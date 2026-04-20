@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNAC | Movilidad Universitaria</title>
+    <title>UNAC | Movilidad Inteligente</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
         :root { 
             --accent: #ffc107; 
-            --dark: #0a0a0a;
-            --glass: rgba(255, 255, 255, 0.03);
+            --accent-glow: rgba(255, 193, 7, 0.4);
+            --dark: #050505;
         }
         
         body, html { 
@@ -24,9 +25,31 @@
             overflow-x: hidden;
         }
 
+        /* ANIMACIONES */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 5px var(--accent-glow); }
+            50% { box-shadow: 0 0 20px var(--accent-glow); }
+            100% { box-shadow: 0 0 5px var(--accent-glow); }
+        }
+
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        /* FONDO DINÁMICO */
         .main-wrapper {
             position: relative;
-            background: linear-gradient(rgba(10, 10, 10, 0.85), rgba(10, 10, 10, 0.95)), 
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), 
                         url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
             background-size: cover;
             background-position: center;
@@ -35,171 +58,217 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
         }
 
-        /* HEADER CORREGIDO PARA MÓVIL */
+        /* NAVBAR MEJORADA */
         header {
             width: 100%;
-            max-width: 1100px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            max-width: 1200px;
+            padding: 25px;
             z-index: 100;
         }
 
-        /* CONTENEDOR PRINCIPAL RE-AJUSTADO */
+        .nav-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            padding: 10px 25px;
+        }
+
+        .nav-link {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #eee;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover { color: var(--accent); }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0; height: 2px; bottom: -4px; left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        /* HERO SECTION */
         .content-box {
-            max-width: 1000px;
+            max-width: 1100px;
             width: 90%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 40px 0;
-            gap: 20px;
             flex-grow: 1;
         }
 
-        .text-side { flex: 1; }
-        
-        h1 { 
-            font-family: 'Montserrat', sans-serif; 
-            font-size: clamp(1.8rem, 5vw, 2.8rem); 
-            line-height: 1.1; 
-            font-weight: 700;
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2.2rem, 6vw, 3.8rem);
+            line-height: 1;
+            font-weight: 800;
+            text-transform: uppercase;
         }
 
-        /* GLOBO RESPONSIVO */
-        #globe-box { 
-            width: 320px; 
-            height: 320px; 
-            flex-shrink: 0;
+        .text-gradient {
+            background: linear-gradient(to right, #ffffff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* TARJETAS */
+        /* GLOBO 3D */
+        #globe-box {
+            width: 400px;
+            height: 400px;
+            position: relative;
+        }
+
+        /* STATS CARDS */
         .stats-area {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            max-width: 1000px;
+            gap: 20px;
             width: 90%;
-            margin-bottom: 40px;
+            max-width: 1100px;
+            margin-bottom: 50px;
         }
 
-        .card-3d {
-            background: var(--glass);
-            border: 1px solid rgba(255, 193, 7, 0.15);
-            backdrop-filter: blur(8px);
-            padding: 20px 10px;
-            border-radius: 12px;
+        .card-tech {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px 15px;
+            border-radius: 20px;
             text-align: center;
-            transition: 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .card-3d h3 { color: var(--accent); font-size: 1.5rem; font-weight: 700; margin: 0; }
-        .card-3d p { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1.5px; color: #888; margin: 5px 0 0; }
+        .card-tech:hover {
+            border-color: var(--accent);
+            transform: translateY(-10px) scale(1.05);
+            animation: pulse-glow 2s infinite;
+        }
 
-        /* VISTA MÓVIL (CORRECCIONES) */
+        .card-tech i { color: var(--accent); font-size: 1.5rem; margin-bottom: 15px; display: block; }
+        .card-tech h3 { font-size: 1.8rem; font-weight: 800; margin: 0; }
+        .card-tech p { font-size: 10px; color: #777; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* RESPONSIVE MÓVIL */
         @media (max-width: 768px) {
-            header { padding: 15px 20px; }
-            .content-box { 
-                flex-direction: column-reverse; /* Globo arriba, texto abajo */
-                text-align: center;
-                padding: 10px 0;
-                justify-content: center;
-            }
-            #globe-box { 
-                width: 240px; 
-                height: 240px; 
-                margin-top: -20px;
-            }
-            .text-side { width: 100%; }
-            .text-side .flex { justify-content: center; } /* Centra el indicador amarillo */
-            
-            h1 { margin-top: 15px; }
-
-            .stats-area { 
-                grid-template-columns: repeat(2, 1fr); 
-                margin-bottom: 30px;
-            }
-
-            .nav-links-desktop { display: none; } /* Ocultar links en móvil para limpieza */
+            .nav-glass { display: none; } /* En móvil se puede añadir un menú hamburguesa luego */
+            .content-box { flex-direction: column-reverse; text-align: center; }
+            #globe-box { width: 280px; height: 280px; margin-top: -40px; }
+            .stats-area { grid-template-columns: repeat(2, 1fr); }
+            h1 { margin-top: 20px; }
         }
-
-        .nav-link { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: #aaa; transition: 0.3s; }
-        .nav-link:hover { color: var(--accent); }
     </style>
 </head>
 <body>
 
     <div class="main-wrapper">
-        <!-- Header -->
-        <header>
-            <div class="flex flex-col">
-                <span class="text-[10px] font-bold tracking-[3px] opacity-50 uppercase">UNAC</span>
-                <span class="text-[12px] font-bold text-yellow-500 uppercase">Movilidad Universitaria</span>
+        <!-- Header / Navigation -->
+        <header class="animate-fade-up">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-500/30">
+                        <i class="fa-solid fa-bus text-black text-xl"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs font-black tracking-widest leading-none">UNAC</span>
+                        <span class="text-[10px] text-yellow-500 font-bold uppercase tracking-tighter">Movilidad</span>
+                    </div>
+                </div>
+
+                <nav class="nav-glass hidden md:flex gap-8">
+                    <a href="#" class="nav-link">INICIO</a>
+                    <a href="#" class="nav-link">RUTAS</a>
+                    <a href="#" class="nav-link">REGISTRO</a>
+                    <a href="#" class="nav-link">NOTICIAS</a>
+                    <a href="#" class="nav-link">CONTACTO</a>
+                </nav>
+
+                <button class="md:hidden text-white text-2xl">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
             </div>
-            <nav class="hidden md:flex gap-6 uppercase">
-                <a href="#" class="nav-link">Inicio</a>
-                <a href="#" class="nav-link">Horarios</a>
-                <a href="#" class="nav-link border border-yellow-500/30 px-4 py-1 rounded-full">Consultas</a>
-            </nav>
         </header>
 
-        <!-- Bloque Inicio -->
-        <div class="content-box">
-            <!-- Texto -->
-            <div class="text-side">
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="w-6 h-[1px] bg-yellow-500"></span>
-                    <span class="text-yellow-500 text-[9px] font-bold uppercase tracking-[2px]">Gestión de Transporte</span>
+        <!-- Main Content -->
+        <main class="content-box">
+            <div class="text-side animate-fade-up" style="animation-delay: 0.2s;">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-6">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
+                    </span>
+                    <span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest">Sistema en tiempo real</span>
                 </div>
-                <h1>Transporte <br><span class="opacity-40 italic font-light">Estratégico</span></h1>
-                <p class="mt-4 text-gray-400 max-w-md mx-auto md:mx-0">Conectando el Campus con la comunidad universitaria. Servicio optimizado para el ciclo 2024-A.</p>
                 
-                <div class="flex gap-3 mt-8">
-                    <button class="bg-yellow-500 text-black text-[11px] font-bold px-6 py-3 rounded hover:scale-105 transition shadow-lg shadow-yellow-500/20">HORARIOS</button>
-                    <button class="border border-white/20 text-[11px] font-bold px-6 py-3 rounded hover:bg-white/5 transition">RUTAS</button>
+                <h1>Conectando <br><span class="text-gradient italic">Tu Futuro</span></h1>
+                <p class="mt-6 text-gray-400 text-sm leading-relaxed max-w-md mx-auto md:mx-0">
+                    Bienvenido a la plataforma oficial de transporte de la UNAC. 
+                    Seguridad, eficiencia y tecnología al servicio de la comunidad universitaria.
+                </p>
+                
+                <div class="flex flex-wrap gap-4 mt-10 justify-center md:justify-start">
+                    <a href="#" class="bg-yellow-500 text-black text-xs font-black px-8 py-4 rounded-xl hover:bg-yellow-400 transition-all flex items-center gap-2 group">
+                        EXPLORAR RUTAS 
+                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <a href="#" class="bg-white/5 border border-white/10 text-xs font-black px-8 py-4 rounded-xl hover:bg-white/10 transition-all">
+                        VER NOTICIAS
+                    </a>
                 </div>
             </div>
 
-            <!-- Globo -->
-            <div id="globe-box"></div>
-        </div>
+            <!-- Globe Animation -->
+            <div id="globe-box" class="animate-float"></div>
+        </main>
 
-        <!-- Estadísticas -->
-        <div class="stats-area">
-            <div class="card-3d">
+        <!-- Stats Section -->
+        <section class="stats-area animate-fade-up" style="animation-delay: 0.4s;">
+            <div class="card-tech">
+                <i class="fa-solid fa-route"></i>
                 <h3>02</h3>
-                <p>Vehículos</p>
+                <p>Rutas Activas</p>
             </div>
-            <div class="card-3d">
+            <div class="card-tech">
+                <i class="fa-solid fa-bolt"></i>
                 <h3>35km</h3>
-                <p>Ruta Total</p>
+                <p>Track Diario</p>
             </div>
-            <div class="card-3d">
-                <h3>55m</h3>
-                <p>Promedio</p>
+            <div class="card-tech">
+                <i class="fa-solid fa-clock"></i>
+                <h3>05:30</h3>
+                <p>Primer Turno</p>
             </div>
-            <div class="card-3d">
-                <h3>+600</h3>
-                <p>Alumnos</p>
+            <div class="card-tech">
+                <i class="fa-solid fa-shield-halved"></i>
+                <h3>100%</h3>
+                <p>Seguridad</p>
             </div>
-        </div>
+        </section>
 
-        <footer class="pb-6 text-[9px] text-gray-600 tracking-[3px] uppercase">
-            UNAC - Control Tecnológico v4.0
+        <footer class="py-8 text-[10px] text-gray-600 tracking-[5px] uppercase flex flex-col items-center gap-4">
+            <div class="flex gap-6 mb-4">
+                <a href="#" class="hover:text-yellow-500 transition-colors"><i class="fa-brands fa-facebook-f text-lg"></i></a>
+                <a href="#" class="hover:text-yellow-500 transition-colors"><i class="fa-brands fa-instagram text-lg"></i></a>
+                <a href="#" class="hover:text-yellow-500 transition-colors"><i class="fa-brands fa-x-twitter text-lg"></i></a>
+            </div>
+            UNAC &copy; 2024 Tech Intelligence Unit
         </footer>
     </div>
 
     <script>
-        let scene, camera, renderer, globe;
+        let scene, camera, renderer, globe, particles;
         const container = document.getElementById('globe-box');
 
         function init() {
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.z = 100;
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -207,34 +276,51 @@
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
 
-            const geometry = new THREE.SphereGeometry(35, 40, 40);
+            // Crear el globo de red
+            const geometry = new THREE.IcosahedronGeometry(35, 2);
             const material = new THREE.MeshBasicMaterial({
                 color: 0xffc107,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.15
+                opacity: 0.2
             });
-
             globe = new THREE.Mesh(geometry, material);
             scene.add(globe);
 
-            // Nodos sutiles
-            const nodesGeom = new THREE.SphereGeometry(35.5, 20, 20);
-            const nodesMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, transparent: true, opacity: 0.4 });
-            const nodes = new THREE.Points(nodesGeom, nodesMat);
-            globe.add(nodes);
+            // Añadir puntos brillantes (vértices)
+            const pointsGeom = new THREE.IcosahedronGeometry(35.5, 2);
+            const pointsMat = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.7,
+                transparent: true,
+                opacity: 0.8
+            });
+            const points = new THREE.Points(pointsGeom, pointsMat);
+            globe.add(points);
+
+            // Partículas de fondo
+            const partGeom = new THREE.BufferGeometry();
+            const partCount = 500;
+            const posArray = new Float32Array(partCount * 3);
+            for(let i=0; i<partCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 200;
+            }
+            partGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const partMat = new THREE.PointsMaterial({ size: 0.2, color: 0xffffff });
+            particles = new THREE.Points(partGeom, partMat);
+            scene.add(particles);
 
             animate();
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            globe.rotation.y += 0.002;
+            globe.rotation.y += 0.003;
             globe.rotation.x += 0.001;
+            particles.rotation.y -= 0.0005;
             renderer.render(scene, camera);
         }
 
-        // Ajuste de tamaño en tiempo real
         window.addEventListener('resize', () => {
             const width = container.clientWidth;
             const height = container.clientHeight;
