@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNAC Movilidad | Portal Tecnológico</title>
+    
+    <!-- Librerías de Alto Nivel -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --accent: #00d2ff;
+            --bg-dark: #01060f;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Evita el scroll tradicional */
+            height: 100vh;
+        }
+
+        .font-tech { font-family: 'Orbitron', sans-serif; }
+
+        /* Contenedor de Ventanas */
+        .window-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .window {
+            position: absolute;
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.9) translateY(20px);
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .window.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+            pointer-events: all;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Fondo 3D */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Estilo de Tarjetas de Vidrio */
+        .glass-panel {
+            background: rgba(2, 12, 27, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Menú Lateral Tecnológico */
+        .side-nav {
+            position: fixed;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .nav-dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            transform: scale(1.5);
+        }
+
+        #map { height: 100%; border-radius: 20px; filter: invert(90%) hue-rotate(180deg); }
+
+        /* Animación de carga */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="text-center">
+            <i class="fas fa-microchip text-5xl text-blue-500 animate-pulse mb-4"></i>
+            <p class="font-tech tracking-[1em] text-xs">INICIALIZANDO IA...</p>
+        </div>
+    </div>
+
+    <!-- Fondo 3D (Three.js) -->
+    <canvas id="canvas-bg"></canvas>
+
+    <!-- Navegación Superior -->
+    <nav class="fixed top-0 w-full p-8 flex justify-between items-center z-[100]">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.5)]">
+                <i class="fas fa-robot text-white"></i>
+            </div>
+            <span class="font-tech text-xl font-bold tracking-tighter">UNAC <span class="text-blue-400">V-MOV</span></span>
+        </div>
+        <div class="hidden md:flex gap-8 font-tech text-[10px] tracking-widest text-gray-400">
+            <button onclick="showWindow('home')" class="hover:text-blue-400 transition">INICIO</button>
+            <button onclick="showWindow('rutas')" class="hover:text-blue-400 transition">RUTAS</button>
+            <button onclick="showWindow('ticket')" class="hover:text-blue-400 transition text-blue-400">SOLICITAR TICKET</button>
+            <button onclick="showWindow('noticias')" class="hover:text-blue-400 transition">NOTICIAS</button>
+        </div>
+        <button class="border border-blue-500/50 px-6 py-2 rounded-full text-[10px] font-tech hover:bg-blue-500 transition">CONSULTAS</button>
+    </nav>
+
+    <!-- Indicadores de Ventana Lateral -->
+    <div class="side-nav">
+        <div class="nav-dot active" data-target="home"></div>
+        <div class="nav-dot" data-target="rutas"></div>
+        <div class="nav-dot" data-target="ticket"></div>
+        <div class="nav-dot" data-target="noticias"></div>
+    </div>
+
+    <!-- CONTENEDOR DE VENTANAS -->
+    <div class="window-container">
+        
+        <!-- Ventana 1: HOME -->
+        <section id="home" class="window active">
+            <div class="grid md:grid-cols-2 gap-10 items-center">
+                <div>
+                    <span class="text-blue-400 font-tech text-xs tracking-[0.5em] mb-4 block">SISTEMA DE TRANSPORTE 4.0</span>
+                    <h1 class="text-7xl font-tech font-bold leading-none mb-6">MOVILIDAD <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-400 italic">INTELIGENTE.</span></h1>
+                    <p class="text-gray-400 text-lg mb-8 max-w-md">Optimización de rutas universitarias mediante algoritmos de inteligencia artificial y seguimiento en tiempo real.</p>
+                    <div class="flex gap-4">
+                        <button onclick="showWindow('rutas')" class="bg-blue-600 px-8 py-4 rounded-xl font-bold shadow-lg shadow-blue-900/50 hover:bg-blue-400 transition">EXPLORAR MAPA</button>
+                        <button class="bg-white/5 border border-white/10 px-8 py-4 rounded-xl font-bold hover:bg-white/10 transition">REPORTE IA</button>
+                    </div>
+                </div>
+                <div class="relative flex justify-center">
+                    <div class="w-80 h-80 bg-blue-500/20 rounded-full absolute blur-[100px] animate-pulse"></div>
+                    <img src="https://cdni.iconscout.com/illustration/premium/thumb/robot-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--artificial-intelligence-cyborg-pack-science-technology-illustrations-4847525.png" class="relative z-10 w-full max-w-sm drop-shadow-2xl floating-robot">
+                </div>
+            </div>
+        </section>
+
+        <!-- Ventana 2: RUTAS -->
+        <section id="rutas" class="window">
+            <div class="glass-panel grid md:grid-cols-3 gap-6 h-full">
+                <div class="md:col-span-2 relative h-full min-h-[300px]">
+                    <div id="map"></div>
+                </div>
+                <div class="space-y-4 overflow-y-auto pr-2">
+                    <h2 class="font-tech text-xl text-blue-400">FLOTA ACTIVA</h2>
+                    <div class="p-4 bg-white/5 border border-white/10 rounded-xl">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-xs font-bold">BUS-01 (Ventanilla)</span>
+                            <span class="text-green-400 text-[10px]">EN RUTA</span>
+                        </div>
+                        <div class="w-full bg-gray-800 h-1 rounded-full"><div class="bg-blue-500 h-1 w-2/3"></div></div>
+                    </div>
+                    <!-- Más items -->
+                    <div class="p-4 bg-white/5 border border-white/10 rounded-xl opacity-50">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-xs font-bold">BUS-02 (Pachacútec)</span>
+                            <span class="text-yellow-400 text-[10px]">MANTENIMIENTO</span>
+                        </div>
+                        <div class="w-full bg-gray-800 h-1 rounded-full"><div class="bg-yellow-500 h-1 w-0"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ventana 3: TICKET -->
+        <section id="ticket" class="window">
+            <div class="glass-panel max-w-2xl mx-auto w-full">
+                <div class="text-center mb-10">
+                    <h2 class="font-tech text-3xl">SMART TICKET <span class="text-blue-500">QR</span></h2>
+                    <p class="text-gray-400 text-sm">Escanea tu acceso al subir a la unidad</p>
+                </div>
+                <form class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <input type="text" placeholder="Código UNAC" class="bg-black/40 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 transition">
+                        <select class="bg-black/40 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 transition text-gray-400">
+                            <option>Seleccionar Turno</option>
+                            <option>Mañana</option>
+                            <option>Noche</option>
+                        </select>
+                    </div>
+                    <button class="w-full bg-blue-600 py-4 rounded-xl font-tech tracking-widest hover:bg-blue-400 transition">GENERAR TOKEN DE ACCESO</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Ventana 4: NOTICIAS -->
+        <section id="noticias" class="window">
+            <h2 class="font-tech text-3xl mb-8">NEWS FEED <span class="text-blue-500">TECH</span></h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="glass-panel !p-0 overflow-hidden group">
+                    <div class="h-48 bg-cover bg-center group-hover:scale-110 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=500')"></div>
+                    <div class="p-6">
+                        <p class="text-blue-400 text-[10px] font-bold mb-2">TECNOLOGÍA</p>
+                        <h4 class="font-bold mb-2">IA para conteo de pasajeros</h4>
+                        <p class="text-xs text-gray-400">Implementamos visión artificial para evitar el exceso de aforo...</p>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="glass-panel !p-0 overflow-hidden group">
+                    <div class="h-48 bg-cover bg-center group-hover:scale-110 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=500')"></div>
+                    <div class="p-6">
+                        <p class="text-blue-400 text-[10px] font-bold mb-2">INFRAESTRUCTURA</p>
+                        <h4 class="font-bold mb-2">Nuevos paraderos Smart</h4>
+                        <p class="text-xs text-gray-400">Ventanilla inaugura estaciones con paneles solares y WiFi.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // 1. MANEJO DE VENTANAS (SPA logic)
+        function showWindow(id) {
+            // Desactivar todas las ventanas
+            document.querySelectorAll('.window').forEach(win => win.classList.remove('active'));
+            document.querySelectorAll('.nav-dot').forEach(dot => dot.classList.remove('active'));
+            
+            // Activar la seleccionada
+            document.getElementById(id).classList.add('active');
+            document.querySelector(`[data-target="${id}"]`).classList.add('active');
+
+            // Reiniciar mapa si es la ventana de rutas
+            if(id === 'rutas') {
+                setTimeout(() => map.invalidateSize(), 400);
+            }
+        }
+
+        document.querySelectorAll('.nav-dot').forEach(dot => {
+            dot.addEventListener('click', () => showWindow(dot.dataset.target));
+        });
+
+        // 2. FONDO 3D CON THREE.JS (Plexus Effect)
+        let scene, camera, renderer, points;
+        function init3D() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas-bg'), antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            const geometry = new THREE.BufferGeometry();
+            const count = 1500;
+            const positions = new Float32Array(count * 3);
+
+            for(let i=0; i<count*3; i++) {
+                positions[i] = (Math.random() - 0.5) * 15;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const material = new THREE.PointsMaterial({ size: 0.015, color: 0x00d2ff });
+            points = new THREE.Points(geometry, material);
+            scene.add(points);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                points.rotation.y += 0.001;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // 3. MAPA
+        const map = L.map('map').setView([-11.875, -77.12], 13);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+        
+        // 4. LOADER
+        window.onload = () => {
+            init3D();
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+            }, 1500);
+        };
+
+        // Responsividad
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Animación de Robot
+        gsap.to(".floating-robot", {
+            y: 20,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+        });
+    </script>
+</body>
+</html>
