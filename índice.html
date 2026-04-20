@@ -3,232 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNAC Movilidad Tecnológica</title>
+    <title>UNAC Movilidad | Ventanilla Digital</title>
     
-    <!-- Tailwind CSS Directo -->
+    <!-- Tailwind & Fuentes -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js para el fondo 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
-    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* Forzamos el fondo oscuro desde el inicio para evitar pantallas blancas */
-        html, body {
-            background-color: #020617 !important;
-            margin: 0;
-            padding: 0;
-            color: white;
-            font-family: 'Inter', sans-serif;
-            overflow: hidden; /* Evita scroll innecesario */
+        :root { --blue: #00d2ff; --bg: #020617; }
+        body, html { 
+            background-color: var(--bg); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
             height: 100vh;
+            margin: 0;
         }
-
         .font-tech { font-family: 'Orbitron', sans-serif; }
 
         /* Fondo 3D */
-        #canvas-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+        #canvas-bg { position: fixed; top: 0; left: 0; z-index: 0; }
+
+        /* Estilo Vidrio Aero */
+        .glass {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 20px;
         }
 
-        /* Sistema de Ventanas */
-        .window-content {
-            position: relative;
-            z-index: 10;
-            height: 100vh;
-            width: 100%;
+        /* Transiciones de Ventanas */
+        .page {
+            position: absolute;
+            inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .page {
-            position: absolute;
-            width: 90%;
-            max-width: 1200px;
             opacity: 0;
-            visibility: hidden;
-            transform: translateY(30px);
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
         }
-
         .page.active {
             opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+            pointer-events: all;
+            transform: translateY(0) scale(1);
         }
-
-        /* Estilo de Cristal */
-        .glass {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 24px;
-            padding: 2rem;
-        }
-
-        .nav-link {
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-        }
-
-        .nav-link:hover { color: #3b82f6; }
 
         /* Animación Robot */
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
         }
-        .robot { animation: float 4s ease-in-out infinite; }
+        .robot-img { animation: float 5s ease-in-out infinite; }
+
+        .btn-tech {
+            background: linear-gradient(90deg, #00d2ff, #3a86ff);
+            transition: 0.3s;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        }
+        .btn-tech:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(0, 210, 255, 0.6); }
     </style>
 </head>
 <body>
 
     <canvas id="canvas-bg"></canvas>
 
-    <!-- Menu Superior -->
+    <!-- Header / Nav -->
     <nav class="fixed top-0 w-full z-[100] px-10 py-6 flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                <i class="fas fa-bolt text-white text-xs"></i>
+        <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('home')">
+            <div class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/50">
+                <i class="fas fa-microchip text-white text-xs"></i>
             </div>
-            <span class="font-tech font-bold text-xl tracking-tighter">UNAC <span class="text-blue-500">MOV</span></span>
+            <span class="font-tech font-bold text-xl tracking-tighter">UNAC <span class="text-cyan-400">V-MOV</span></span>
         </div>
         
-        <div class="hidden md:flex gap-8 font-tech text-gray-400">
-            <span class="nav-link" onclick="openPage('home')">INICIO</span>
-            <span class="nav-link" onclick="openPage('rutas')">RUTAS</span>
-            <span class="nav-link" onclick="openPage('ticket')">TICKETS</span>
-            <span class="nav-link" onclick="openPage('noticias')">NOTICIAS</span>
+        <div class="hidden md:flex gap-10 font-tech text-[10px] tracking-[0.2em] text-gray-400">
+            <button onclick="showPage('rutas')" class="hover:text-cyan-400 transition">RUTAS</button>
+            <button onclick="showPage('registro')" class="hover:text-cyan-400 transition">REGISTRO</button>
+            <button onclick="showPage('ticket')" class="hover:text-cyan-400 transition">TICKETS</button>
+            <button onclick="showPage('noticias')" class="hover:text-cyan-400 transition">NOTICIAS</button>
         </div>
 
-        <button class="border border-blue-500/50 px-6 py-2 rounded-lg font-tech text-[10px] hover:bg-blue-500 transition">CONSULTAS</button>
+        <button onclick="showPage('consultas')" class="border border-cyan-500/50 px-6 py-2 rounded-full font-tech text-[9px] hover:bg-cyan-500 transition">CONSULTAS</button>
     </nav>
 
-    <!-- Contenedor Principal -->
-    <main class="window-content">
-        
-        <!-- VENTANA: INICIO -->
+    <!-- Secciones (Ventanas) -->
+    <main class="relative h-screen w-full">
+
+        <!-- HOME -->
         <section id="home" class="page active">
-            <div class="grid md:grid-cols-2 gap-10 items-center">
+            <div class="max-w-6xl w-full px-10 grid md:grid-cols-2 gap-10 items-center">
                 <div class="space-y-6">
-                    <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Tecnología de Vanguardia</span>
-                    <h1 class="text-6xl md:text-8xl font-tech font-bold leading-none">
-                        Movilidad <br> <span class="text-blue-500 italic">Digital.</span>
+                    <div class="inline-block px-4 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold tracking-widest uppercase">
+                        Sistema Inteligente 2024
+                    </div>
+                    <h1 class="text-6xl md:text-8xl font-tech font-bold leading-none uppercase">
+                        Movilidad <br> <span class="text-cyan-400 italic">Tecnológica.</span>
                     </h1>
-                    <p class="text-gray-400 text-lg max-w-md">
-                        Gestión inteligente de flotas para la comunidad UNAC. Monitoreo en tiempo real con inteligencia artificial.
+                    <p class="text-gray-400 text-lg max-w-md leading-relaxed">
+                        Control de rutas y gestión de tickets mediante inteligencia artificial para la comunidad UNAC Ventanilla.
                     </p>
                     <div class="flex gap-4">
-                        <button onclick="openPage('rutas')" class="bg-blue-600 hover:bg-blue-400 text-white px-8 py-4 rounded-xl font-bold transition">VER RUTAS</button>
-                        <button onclick="openPage('ticket')" class="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold transition">SOLICITAR TICKET</button>
+                        <button onclick="showPage('rutas')" class="btn-tech px-10 py-4 rounded-xl font-bold text-sm uppercase tracking-widest">Explorar Rutas</button>
                     </div>
                 </div>
                 <div class="flex justify-center">
-                    <img src="https://cdni.iconscout.com/illustration/premium/thumb/robot-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--artificial-intelligence-cyborg-pack-science-technology-illustrations-4847525.png" alt="Robot IA" class="robot w-full max-w-md drop-shadow-[0_0_50px_rgba(59,130,246,0.3)]">
+                    <img src="https://cdni.iconscout.com/illustration/premium/thumb/robot-3d-illustration-download-in-png-blend-fbx-gltf-file-formats--artificial-intelligence-cyborg-pack-science-technology-illustrations-4847525.png" class="robot-img w-full max-w-md">
                 </div>
             </div>
         </section>
 
-        <!-- VENTANA: RUTAS -->
+        <!-- RUTAS -->
         <section id="rutas" class="page">
-            <div class="glass w-full grid md:grid-cols-3 gap-6 h-[500px]">
-                <div class="md:col-span-2 bg-slate-900 rounded-xl overflow-hidden relative border border-white/5">
-                    <!-- Placeholder de Mapa -->
-                    <div class="absolute inset-0 flex items-center justify-center text-center p-10">
-                        <div>
-                            <i class="fas fa-map-marked-alt text-5xl text-blue-500 mb-4"></i>
-                            <h3 class="font-tech text-xl">SISTEMA GPS ACTIVO</h3>
-                            <p class="text-gray-500 text-sm">Cargando coordenadas de Ventanilla...</p>
-                        </div>
-                    </div>
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15613.435766254714!2d-77.12!3d-11.875!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2spe!4v1710000000000!5m2!1ses!2spe" class="w-full h-full border-0 opacity-40 grayscale invert" allowfullscreen="" loading="lazy"></iframe>
+            <div class="glass w-[90%] max-w-5xl p-8 grid md:grid-cols-3 gap-8">
+                <div class="md:col-span-2 h-[400px] bg-slate-900 rounded-xl overflow-hidden border border-white/10">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15613.435766254714!2d-77.12!3d-11.875!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2spe!4v1710000000000!5m2!1ses!2spe" class="w-full h-full border-0 grayscale invert" allowfullscreen="" loading="lazy"></iframe>
                 </div>
                 <div class="space-y-4">
-                    <h3 class="font-tech text-blue-400">ESTADO DE BUSES</h3>
-                    <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                    <h2 class="font-tech text-cyan-400 text-xl">TRACKING IA</h2>
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/10 hover:border-cyan-500/50 transition">
                         <p class="text-xs font-bold uppercase">Bus #01 - Ventanilla</p>
-                        <p class="text-[10px] text-green-400">● EN MOVIMIENTO</p>
+                        <p class="text-[10px] text-green-400 tracking-widest">ACTIVO - EN CAMINO</p>
                     </div>
-                    <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/10 opacity-50">
                         <p class="text-xs font-bold uppercase">Bus #02 - Callao</p>
-                        <p class="text-[10px] text-yellow-400">● DETENIDO EN PARADERO</p>
+                        <p class="text-[10px] text-yellow-400 tracking-widest">RECARGA DE ENERGÍA</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- VENTANA: TICKETS -->
+        <!-- REGISTRO -->
+        <section id="registro" class="page">
+            <div class="glass p-10 max-w-lg w-full text-center">
+                <h2 class="font-tech text-2xl mb-6 uppercase">Registro <span class="text-cyan-400">Biométrico</span></h2>
+                <div class="space-y-4 text-left">
+                    <input type="text" placeholder="Código Universitario" class="w-full bg-slate-900 border border-white/10 p-4 rounded-xl outline-none focus:border-cyan-500">
+                    <input type="password" placeholder="Clave de Acceso" class="w-full bg-slate-900 border border-white/10 p-4 rounded-xl outline-none focus:border-cyan-500">
+                    <button class="btn-tech w-full py-4 rounded-xl font-bold uppercase tracking-widest">Crear Cuenta Digital</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TICKET -->
         <section id="ticket" class="page">
-            <div class="glass max-w-xl mx-auto">
-                <div class="text-center mb-8">
-                    <h2 class="text-3xl font-tech">SISTEMA DE <span class="text-blue-500">TICKETS</span></h2>
-                    <p class="text-gray-500 text-sm">Genera tu QR de acceso universitario</p>
+            <div class="glass p-10 max-w-xl w-full text-center relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/20 blur-3xl rounded-full"></div>
+                <h2 class="font-tech text-2xl mb-2">SOLICITAR <span class="text-cyan-400">SMART TICKET</span></h2>
+                <p class="text-gray-500 text-xs mb-8 uppercase tracking-widest">Generación de código QR instantáneo</p>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="p-6 bg-slate-900 rounded-xl border border-white/10 cursor-pointer hover:border-cyan-500">
+                        <i class="fas fa-sun text-2xl text-yellow-400 mb-2"></i>
+                        <p class="text-[10px] font-bold">TURNO MAÑANA</p>
+                    </div>
+                    <div class="p-6 bg-slate-900 rounded-xl border border-white/10 cursor-pointer hover:border-cyan-500">
+                        <i class="fas fa-moon text-2xl text-cyan-400 mb-2"></i>
+                        <p class="text-[10px] font-bold">TURNO NOCHE</p>
+                    </div>
                 </div>
-                <form class="space-y-4">
-                    <input type="text" placeholder="Código de Estudiante" class="w-full bg-slate-900 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500">
-                    <select class="w-full bg-slate-900 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500">
-                        <option>Seleccionar Ruta</option>
-                        <option>Ventanilla - Campus</option>
-                        <option>Campus - Ventanilla</option>
-                    </select>
-                    <button type="button" class="w-full bg-blue-600 p-4 rounded-xl font-bold font-tech hover:bg-blue-400 transition">GENERAR QR</button>
-                </form>
+                <button class="btn-tech w-full py-4 rounded-xl font-bold uppercase tracking-widest">Generar Ticket Digital</button>
             </div>
         </section>
 
-        <!-- VENTANA: NOTICIAS -->
+        <!-- NOTICIAS -->
         <section id="noticias" class="page">
-            <h2 class="text-4xl font-tech mb-8">NOTICIAS <span class="text-blue-500">UNAC</span></h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="glass p-0 overflow-hidden group">
-                    <div class="h-40 bg-blue-900/50 flex items-center justify-center">
-                        <i class="fas fa-bus text-5xl text-blue-400"></i>
+            <div class="max-w-5xl w-full px-10">
+                <h2 class="font-tech text-3xl mb-10">TECH <span class="text-cyan-400">NEWS</span></h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="glass p-0 overflow-hidden group cursor-pointer">
+                        <div class="h-40 bg-slate-800 flex items-center justify-center group-hover:scale-110 transition duration-500">
+                            <i class="fas fa-bolt text-4xl text-cyan-400"></i>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="font-bold text-sm mb-2 uppercase">Buses Eléctricos</h4>
+                            <p class="text-[10px] text-gray-400">Implementación de nueva flota 100% eléctrica en Ventanilla.</p>
+                        </div>
                     </div>
-                    <div class="p-6">
-                        <h4 class="font-bold mb-2">Nuevas Unidades</h4>
-                        <p class="text-xs text-gray-400">Se han integrado 5 buses eléctricos a la ruta de Ventanilla.</p>
+                    <div class="glass p-0 overflow-hidden group cursor-pointer">
+                        <div class="h-40 bg-slate-800 flex items-center justify-center group-hover:scale-110 transition duration-500">
+                            <i class="fas fa-wifi text-4xl text-cyan-400"></i>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="font-bold text-sm mb-2 uppercase">WiFi 6G</h4>
+                            <p class="text-[10px] text-gray-400">Conectividad de alta velocidad en todos los paraderos.</p>
+                        </div>
                     </div>
                 </div>
-                <div class="glass p-0 overflow-hidden group">
-                    <div class="h-40 bg-blue-900/50 flex items-center justify-center">
-                        <i class="fas fa-wifi text-5xl text-blue-400"></i>
-                    </div>
-                    <div class="p-6">
-                        <h4 class="font-bold mb-2">WiFi en Buses</h4>
-                        <p class="text-xs text-gray-400">Ahora todas nuestras unidades cuentan con conexión de alta velocidad.</p>
-                    </div>
-                </div>
+            </div>
+        </section>
+
+        <!-- CONSULTAS -->
+        <section id="consultas" class="page">
+            <div class="glass p-10 max-w-lg w-full text-center">
+                <i class="fas fa-headset text-5xl text-cyan-400 mb-6"></i>
+                <h2 class="font-tech text-2xl mb-4">SOPORTE IA</h2>
+                <p class="text-gray-400 text-sm mb-8">¿Tienes dudas con el sistema? Chatea con nuestro asistente virtual.</p>
+                <button class="btn-tech w-full py-4 rounded-xl font-bold uppercase tracking-widest">Iniciar Chat de Soporte</button>
             </div>
         </section>
 
     </main>
 
-    <footer class="fixed bottom-6 w-full text-center text-[10px] text-gray-600 font-tech tracking-[0.3em] z-50">
-        © 2024 UNAC - MOVILIDAD TECNOLÓGICA
+    <footer class="fixed bottom-6 w-full text-center text-[9px] text-gray-600 font-tech tracking-[0.4em] z-50">
+        UNAC - MOVILIDAD TECNOLÓGICA V.2.0
     </footer>
 
     <script>
-        // --- LOGICA DE NAVEGACION ---
-        function openPage(id) {
-            // Ocultar todas las paginas
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            // Mostrar la seleccionada
+        // Lógica Navegación SPA
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        // --- FONDO 3D (THREE.JS) ---
+        // Fondo 3D con Three.js (Red de Partículas)
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas-bg'), antialias: true, alpha: true });
@@ -236,16 +227,13 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         camera.position.z = 5;
 
-        // Crear partículas (Estrellas/Nodos)
         const geometry = new THREE.BufferGeometry();
         const vertices = [];
-        for (let i = 0; i < 1000; i++) {
-            vertices.push(THREE.MathUtils.randFloatSpread(20)); // x
-            vertices.push(THREE.MathUtils.randFloatSpread(20)); // y
-            vertices.push(THREE.MathUtils.randFloatSpread(20)); // z
+        for (let i = 0; i < 2000; i++) {
+            vertices.push(THREE.MathUtils.randFloatSpread(20), THREE.MathUtils.randFloatSpread(20), THREE.MathUtils.randFloatSpread(20));
         }
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-        const material = new THREE.PointsMaterial({ color: 0x3b82f6, size: 0.05 });
+        const material = new THREE.PointsMaterial({ color: 0x00d2ff, size: 0.03, transparent: true, opacity: 0.5 });
         const points = new THREE.Points(geometry, material);
         scene.add(points);
 
@@ -255,10 +243,8 @@
             points.rotation.x += 0.0005;
             renderer.render(scene, camera);
         }
-
         animate();
 
-        // Ajustar al cambiar tamaño de pantalla
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
