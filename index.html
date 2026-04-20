@@ -3,93 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNAC | Movilidad</title>
+    <title>UNAC | Movilidad Universitaria</title>
     
+    <!-- Librerías -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        :root { --accent: #ffc107; --dark: #050505; }
+        :root { 
+            --accent: #ffc107; 
+            --dark: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 193, 7, 0.2);
+        }
         
+        * { box-sizing: border-box; }
+
         body, html { 
-            margin: 0; padding: 0; height: 100%; 
+            margin: 0; padding: 0; min-height: 100vh; 
             background-color: var(--dark);
             font-family: 'Inter', sans-serif;
-            color: white;
+            color: #ffffff;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
-        /* FONDO RECUPERADO (Imagen del bus con overlay) */
+        /* FONDO OPTIMIZADO */
         .main-wrapper {
             position: relative;
-            background: linear-gradient(rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0.95)), 
+            background: linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.95)), 
                         url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* CONTENEDOR COMPACTO */
+        /* CONTENEDOR PRINCIPAL */
         .content-box {
-            max-width: 850px; /* Tamaño mucho más pequeño */
+            max-width: 1000px;
             width: 100%;
-            margin-top: 100px;
+            margin-top: 5vh;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            gap: 20px;
+            padding: 2rem;
+            z-index: 10;
         }
 
-        /* TEXTOS PEQUEÑOS Y PROFESIONALES */
-        .text-side { max-width: 400px; }
-        h1 { font-family: 'Montserrat', sans-serif; font-size: 2.2rem; line-height: 1.1; }
-        p { font-size: 0.85rem; color: #aaa; margin-top: 10px; }
+        .text-side { max-width: 500px; animation: fadeInUp 0.8s ease-out; }
+        
+        h1 { 
+            font-family: 'Montserrat', sans-serif; 
+            font-size: clamp(2rem, 5vw, 3rem); 
+            line-height: 1.1; 
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
 
-        /* GLOBO REDUCIDO */
-        #globe-box { width: 220px; height: 220px; }
+        p { 
+            font-size: 0.95rem; 
+            color: #cbd5e1; 
+            line-height: 1.6;
+            font-weight: 300;
+        }
 
-        /* TARJETAS 3D INFERIORES COMPACTAS */
+        /* GLOBO 3D */
+        #globe-box { 
+            width: 300px; 
+            height: 300px; 
+            cursor: grab;
+            filter: drop-shadow(0 0 20px rgba(255, 193, 7, 0.1));
+        }
+
+        /* TARJETAS 3D */
         .stats-area {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            max-width: 850px;
-            width: 100%;
-            margin-top: 30px;
+            gap: 20px;
+            max-width: 1000px;
+            width: 90%;
+            margin: 40px 0;
             perspective: 1000px;
         }
 
         .card-3d {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 193, 7, 0.1);
-            padding: 20px 10px;
-            border-radius: 10px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            padding: 25px 15px;
+            border-radius: 16px;
             text-align: center;
-            transition: all 0.4s ease;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             transform-style: preserve-3d;
         }
 
         .card-3d:hover {
-            transform: translateY(-5px) rotateX(10deg);
+            transform: translateY(-10px) rotateX(5deg);
             border-color: var(--accent);
-            background: rgba(255, 193, 7, 0.05);
+            background: rgba(255, 193, 7, 0.08);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
         }
 
-        .card-3d h3 { color: var(--accent); font-size: 1.4rem; font-weight: 700; margin: 0; }
-        .card-3d p { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #666; margin: 5px 0 0; }
+        .card-3d h3 { 
+            color: var(--accent); 
+            font-size: 1.75rem; 
+            font-weight: 700; 
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
 
-        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #888; }
+        .card-3d p { 
+            font-size: 0.65rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            color: #94a3b8; 
+            margin: 8px 0 0;
+            font-weight: 600;
+        }
+
+        /* NAVEGACIÓN */
+        .nav-link { 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            letter-spacing: 1.5px; 
+            color: #94a3b8; 
+            transition: 0.3s;
+        }
         .nav-link:hover, .active-link { color: var(--accent); }
 
-        @media (max-width: 600px) {
-            .content-box { flex-direction: column; text-align: center; margin-top: 80px; }
-            .stats-area { grid-template-columns: repeat(2, 1fr); padding: 20px; }
+        /* ANIMACIONES */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .content-box { 
+                flex-direction: column-reverse; 
+                text-align: center; 
+                margin-top: 20px;
+                padding: 1.5rem;
+            }
+            #globe-box { width: 250px; height: 250px; margin-bottom: 2rem; }
+            .stats-area { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .text-side { max-width: 100%; }
+            .text-side .flex { justify-content: center; }
         }
     </style>
 </head>
@@ -97,45 +162,49 @@
 
     <div class="main-wrapper">
         <!-- Header -->
-        <header class="w-full max-w-6xl px-8 py-6 flex justify-between items-center z-50">
+        <header class="w-full max-w-6xl px-6 py-8 flex justify-between items-center z-50">
             <div class="flex flex-col">
-                <span class="text-[9px] font-bold tracking-tighter opacity-50 uppercase">UNAC</span>
-                <span class="text-[11px] font-bold text-yellow-500 uppercase">Movilidad Universitaria</span>
+                <span class="text-[10px] font-black tracking-[4px] opacity-40 uppercase">UNAC</span>
+                <span class="text-[12px] font-bold text-yellow-500 uppercase tracking-wider">Movilidad</span>
             </div>
-            <nav class="hidden md:flex gap-6 uppercase">
+            <nav class="hidden md:flex items-center gap-8 uppercase">
                 <a href="#" class="nav-link active-link">Inicio</a>
                 <a href="#" class="nav-link">Horarios</a>
                 <a href="#" class="nav-link">Rutas</a>
-                <a href="#" class="nav-link border border-yellow-500/30 px-3 py-1 rounded">Consultas</a>
+                <a href="#" class="nav-link border border-yellow-500/40 px-4 py-2 rounded-full hover:bg-yellow-500 hover:text-black transition-all">Consultas</a>
             </nav>
         </header>
 
-        <!-- Bloque Inicio Compacto -->
-        <div class="content-box">
-            <!-- Texto Esquina Izquierda -->
+        <!-- Bloque Inicio -->
+        <main class="content-box">
+            <!-- Texto -->
             <div class="text-side">
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="w-4 h-[1px] bg-yellow-500"></span>
-                    <span class="text-yellow-500 text-[9px] font-bold uppercase tracking-widest">Sistema Oficial</span>
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-[2px] bg-yellow-500"></span>
+                    <span class="text-yellow-500 text-[10px] font-bold uppercase tracking-[3px]">Sistema Inteligente de Control</span>
                 </div>
-                <h1 class="font-bold">Movilidad <br><span class="opacity-40 italic">Universitaria</span></h1>
-                <p>Gestión de transporte para la comunidad UNAC. Conexión directa Ventanilla - Campus Universitario Ciclo 2024-A.</p>
+                <h1>Transporte <br><span class="opacity-30 font-light">Universitario</span></h1>
+                <p class="mb-8">Optimización y gestión de rutas para la comunidad de la Universidad Nacional del Callao. Ciclo 2024-A.</p>
                 
-                <div class="flex gap-3 mt-6">
-                    <button class="bg-yellow-500 text-black text-[11px] font-bold px-5 py-2 rounded shadow-lg shadow-yellow-500/20 hover:scale-105 transition">HORARIOS</button>
-                    <button class="border border-white/20 text-[11px] font-bold px-5 py-2 rounded hover:bg-white/5 transition">SABER MÁS</button>
+                <div class="flex gap-4">
+                    <button class="bg-yellow-500 text-black text-[12px] font-bold px-8 py-3 rounded-lg shadow-xl shadow-yellow-500/10 hover:bg-yellow-400 hover:-translate-y-1 transition-all">
+                        VER HORARIOS
+                    </button>
+                    <button class="bg-white/5 border border-white/10 text-[12px] font-bold px-8 py-3 rounded-lg hover:bg-white/10 transition-all">
+                        RUTAS
+                    </button>
                 </div>
             </div>
 
-            <!-- Globo Esquina Derecha -->
+            <!-- Globo 3D -->
             <div id="globe-box"></div>
-        </div>
+        </main>
 
-        <!-- Estadísticas 3D Animadas -->
-        <div class="stats-area">
+        <!-- Estadísticas -->
+        <section class="stats-area">
             <div class="card-3d">
-                <h3>2</h3>
-                <p>Vehículos</p>
+                <h3>02</h3>
+                <p>Unidades</p>
             </div>
             <div class="card-3d">
                 <h3>35km</h3>
@@ -143,47 +212,54 @@
             </div>
             <div class="card-3d">
                 <h3>55m</h3>
-                <p>Duración</p>
+                <p>Tiempos</p>
             </div>
             <div class="card-3d">
                 <h3>+600</h3>
-                <p>Beneficiados</p>
+                <p>Usuarios</p>
             </div>
-        </div>
+        </section>
 
-        <footer class="mt-auto py-6 text-[9px] text-gray-600 tracking-[3px]">
-            UNAC - V.4.0.0 TECNOLOGÍA DE CONTROL
+        <footer class="mt-auto py-10 text-[10px] text-gray-500 tracking-[4px] uppercase opacity-60">
+            UNAC &copy; 2024 Tech Control Unit
         </footer>
     </div>
 
-    <!-- Script Globo 3D Sutil -->
     <script>
         let scene, camera, renderer, globe;
+        const container = document.getElementById('globe-box');
 
         function init() {
-            const container = document.getElementById('globe-box');
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+            
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.z = 100;
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
 
-            const geometry = new THREE.SphereGeometry(35, 50, 50);
+            // Geometría del Globo (Estructura)
+            const geometry = new THREE.SphereGeometry(35, 64, 64);
             const material = new THREE.MeshBasicMaterial({
                 color: 0xffc107,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.15
+                opacity: 0.1
             });
 
             globe = new THREE.Mesh(geometry, material);
             scene.add(globe);
 
-            // Nodos de luz
-            const nodesGeom = new THREE.SphereGeometry(35.2, 20, 20);
-            const nodesMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.4 });
+            // Puntos de luz / Nodos
+            const nodesGeom = new THREE.SphereGeometry(35.5, 32, 32);
+            const nodesMat = new THREE.PointsMaterial({ 
+                color: 0xffffff, 
+                size: 0.5,
+                transparent: true,
+                opacity: 0.5 
+            });
             const nodes = new THREE.Points(nodesGeom, nodesMat);
             globe.add(nodes);
 
@@ -192,10 +268,19 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            globe.rotation.y += 0.002;
-            globe.rotation.x += 0.001;
+            globe.rotation.y += 0.0015;
+            globe.rotation.x += 0.0005;
             renderer.render(scene, camera);
         }
+
+        // Ajustar el tamaño del canvas al cambiar el tamaño de ventana
+        window.addEventListener('resize', () => {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
 
         window.onload = init;
     </script>
