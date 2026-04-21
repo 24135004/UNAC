@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UNAC | Rutas Oficiales</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root { --accent: #ffc107; --dark: #050505; --success: #4ade80; }
+        
+        body, html { 
+            margin: 0; padding: 0; min-height: 100vh;
+            background-color: var(--dark);
+            font-family: 'Inter', sans-serif;
+            color: white; overflow-x: hidden;
+        }
+
+        /* FONDO RECUPERADO DE INICIO */
+        .main-wrapper {
+            position: relative;
+            background: linear-gradient(rgba(5, 5, 5, 0.9), rgba(5, 5, 5, 0.98)), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        header { width: 100%; max-width: 1200px; padding: 25px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.5); text-transform: uppercase; transition: 0.3s; }
+        .nav-link:hover, .active-link { color: var(--accent); }
+
+        /* HUD DE PROGRESO REALISTA */
+        .progress-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            border-radius: 15px; padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; margin: 15px 0; }
+        .bar-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); box-shadow: 0 0 15px var(--accent); width: 0%; transition: width 1s linear; }
+
+        /* PARADEROS ORGANIZADOS */
+        .stop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .stop-item {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 15px; border-radius: 8px; font-size: 11px; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; opacity: 0.3; transition: 0.5s;
+        }
+        .stop-item.active { opacity: 1; border-color: var(--accent); background: rgba(255, 193, 7, 0.1); }
+        .stop-item.passed { opacity: 0.8; color: var(--success); }
+
+        /* DOCUMENTOS */
+        .doc-card {
+            background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 12px;
+            border-left: 4px solid var(--accent); margin-bottom: 12px;
+        }
+
+        .map-box { border-radius: 15px; overflow: hidden; border: 1px solid var(--accent); height: 400px; }
+        iframe { filter: invert(90%) hue-rotate(180deg) brightness(0.8); }
+
+        @media (max-width: 768px) {
+            .nav-link:not(.active-link) { display: none; }
+            .grid-cols-12 { display: flex; flex-direction: column; }
+            .stop-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <header>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 border border-yellow-500 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-bus text-yellow-500"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[11px] font-black tracking-[4px]">UNAC</span>
+                    <span class="text-[9px] text-yellow-500 font-bold uppercase">Movilidad</span>
+                </div>
+            </div>
+            <nav class="flex gap-8">
+                <a href="index.html" class="nav-link">Inicio</a>
+                <a href="#" class="nav-link active-link">Rutas</a>
+                <a href="#" class="nav-link">Registro</a>
+                <a href="#" class="nav-link">Noticias</a>
+                <a href="#" class="nav-link">Contacto</a>
+            </nav>
+        </header>
+
+        <main class="w-[92%] max-w-7xl mx-auto py-8">
+            
+            <!-- MONITOR TIEMPO REAL CALIBRADO (120 MIN VUELTA) -->
+            <section class="progress-card mb-8">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <p class="text-[10px] text-yellow-500 font-black tracking-widest uppercase">Estatus de Misión</p>
+                        <h2 class="text-xl font-bold italic" id="shift-txt">Sincronizando Horario...</h2>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] text-gray-500 font-black uppercase">Próximo Punto</p>
+                        <p id="next-stop-txt" class="text-sm font-bold">---</p>
+                    </div>
+                </div>
+                <div class="bar-bg">
+                    <div id="fill-bar" class="bar-fill"></div>
+                    <div id="bus-icon" class="absolute top-[-10px] transition-all duration-1000" style="left: 0%;">
+                        <div class="bg-yellow-500 p-2 rounded-lg"><i class="fa-solid fa-bus-simple text-black text-[10px]"></i></div>
+                    </div>
+                </div>
+                <div class="flex justify-between text-[9px] font-black text-gray-500 uppercase">
+                    <span>Partida</span>
+                    <span id="eta-txt" class="text-yellow-500">Tráfico estimado: -- min</span>
+                    <span>Destino</span>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-12 gap-8">
+                <!-- IZQUIERDA: MAPA Y PARADEROS -->
+                <div class="col-span-12 lg:col-span-8 space-y-6">
+                    <div class="map-box shadow-2xl">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m76!1m12!1m3!1d316180.4101640676!2d-77.117157!3d-11.942492!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m61!3e0!4m5!1s0x9105d526b243bda5%3A0x4f54a232b468d4dd!2sUNAC%20-%20VENTANILLA%2C%205VG8%2BJM6%2C%20Ventanilla%2007076!3m2!1d-11.823452099999999!2d-77.13334929999999!4m5!1s0x9105d435b83203e3%3A0xec61b60f61ee3315!2sAv.%20Lima%20124%2C%20Ventanilla%2007076!3m2!1d-11.825525599999999!2d-77.12339399999999!4m5!1s0x9105d6a0047c35cf%3A0xe834f15b11189651!2sRestaurant%20Cevicheria%20Isla%20Marina%2C%205V4X%2BP63%2C%20%C3%93valo%20Zapallal%2C%20Puente%20Piedra%2015118!3m2!1d-11.8432517!2d-77.10197459999999!4m5!1s0x9105d4248066a2d7%3A0x56037034a7c6abf2!2s&#39;&#39;Janampa&#39;&#39;%2C%20Puente%20Piedra%2007076!3m2!1d-11.8375372!2d-77.1111908!4m5!1s0x9105d43d43ef2311%3A0x46abaa182ee0ad46!2sPoliclinico%20Emmanuel%20Peruano%20Japones%20Ventanilla%2C%20Distrito%2C%20Av.%20Nestor%20Gambetta%20879%2C%20Mi%20Per%C3%BA%2007056!3m2!1d-11.8422825!2d-77.1153188!4m5!1s0x9105d41201de0641%3A0xb9588b916014b0f8!2sCajamarca%2C%20Mi%20Per%C3%BA%2007056!3m2!1d-11.8545462!2d-77.1198749!4m5!1s0x9105d40da8942869%3A0x342d6da4f6adef8e!2sAv.%20Cuzco%2023%2C%20Ventanilla%2007056!3m2!1d-11.8571074!2d-77.122368!4m5!1s0x9105d38d17b02e2f%3A0x412791cdb8eaaa44!2sLucero%2C%20A.%20A.%20Caceres%2C%20Ventanilla%2007036!3m2!1d-11.8754818!2d-77.12703499999999!4m5!1s0x9105cb0031233399%3A0xb018a4861509b318!2sContenedores%20Minka%2C%20XV2P%2BQ6C%2C%20Callao%2007001!3m2!1d-12.0480649!2d-77.1144882!4m5!1s0x9105cb910984762b%3A0x104327c627fa29ad!2sUniversidad%20Nacional%20del%20Callao%2C%20Av.%20Juan%20Pablo%20%E2%85%A1%20306%2C%20Bellavista%2007011!3m2!1d-12.0613052!2d-77.11724869999999!5e1!3m2!1ses-419!2spe!4v1776727476356!5m2!1ses-419!2spe" width="100%" height="100%" style="border:0;" loading="lazy"></iframe>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-black tracking-[4px] text-yellow-500 mb-6 uppercase underline decoration-yellow-500/30">Paraderos Oficiales</h3>
+                        <div class="stop-grid" id="stops-list"></div>
+                    </div>
+                </div>
+
+                <!-- DERECHA: REQUISITOS Y ALERTA -->
+                <div class="col-span-12 lg:col-span-4 space-y-6">
+                    <div class="bg-white/5 border border-white/10 p-6 rounded-2xl">
+                        <h3 class="text-xs font-black tracking-[4px] text-yellow-500 mb-6 uppercase">Programación Oficial</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-xs font-bold p-3 bg-white/5 rounded-lg border border-white/10">
+                                <span>05:15 AM (Ida)</span> <span class="text-green-500">ACTIVO</span>
+                            </div>
+                            <div class="flex justify-between text-xs font-bold p-3 bg-white/5 rounded-lg border border-white/10">
+                                <span>06:00 PM (Vuelta)</span> <span class="text-green-500">ACTIVO</span>
+                            </div>
+                            <div class="flex justify-between text-xs font-bold p-3 bg-white/5 rounded-lg border border-white/10 opacity-30">
+                                <span>02:30 PM (Extra)</span> <span class="text-red-500">CERRADO</span>
+                            </div>
+                            <div class="flex justify-between text-xs font-bold p-3 bg-white/5 rounded-lg border border-white/10 opacity-30">
+                                <span>10:15 PM (Extra)</span> <span class="text-red-500">CERRADO</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 p-6 rounded-2xl">
+                        <h3 class="text-xs font-black text-yellow-500 uppercase tracking-widest mb-6">Documentación</h3>
+                        <div class="doc-card"><p class="text-[11px] font-bold">Carnet Universitario 2024</p></div>
+                        <div class="doc-card" style="border-left-color: #666;"><p class="text-[11px] font-bold">Constancia de Matrícula</p></div>
+                        <div class="doc-card" style="border-left-color: #fff;"><p class="text-[11px] font-bold">DNI Original</p></div>
+                    </div>
+
+                    <div class="bg-red-500/10 border-l-4 border-red-500 p-6 rounded-r-2xl">
+                        <p class="text-red-500 font-black text-[10px] tracking-widest mb-3 uppercase">⚠️ Punto Crítico</p>
+                        <p class="text-[11px] leading-relaxed">Último paradero para recoger: <span class="text-white font-bold">CARSA VENTANILLA 😫</span>.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 mt-auto">
+            <span class="text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
+            <span class="text-[9px] text-gray-500 tracking-[1px] text-center px-4 font-medium uppercase">
+                © 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.
+            </span>
+        </footer>
+    </div>
+
+    <script>
+        const stops = ["Sede UNAC (Inicio)", "Paradero Hogar", "Ov. Zapallal", "Cruce Ventanilla", "Policlínico", "Av. Trujillo", "Semáforo", "Carsa Ventanilla", "Tercero", "Segundo", "Ocho", "Inka Cola", "Paradero 15", "UNAC (Fin)"];
+
+        function init() {
+            const list = document.getElementById('stops-list');
+            stops.forEach((name, i) => {
+                const div = document.createElement('div');
+                div.className = 'stop-item';
+                div.id = `stop-${i}`;
+                div.innerHTML = `<i class="fa-solid ${i === stops.length - 1 ? 'fa-flag-checkered' : 'fa-circle-check'}"></i> <span class="uppercase">${name}</span>`;
+                list.appendChild(div);
+            });
+            update();
+        }
+
+        function update() {
+            const now = new Date();
+            const time = now.getHours() + (now.getMinutes() / 60);
+            
+            // Calibración Realista (A las 7:45 PM el bus está cerca de Inka Cola / Final)
+            const shifts = [
+                { start: 5.25, end: 6.75, name: "Ventanilla → UNAC" },
+                { start: 18, end: 20, name: "UNAC → Ventanilla (Trafico Pesado)" }
+            ];
+
+            const active = shifts.find(s => time >= s.start && time <= s.end);
+            const fill = document.getElementById('fill-bar');
+            const bus = document.getElementById('bus-icon');
+            const status = document.getElementById('shift-txt');
+            const next = document.getElementById('next-stop-txt');
+            const eta = document.getElementById('eta-txt');
+
+            if (active) {
+                const total = (active.end - active.start) * 60;
+                const elapsed = (time - active.start) * 60;
+                const progress = Math.min((elapsed / total) * 100, 100);
+                
+                fill.style.width = progress + '%';
+                bus.style.left = progress + '%';
+                status.innerText = active.name;
+
+                const stopIdx = Math.floor((progress / 100) * stops.length);
+                next.innerText = stops[stopIdx + 1] || "Llegando...";
+                eta.innerText = `Llegada aprox: ${Math.ceil(total - elapsed)} min restantes`;
+
+                stops.forEach((_, i) => {
+                    const el = document.getElementById(`stop-${i}`);
+                    el.className = i < stopIdx ? 'stop-item passed' : i === stopIdx ? 'stop-item active' : 'stop-item';
+                });
+            } else {
+                status.innerText = "Fuera de Horario";
+                next.innerText = "N/A";
+                eta.innerText = "Sincronizando...";
+                fill.style.width = '0%'; bus.style.left = '0%';
+            }
+        }
+
+        init();
+        setInterval(update, 1000);
+    </script>
+</body>
+</html>
