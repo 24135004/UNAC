@@ -45,112 +45,61 @@
             background-position: center;
             background-attachment: fixed;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 100; }
 
-        /* NAVEGACIÓN LIMPIA (Sin el cuadrado transparente) */
-        .nav-minimal {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
+        /* NAVEGACIÓN LIMPIA */
         .nav-link { 
-            font-size: 11px; 
-            font-weight: 700; 
-            letter-spacing: 2px; 
-            color: rgba(255, 255, 255, 0.6); 
-            transition: 0.3s;
-            text-transform: uppercase;
-            position: relative;
+            font-size: 11px; font-weight: 700; letter-spacing: 2px; 
+            color: rgba(255, 255, 255, 0.6); transition: 0.3s;
+            text-transform: uppercase; position: relative;
         }
-
-        .nav-link:hover { 
-            color: var(--accent); 
-        }
-
-        /* Pequeña línea decorativa al pasar el mouse */
+        .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -6px;
-            left: 0;
-            background: var(--accent);
-            transition: width 0.3s;
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s;
         }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
+        .nav-link:hover::after, .active-link::after { width: 100%; }
 
         .content-box {
-            max-width: 1100px;
-            width: 90%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            flex-grow: 1;
+            max-width: 1100px; width: 90%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 0; flex-grow: 1;
         }
 
         h1 {
             font-family: 'Montserrat', sans-serif;
             font-size: clamp(2rem, 6vw, 3.5rem);
-            line-height: 1;
-            font-weight: 800;
-            text-transform: uppercase;
+            line-height: 1; font-weight: 800; text-transform: uppercase;
         }
 
         #globe-box { width: 400px; height: 400px; }
 
         .stats-area {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            width: 90%;
-            max-width: 1100px;
-            margin-bottom: 40px;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 15px; width: 90%; max-width: 1100px; margin-bottom: 40px;
         }
 
         .card-tech {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 20px 10px;
-            border-radius: 15px;
-            text-align: center;
-            transition: 0.3s;
+            padding: 20px 10px; border-radius: 15px;
+            text-align: center; transition: 0.3s;
         }
         .card-tech:hover { border-color: var(--accent); transform: translateY(-5px); }
         .card-tech i { color: var(--accent); font-size: 1.2rem; margin-bottom: 10px; display: block; }
         .card-tech h3 { font-size: 1.5rem; font-weight: 800; margin: 0; }
         .card-tech p { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* CORRECCIONES MÓVIL */
         @media (max-width: 768px) {
             header { padding: 15px; }
             .nav-minimal { display: none; } 
-            .content-box { 
-                flex-direction: column-reverse; 
-                text-align: center;
-                padding-top: 0;
-            }
-            #globe-box { 
-                width: 260px; 
-                height: 260px; 
-                margin-bottom: 10px;
-            }
-            .stats-area { 
-                grid-template-columns: repeat(2, 1fr); 
-                margin-bottom: 30px;
-            }
+            .content-box { flex-direction: column-reverse; text-align: center; padding-top: 0; }
+            #globe-box { width: 260px; height: 260px; margin-bottom: 10px; }
+            .stats-area { grid-template-columns: repeat(2, 1fr); margin-bottom: 30px; }
             h1 { margin-top: 10px; }
-            footer { padding: 30px 15px; }
         }
     </style>
 </head>
@@ -169,20 +118,17 @@
                 </div>
             </div>
 
-          <!-- En el Menú de Navegación -->
-<nav class="flex gap-8">
-    <a href="index.html" class="nav-link active-link">Inicio</a>
-    <a href="rutas.html" class="nav-link">Rutas</a> <!-- CAMBIADO AQUÍ -->
-    <a href="#" class="nav-link">Registro</a>
-    <a href="#" class="nav-link">Noticias</a>
-    <a href="#" class="nav-link">Contacto</a>
-</nav>
-
-<!-- En los botones del centro (Hero) -->
-<div class="flex gap-4 mt-10">
-    <a href="rutas.html" class="bg-yellow-500 text-black px-8 py-4 rounded font-bold">HORARIOS</a> <!-- CAMBIADO AQUÍ -->
-    <a href="rutas.html" class="border border-white/10 px-8 py-4 rounded">RUTAS</a> <!-- CAMBIADO AQUÍ -->
-</div>
+            <nav class="hidden md:flex gap-8 nav-minimal">
+                <a href="index.html" class="nav-link active-link">Inicio</a>
+                <a href="rutas.html" class="nav-link">Rutas</a>
+                <a href="#" class="nav-link">Registro</a>
+                <a href="#" class="nav-link">Noticias</a>
+                <a href="#" class="nav-link">Contacto</a>
+            </nav>
+            
+            <div class="md:hidden text-yellow-500 text-xl">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </div>
         </header>
 
         <!-- Main Content -->
@@ -198,9 +144,10 @@
                     Plataforma inteligente para la gestión y monitoreo del transporte oficial de la Universidad Nacional del Callao.
                 </p>
                 
+                <!-- Botones Corregidos -->
                 <div class="flex gap-3 mt-8 justify-center md:justify-start">
-                    <button class="bg-yellow-500 text-black text-[11px] font-black px-7 py-3 rounded-lg hover:scale-105 transition shadow-lg shadow-yellow-500/20">HORARIOS</button>
-                    <button class="bg-white/5 border border-white/10 text-[11px] font-bold px-7 py-3 rounded-lg hover:bg-white/10 transition">RUTAS</button>
+                    <a href="rutas.html" class="bg-yellow-500 text-black text-[11px] font-black px-7 py-3 rounded-lg hover:scale-105 transition shadow-lg shadow-yellow-500/20 flex items-center justify-center">HORARIOS</a>
+                    <a href="rutas.html" class="bg-white/5 border border-white/10 text-[11px] font-bold px-7 py-3 rounded-lg hover:bg-white/10 transition flex items-center justify-center">RUTAS</a>
                 </div>
             </div>
 
@@ -233,7 +180,7 @@
 
         <!-- Footer -->
         <footer class="w-full py-10 flex flex-col items-center border-t border-white/5 bg-black/20">
-            <span class="text-[10px] font-bold tracking-[4px] text-yellow-500 mb-2">SISTEMA CREADO POR SEBASTIAN</span>
+            <span class="text-[10px] font-bold tracking-[4px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
             <span class="text-[9px] text-gray-500 tracking-[1px] text-center px-4">
                 © 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.
             </span>
@@ -241,7 +188,7 @@
     </div>
 
     <script>
-        let scene, camera, renderer, globe, particles;
+        let scene, camera, renderer, globe;
         const container = document.getElementById('globe-box');
 
         function init() {
@@ -279,6 +226,7 @@
         }
 
         window.addEventListener('resize', () => {
+            if (!container.clientWidth) return;
             const width = container.clientWidth;
             const height = container.clientHeight;
             renderer.setSize(width, height);
