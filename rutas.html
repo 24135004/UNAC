@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        :root { --accent: #ffc107; --dark: #050505; --success: #10b981; }
+        :root { --accent: #ffc107; --dark: #050505; --success: #10b981; --warning: #6b7280; }
         
         body, html { 
             margin: 0; padding: 0; min-height: 100vh;
@@ -30,17 +30,13 @@
 
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 100; }
 
-        /* NAVEGACIÓN ESTILO INICIO */
         .nav-link { 
             font-size: 11px; font-weight: 700; letter-spacing: 2px; 
             color: rgba(255, 255, 255, 0.6); transition: 0.3s;
             text-transform: uppercase; position: relative;
         }
         .nav-link:hover, .active-link { color: var(--accent); }
-        .nav-link::after {
-            content: ''; position: absolute; width: 0; height: 2px;
-            bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s;
-        }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
         .nav-link:hover::after, .active-link::after { width: 100%; }
 
         /* TARJETAS DE RUTA */
@@ -49,12 +45,8 @@
             padding: 15px; border-radius: 12px; transition: 0.3s; cursor: pointer; text-align: left;
         }
         .route-card.active { border-color: var(--accent); background: rgba(255, 193, 7, 0.1); transform: scale(1.02); }
-        
-        /* ESTILO INHABILITADO (Diferente color) */
-        .route-card.disabled { 
-            opacity: 0.5; cursor: not-allowed; grayscale: 1;
-            border: 1px dashed rgba(255,255,255,0.2); background: rgba(255,255,255,0.01);
-        }
+        .route-card.inhabited { border-color: #444; background: rgba(255,255,255,0.01); opacity: 0.7; }
+        .route-card.inhabited.active { border-color: #666; background: rgba(255,255,255,0.05); }
 
         /* MONITOR HUD */
         .progress-hud { 
@@ -65,42 +57,28 @@
         .bar-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); box-shadow: 0 0 15px var(--accent); width: 0%; transition: width 1s linear; border-radius: 10px; }
 
         /* PARADEROS SUTILES */
-        .stop-point { position: relative; padding-left: 25px; margin-bottom: 12px; font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 600; }
-        .stop-point::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; background: #333; border: 1px solid var(--accent); border-radius: 50%; }
-        .stop-point.active { color: white; }
-        .stop-point.active::before { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+        .stop-point { position: relative; padding-left: 25px; margin-bottom: 12px; font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.02); padding-bottom: 5px; }
+        .stop-point::before { content: ''; position: absolute; left: 0; top: 8px; width: 8px; height: 8px; background: #333; border: 1px solid var(--accent); border-radius: 50%; }
 
         /* EFECTO IMÁGENES 3D */
         .container-3d { perspective: 1000px; }
-        .card-3d {
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-style: preserve-3d; border-radius: 15px; overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+        .card-3d { transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
         .container-3d:hover .card-3d { transform: rotateY(15deg) rotateX(5deg); }
         .card-3d img { width: 100%; height: 140px; object-fit: cover; }
 
         .map-frame { width: 100%; height: 450px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
-        
         .scroll-stops { max-height: 400px; overflow-y: auto; padding-right: 10px; }
         .scroll-stops::-webkit-scrollbar { width: 4px; }
         .scroll-stops::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
-
-        @media (max-width: 768px) {
-            .nav-minimal { display: none; }
-            .map-frame { height: 300px; }
-        }
     </style>
 </head>
 <body>
 
     <div class="main-wrapper">
         <header class="flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center">
-                    <i class="fa-solid fa-bus text-black text-lg"></i>
-                </div>
-                <div class="flex flex-col text-left">
+            <div class="flex items-center gap-3 text-left">
+                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center"><i class="fa-solid fa-bus text-black text-lg"></i></div>
+                <div class="flex flex-col">
                     <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
                     <span class="text-[9px] text-yellow-500 font-bold uppercase">Movilidad</span>
                 </div>
@@ -117,46 +95,45 @@
 
         <main class="w-[90%] max-w-7xl py-6 grid grid-cols-12 gap-8">
             
-            <!-- SECCIÓN IZQUIERDA -->
             <div class="col-span-12 lg:col-span-4 space-y-6">
                 <h1 class="text-xl font-black uppercase italic tracking-tighter">Panel de <span class="text-yellow-500">Rutas</span></h1>
                 
-                <!-- LAS 4 RUTAS VISIBLES -->
+                <!-- SELECTOR DE 4 RUTAS -->
                 <div class="space-y-3">
                     <div onclick="selectRoute(0)" id="route-0" class="route-card active">
                         <div class="flex justify-between items-start">
                             <p class="text-[9px] font-bold text-yellow-500 uppercase tracking-widest">5:15 AM</p>
-                            <span class="text-[8px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-black uppercase tracking-widest">Activado</span>
+                            <span class="text-[8px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-black uppercase">Activado</span>
                         </div>
-                        <h3 class="text-[10px] font-black uppercase mt-1 leading-tight">SEDE UNAC - UNAC</h3>
+                        <h3 class="text-[10px] font-black uppercase mt-1">SEDE UNAC - UNAC</h3>
                     </div>
 
-                    <div onclick="selectRoute(1)" id="route-1" class="route-card">
+                    <div onclick="selectRoute(1)" id="route-1" class="route-card inhabited">
                         <div class="flex justify-between items-start">
                             <p class="text-[9px] font-bold text-yellow-500 uppercase tracking-widest">6:00 PM</p>
-                            <span class="text-[8px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-black uppercase tracking-widest">Activado</span>
+                            <span class="text-[8px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-black uppercase">Activado</span>
                         </div>
-                        <h3 class="text-[10px] font-black uppercase mt-1 leading-tight">UNAC - SEDE UNAC</h3>
+                        <h3 class="text-[10px] font-black uppercase mt-1">UNAC - SEDE UNAC</h3>
                     </div>
 
-                    <div class="route-card disabled">
+                    <div onclick="selectRoute(2)" id="route-2" class="route-card inhabited">
                         <div class="flex justify-between items-start">
                             <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">2:15 PM</p>
-                            <span class="text-[8px] bg-red-500/10 text-red-400 px-2 py-0.5 rounded font-black uppercase tracking-widest">Inhabilitado</span>
+                            <span class="text-[8px] bg-red-500/10 text-red-400 px-2 py-0.5 rounded font-black uppercase">Inhabilitado</span>
                         </div>
-                        <h3 class="text-[10px] font-black uppercase mt-1 leading-tight">UNAC - INKA COLA</h3>
+                        <h3 class="text-[10px] font-black uppercase mt-1">UNAC - INKA COLA</h3>
                     </div>
 
-                    <div class="route-card disabled">
+                    <div onclick="selectRoute(3)" id="route-3" class="route-card inhabited">
                         <div class="flex justify-between items-start">
                             <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">10:15 PM</p>
-                            <span class="text-[8px] bg-red-500/10 text-red-400 px-2 py-0.5 rounded font-black uppercase tracking-widest">Inhabilitado</span>
+                            <span class="text-[8px] bg-red-500/10 text-red-400 px-2 py-0.5 rounded font-black uppercase">Inhabilitado</span>
                         </div>
-                        <h3 class="text-[10px] font-black uppercase mt-1 leading-tight">UNAC - PARADERO TELÉFONO</h3>
+                        <h3 class="text-[10px] font-black uppercase mt-1">UNAC - TELEFONO</h3>
                     </div>
                 </div>
 
-                <!-- DOCUMENTACIÓN ACTUALIZADA -->
+                <!-- REQUISITOS ACTUALIZADOS -->
                 <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
                     <h4 class="text-[11px] font-black text-yellow-500 uppercase tracking-[4px] mb-6">DOCUMENTACIÓN REQUERIDA</h4>
                     <div class="space-y-6">
@@ -175,7 +152,7 @@
                             </div>
                         </div>
                         <div class="flex gap-4">
-                            <i class="fa-solid fa-file-signature text-yellow-500 mt-1"></i>
+                            <i class="fa-solid fa-file-invoice text-yellow-500 mt-1"></i>
                             <div>
                                 <p class="text-[11px] font-black uppercase">Constancia de Matrícula</p>
                                 <p class="text-[10px] text-gray-400 font-light mt-1">Actualizada del semestre vigente, en caso de no tener carnet universitario.</p>
@@ -184,20 +161,19 @@
                     </div>
                 </div>
 
-                <!-- IMÁGENES 3D -->
-                <div class="space-y-4 pt-2">
-                    <div class="container-3d"><div class="card-3d shadow-xl"><img src="DSC07555-768x432.jpg" alt="Unidad 1"></div></div>
-                    <div class="container-3d"><div class="card-3d shadow-xl"><img src="DSC07588-768x432.jpg" alt="Unidad 2"></div></div>
-                    <div class="container-3d"><div class="card-3d shadow-xl"><img src="DSC07629-768x432.jpg" alt="Unidad 3"></div></div>
+                <!-- IMÁGENES 3D ANIMADAS -->
+                <div class="space-y-4">
+                    <div class="container-3d"><div class="card-3d shadow-xl"><img src="DSC07555-768x432.jpg" alt="U1"></div></div>
+                    <div class="container-3d"><div class="card-3d shadow-xl"><img src="DSC07588-768x432.jpg" alt="U2"></div></div>
+                    <div class="container-3d"><div class="card-3d shadow-xl"><img src="DSC07629-768x432.jpg" alt="U3"></div></div>
                 </div>
             </div>
 
-            <!-- SECCIÓN DERECHA -->
             <div class="col-span-12 lg:col-span-8 space-y-6">
                 <!-- Monitor HUD -->
                 <section class="progress-hud">
                     <div class="flex justify-between items-end">
-                        <p id="route-name" class="text-[10px] text-yellow-500 font-black uppercase tracking-[3px]">Sincronizando GPS...</p>
+                        <p id="route-name" class="text-[10px] text-yellow-500 font-black uppercase tracking-[3px]">Cargando...</p>
                         <p id="clock" class="text-xl font-bold tracking-widest text-white">00:00:00</p>
                     </div>
                     <div class="bar-bg">
@@ -208,25 +184,23 @@
                     </div>
                     <div class="flex justify-between text-[9px] font-black text-gray-400 uppercase italic">
                         <span id="start-point">---</span>
-                        <span id="eta-text" class="text-yellow-500 font-bold">CALCULANDO RUTA</span>
+                        <span id="eta-text" class="text-yellow-500 font-bold">CALCULANDO</span>
                         <span id="end-point">---</span>
                     </div>
                 </section>
 
-                <!-- Mapa Principal -->
+                <!-- Mapa -->
                 <div class="bg-white/5 p-1 rounded-[22px] border border-white/10 shadow-2xl">
                     <iframe id="map-frame" class="map-frame" src="" allowfullscreen="" loading="lazy"></iframe>
                 </div>
 
-                <!-- Paraderos Sutiles -->
+                <!-- Paraderos -->
                 <div class="p-6 bg-white/5 rounded-2xl border border-white/5">
                     <h3 class="text-[10px] font-black text-gray-500 uppercase tracking-[4px] mb-6">Secuencia de Paraderos</h3>
-                    <div class="stop-line scroll-stops" id="stops-container">
-                        <!-- JS Dinámico -->
-                    </div>
+                    <div class="stop-line scroll-stops" id="stops-container"></div>
                 </div>
 
-                <!-- ALERTA ROJA (TEXTO EXACTO) -->
+                <!-- ALERTA ROJA -->
                 <div class="bg-red-500/10 border-l-[10px] border-red-600 p-6 rounded-3xl border border-red-900/40">
                     <h5 class="text-red-500 font-black text-[11px] tracking-widest mb-4 uppercase">❗ DATO ADICIONAL IMPORTANTE ❗</h5>
                     <p class="text-[13px] leading-relaxed text-white font-medium">
@@ -250,65 +224,71 @@
     <script>
         const config = [
             {
-                name: "SEDE UNAC - UNAC (MAÑANA)",
-                start: "Sede Ventanilla", end: "UNAC Callao",
-                timeS: 5.25, timeE: 6.75,
+                name: "SEDE UNAC - UNAC (5:15 AM)",
+                start: "Sede Ventanilla", end: "Callao", oper: true, timeS: 5.25, timeE: 6.75,
                 map: 'https://www.google.com/maps/embed?pb=!1m62!1m12!1m3!1d159337.9280060247!2d-77.1556698885926!3d-11.941967764977532!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m47!3e0!4m3!3m2!1d-11.823069!2d-77.13256539999999!4m3!3m2!1d-11.8252305!2d-77.1234052!4m3!3m2!1d-11.843182599999999!2d-77.101874!4m3!3m2!1d-11.8375611!2d-77.11113209999999!4m5!1s0x9105d43d3b9d9f15%3A0x7484f44b11f271b!2sPolicl%C3%ADnico%20Emanuel%2C%20Ventanilla%2007076!3m2!1d-11.841529999999999!2d-77.11502!4m5!1s0x9105d41212110f83%3A0x3381ebbdfb7c3a11!2sCajamarca%2C%20Mi%20Per%C3%BA%2007056!3m2!1d-11.85413!2d-77.12089!4m3!3m2!1d-11.859558199999999!2d-77.124529!4m3!3m2!1d-11.8754478!2d-77.1269141!4m3!3m2!1d-12.040581399999999!2d-77.1160577!4m5!1s0x9105cb910984762b%3A0x104327c627fa29ad!2sUniversidad%20Nacional%20del%20Callao%2C%20Av.%20Juan%20Pablo%20%E2%85%A1%20306%2C%20Bellavista%2007011!3m2!1d-12.0613052!2d-77.11724869999999!5e1!3m2!1ses-419!2spe!4v1777142468277!5m2!1ses-419!2spe',
                 stops: ["Sede UNAC (Inicio)", "Hogar", "Ov. Zapallal", "Cruce Ventanilla", "Policlínico", "Av. Trujillo", "Semáforo", "Carsa Ventanilla", "QUINCE (15)", "UNAC Callao (Fin)"]
             },
             {
-                name: "UNAC - SEDE UNAC (TARDE)",
-                start: "UNAC Callao", end: "Sede Ventanilla",
-                timeS: 18.0, timeE: 20.0,
-                map: 'https://www.google.com/maps/embed?pb=!1m54!1m12!1m3!1d91283.5448213373!2d-77.11522911083303!3d-11.904422407959084!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m39!3e0!4m3!3m2!1d-12.0618527!2d-77.11811399999999!4m5!1s0x9105cbefb611a025%3A0xc0bf38abdac64504!2sPalomino%2C%20Bellavista%2007011!3m2!1d-12.057409999999999!2d-77.11646!4m3!3m2!1d-12.040162599999999!2d-77.1169468!4m5!1s0x9105d47287f4ff0d%3A0x291fbd59642651e8!2sHuaura%2C%20Mi%20Per%C3%BA%2007056!3m2!1d-11.85585!2d-77.12836999999999!4m3!3m2!1d-11.8431261!2d-77.1019199!4m3!3m2!1d-11.8244667!2d-77.1229334!4m3!3m2!1d-11.8233842!2d-77.1250032!4m5!1s0x9105d526b243bda5%3A0x4f54a232b468d4dd!2sUNAC%20-%20VENTANILLA%2C%205VG8%2BJM6%2C%20Ventanilla%2007076!3m2!1d-11.823452099999999!2d-77.13334929999999!5e1!3m2!1ses-419!2spe!4v1777147929441!5m2!1ses-419!2spe',
+                name: "UNAC - SEDE UNAC (6:00 PM)",
+                start: "Callao", end: "Sede Ventanilla", oper: true, timeS: 18, timeE: 20,
+                map: 'https://www.google.com/maps/embed?pb=!1m54!1m12!1m3!1d91283.5448213373!2d-77.11522911083303!3d-11.904422407959084!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m39!3e0!4m3!3m2!1d-12.0618527!2d-77.11811399999999!4m5!1s0x9105cbefb611a025%3A0xc0bf38abdac64504!2sPalomino%2C%20Bellavista%2007011!3m2!1d-12.057409999999999!2d-77.11646!4m3!3m2!1d-12.040162599999999!2d-77.1169468!4m5!1s0x9105d47287f4ff0d%3A0x291fbd59642651e8!2sHuaura%2C%20Mi%20Per%C3%BA%2007056!3m2!1d-11.85585!2d-77.12836999999999!4m3!3m2!1d-11.8431261!2d-77.1019199!4m3!3m2!1d-11.8244667!2d-77.1229334!4m3!3m2!1d-11.8233842!2d-77.1250032!4m5!1s0x9105d526b243bda5%3A0x4f54a232b468d4dd!2sUNAC%20-%20VENTANILLA%2C%205VG8%2BJM6%2C%20Ventanilla%2007076!3m2!1d-11.823452099999999!2d-77.13334929999999!5e1!3m2!1ses-419!2v1777147929441!5m2!1ses-419!2spe',
                 stops: ["UNAC Callao (Inicio)", "IMUPESA", "PESQUERO", "BAYER", "CARRILLO", "OQUENDO", "GRIFO REPSOL", "QUINCE (15)", "MARQUEZ", "INKA COLA", "SANTA FE", "OCHO (8)", "SEGUNDO", "CENTRO (inhabilitado)", "TERCERO", "LICENCIADOS", "TELEFONO", "PLAZA VEA (inhabilitado)", "PUENTE", "HUARA", "TRUJILLO", "MODULOS AZULES", "PARADERO BUSES", "POLICLINICO", "GRIFO REPSOL", "CRUCE DE VENTANILLA", "DONOFOFRIO", "OV. ZAPALLAL", "FUNDICION", "FLECHA", "HOGAR", "SEDE UNAC (Fin)"]
+            },
+            {
+                name: "UNAC - INKA COLA (2:15 PM)",
+                start: "Callao", end: "Inka Cola", oper: false,
+                map: 'https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d2960.532240448023!2d-77.13256416046117!3d-11.938150732395275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x9105cb910984762b%3A0x104327c627fa29ad!2sUniversidad%20Nacional%20del%20Callao%2C%20Av.%20Juan%20Pablo%20%E2%85%A1%20306%2C%20Bellavista%2007011!3m2!1d-12.0613052!2d-77.11724869999999!4m5!1s0x9105d3108cef4201%3A0xd5b9f23c6ca77ebf!2sParadero%20Inka%20Kola%2C%203V79%2BCP5%2C%20Ip%2051.62%20paradero%20Inka%20Kola%20(op.5%2C%20Avenida%20Del%20Bierzo%2C%20Ventanilla%2007046!3m2!1d-11.936489!2d-77.13062939999999!5e1!3m2!1ses-419!2spe!4v1777141785387!5m2!1ses-419!2spe',
+                stops: ["UNAC Callao (Inicio)", "IMUPESA", "PESQUERO", "BAYER", "CARRILLO", "OQUENDO", "GRIFO REPSOL", "QUINCE (15)", "MARQUEZ", "INKA COLA (FIN)"]
+            },
+            {
+                name: "UNAC - TELEFONO (10:15 PM)",
+                start: "Callao", end: "Paradero Teléfono", oper: false,
+                map: 'https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d158073.67879229266!2d-77.20666131339017!3d-11.97076932739913!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x9105cb910984762b%3A0x104327c627fa29ad!2sUniversidad%20Nacional%20del%20Callao%2C%20Av.%20Juan%20Pablo%20%E2%85%A1%20306%2C%20Bellavista%2007011!3m2!1d-12.0613052!2d-77.11724869999999!4m5!1s0x9105d38d44d9dc71%3A0xf9cf5da526344420!2sMetro%20Ventanilla%2C%20Ventanilla%2007051!3m2!1d-11.87674!2d-77.12642!5e1!3m2!1ses-419!2spe!4v1777141648764!5m2!1ses-419!2spe',
+                stops: ["UNAC Callao (Inicio)", "IMUPESA", "PESQUERO", "BAYER", "CARRILLO", "OQUENDO", "GRIFO REPSOL", "QUINCE (15)", "MARQUEZ", "INKA COLA", "SANTA FE", "OCHO (8)", "SEGUNDO", "CENTRO (inhabilitado)", "TERCERO", "LICENCIADOS", "TELEFONO (FIN)"]
             }
         ];
 
         let activeIdx = 0;
-
         function selectRoute(idx) {
             activeIdx = idx;
             document.querySelectorAll('.route-card').forEach(c => c.classList.remove('active'));
             document.getElementById(`route-${idx}`).classList.add('active');
-            
             const r = config[idx];
             document.getElementById('map-frame').src = r.map;
             document.getElementById('start-point').innerText = r.start;
             document.getElementById('end-point').innerText = r.end;
-            
             const container = document.getElementById('stops-container');
             container.innerHTML = "";
             r.stops.forEach((s) => {
                 const div = document.createElement('div');
                 div.className = "stop-point";
                 div.innerText = s;
-                if(s.includes("inhabilitado")) div.style.color = "#ff4444";
+                if(s.includes("inhabilitado")) div.style.color = "#ef4444";
                 container.appendChild(div);
             });
-            update();
+            updateTracker();
         }
 
-        function update() {
+        function updateTracker() {
             const now = new Date();
             const h = now.getHours() + (now.getMinutes() / 60);
             document.getElementById('clock').innerText = now.toLocaleTimeString();
             const c = config[activeIdx];
-            const isActive = h >= c.timeS && h <= c.timeE;
             document.getElementById('route-name').innerText = c.name;
-            if(isActive) {
+            const isRunning = c.oper && h >= c.timeS && h <= c.timeE;
+            if(isRunning) {
                 const prog = Math.min(((h - c.timeS) / (c.timeE - c.timeS)) * 100, 100);
                 document.getElementById('bar-fill').style.width = prog + "%";
                 document.getElementById('bus-icon').style.left = prog + "%";
-                document.getElementById('eta-text').innerText = "UNIDAD EN RUTA";
+                document.getElementById('eta-text').innerText = "UNIDAD EN TRÁNSITO";
             } else {
                 document.getElementById('bar-fill').style.width = "0%";
                 document.getElementById('bus-icon').style.left = "0%";
-                document.getElementById('eta-text').innerText = "FUERA DE HORARIO";
+                document.getElementById('eta-text').innerText = c.oper ? "FUERA DE HORARIO" : "SERVICIO PENDIENTE";
             }
         }
-
-        setInterval(update, 1000);
+        setInterval(updateTracker, 1000);
         selectRoute(0);
     </script>
 </body>
