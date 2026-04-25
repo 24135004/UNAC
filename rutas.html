@@ -47,6 +47,10 @@
         .nav-link::after { content: ''; display: block; width: 0; height: 2px; background: var(--accent); transition: width 0.3s; margin-top: 4px; }
         .active-link::after { width: 100%; }
 
+        /* MENU MOVIL ESTILOS */
+        #mobile-menu { transform: translateX(100%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        #mobile-menu.open { transform: translateX(0); }
+
         /* GLASSMORPHISM */
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 24px; }
         
@@ -54,30 +58,37 @@
         .route-card.active { border-color: var(--accent); background: rgba(255, 193, 7, 0.12); transform: scale(1.02); }
         .route-card.disabled { opacity: 0.4; border-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
 
-        /* PARADEROS GRID (Sin Scroll) */
         .stops-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px; }
         .stop-point { position: relative; padding-left: 20px; font-size: 9px; font-weight: 700; border-left: 1px solid #333; color: #aaa; text-transform: uppercase; line-height: 1.4; transition: 0.3s; }
         .stop-point::before { content: ''; position: absolute; left: -4px; top: 4px; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 8px var(--accent); }
-        .stop-point:hover { color: white; border-left-color: var(--accent); }
 
-        /* CONTENEDOR GLOBO 3D */
         #globe-container { width: 100%; height: 220px; display: flex; justify-content: center; align-items: center; pointer-events: none; }
 
-        /* IMÁGENES PEQUEÑAS */
         .img-small { width: 100%; height: 115px; border-radius: 15px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); transition: 0.5s; }
         .img-small:hover { transform: scale(1.05) rotateY(10deg); border-color: var(--accent); }
 
-        /* HUD */
         .hud-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 20px; position: relative; margin: 15px 0; }
         .hud-fill { height: 100%; background: var(--accent); box-shadow: 0 0 15px var(--accent); border-radius: 20px; transition: width 1s linear; }
 
         .alert-box { animation: alertPulse 3s infinite ease-in-out; }
 
         @media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } .stops-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .nav-desktop { display: none; } header { flex-direction: column; gap: 15px; } .img-small { height: 100px; } }
+        @media (max-width: 768px) { header { padding: 20px; } }
     </style>
 </head>
 <body>
+
+    <!-- MENÚ MÓVIL (VISIBLE SOLO EN CELULAR) -->
+    <div id="mobile-menu" class="fixed inset-0 bg-black/95 z-[100] flex flex-col items-center justify-center gap-10 md:hidden">
+        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-3xl">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <a href="index.html" class="text-2xl font-black uppercase tracking-widest text-white hover:text-yellow-500">Inicio</a>
+        <a href="rutas.html" class="text-2xl font-black uppercase tracking-widest text-yellow-500">Rutas</a>
+        <a href="#" class="text-2xl font-black uppercase tracking-widest text-white hover:text-yellow-500">Ticket</a>
+        <a href="#" class="text-2xl font-black uppercase tracking-widest text-white hover:text-yellow-500">Registro</a>
+        <a href="#" class="text-2xl font-black uppercase tracking-widest text-white hover:text-yellow-500">Contacto</a>
+    </div>
 
     <div class="main-wrapper">
         <header class="flex justify-between items-center relative z-20 animate-fade">
@@ -85,19 +96,24 @@
                 <div class="w-11 h-11 bg-yellow-500 rounded-xl flex items-center justify-center shadow-xl shadow-yellow-500/20"><i class="fa-solid fa-bus-simple text-black text-2xl"></i></div>
                 <div class="text-left leading-none"><p class="text-[11px] font-black tracking-[4px] uppercase">UNAC</p><p class="text-[9px] text-yellow-500 font-bold uppercase tracking-widest">Movilidad</p></div>
             </div>
-            <nav class="hidden md:flex gap-10 nav-desktop">
+            
+            <!-- NAV DESKTOP -->
+            <nav class="hidden md:flex gap-10">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link active-link">Rutas</a>
                 <a href="#" class="nav-link">Ticket</a>
                 <a href="#" class="nav-link">Registro</a>
                 <a href="#" class="nav-link">Contacto</a>
             </nav>
-            <div class="md:hidden text-yellow-500 text-2xl"><i class="fa-solid fa-bars-staggered"></i></div>
+
+            <!-- BOTÓN MENÚ MÓVIL -->
+            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
         </header>
 
         <main class="max-w-7xl mx-auto px-4 py-4 grid grid-cols-1 lg:grid-cols-12 gap-8 main-grid animate-fade">
             
-            <!-- PANEL IZQUIERDO -->
             <div class="lg:col-span-4 space-y-6">
                 <h1 class="text-xl font-black uppercase italic tracking-tighter">Panel de <span class="text-yellow-500">Operación</span></h1>
                 
@@ -124,17 +140,15 @@
                     <h4 class="text-[10px] font-black text-yellow-500 uppercase tracking-[4px] mb-5 border-b border-white/5 pb-2 italic">Documentación Requerida</h4>
                     <div class="space-y-4 text-[10px]">
                         <div class="flex gap-4"><i class="fa-solid fa-id-card text-yellow-500 text-lg"></i> <div><p class="font-black text-white uppercase italic">Carnet Universitario</p><p class="text-gray-400 font-light mt-1">Obligatorio para acceder al servicio oficial.</p></div></div>
-                        <div class="flex gap-4"><i class="fa-solid fa-address-card text-white text-lg"></i> <div><p class="font-black text-white uppercase italic">DNI Original</p><p class="text-gray-400 font-light mt-1">Opcional para verificación adicional de seguridad.</p></div></div>
+                        <div class="flex gap-4"><i class="fa-solid fa-address-card text-white text-lg"></i> <div><p class="font-black text-white uppercase italic">DNI Original</p><p class="text-gray-400 font-light mt-1">Opcional para verificación adicional.</p></div></div>
                         <div class="flex gap-4"><i class="fa-solid fa-file-invoice text-yellow-500 text-lg"></i> <div><p class="font-black text-white uppercase italic">Constancia de Matrícula</p><p class="text-gray-400 font-light mt-1">Actualizada semestre vigente si no tiene carnet.</p></div></div>
                     </div>
                 </div>
 
-                <!-- GLOBO 3D RELLENANDO ESPACIO -->
                 <div id="globe-container"></div>
             </div>
 
-            <!-- PANEL DERECHO -->
-            <div class="lg:col-span-8 space-y-4">
+            <div class="col-span-12 lg:col-span-8 space-y-4">
                 <div class="glass p-6">
                     <div class="flex justify-between items-end">
                         <p id="route-name" class="text-[10px] text-yellow-500 font-black uppercase tracking-widest">Sincronizando GPS...</p>
@@ -157,23 +171,21 @@
                     <iframe id="main-map" src="" class="w-full h-full rounded-[18px]" frameborder="0"></iframe>
                 </div>
 
-                <!-- PARADEROS -->
                 <div class="glass p-6">
                     <h3 class="text-[10px] font-black text-gray-400 uppercase mb-5 tracking-widest border-b border-white/5 pb-2">Secuencia Operativa de Paraderos</h3>
                     <div id="stops-container" class="stops-grid"></div>
                 </div>
 
-                <!-- ALERTA Y IMÁGENES -->
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-                    <div class="md:col-span-8 glass p-6 border-l-4 border-red-600 bg-red-950/10 alert-box">
+                    <div class="md:col-span-8 glass p-6 border-l-4 border-red-600 bg-red-950/10 alert-box text-left">
                         <h5 class="text-red-500 font-black text-[11px] mb-4 uppercase tracking-[3px] flex items-center gap-2">
                             <i class="fa-solid fa-circle-exclamation animate-pulse"></i> DATO ADICIONAL IMPORTANTE
                         </h5>
                         <p class="text-[13px] leading-relaxed text-white font-medium mb-4 italic">
-                            AVISO ESTUDIANTIL: Debido a la alta demanda de flujo, el último paradero estratégico para recoger pasajeros es <span class="text-yellow-500 font-black underline underline-offset-4 uppercase">CARSA VENTANILLA 😫</span>. Por favor, tome sus precauciones y no se confíe de cupos en puntos posteriores 🙄.
+                            AVISO ESTUDIANTIL: Debido a la alta demanda de flujo, el último paradero estratégico para recoger pasajeros es <span class="text-yellow-500 font-black underline underline-offset-4 uppercase">CARSA VENTANILLA 😫</span>. No se confíe de cupos en puntos posteriores 🙄.
                         </p>
                         <div class="bg-black/40 p-4 rounded-xl border border-white/5">
-                            <p class="text-[12px] text-gray-300">
+                            <p class="text-[12px] text-gray-300 leading-relaxed">
                                 Recomendación: Comuníquense con el <span class="text-white font-bold underline">delegado oficial 🧐</span> para confirmar la disponibilidad de espacios en tiempo real 😰.
                             </p>
                         </div>
@@ -193,6 +205,10 @@
     </div>
 
     <script>
+        function toggleMenu() {
+            document.getElementById('mobile-menu').classList.toggle('open');
+        }
+
         const routeData = [
             {
                 name: "SEDE UNAC / UNIVERSIDAD NACIONAL DEL CALLAO (UNAC)",
@@ -210,7 +226,7 @@
                 name: "UNAC / INKA COLA (2:15 PM)",
                 orig: "Callao", dest: "Inka Kola", tS: 14.25, tE: 15.25,
                 map: 'https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d2960.532240448023!2d-77.13256416046117!3d-11.938150732395275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x9105cb910984762b%3A0x104327c627fa29ad!2sUniversidad%20Nacional%20del%20Callao%2C%20Av.%20Juan%20Pablo%20%E2%85%A1%20306%2C%20Bellavista%2007011!3m2!1d-12.0613052!2d-77.11724869999999!4m5!1s0x9105d3108cef4201%3A0xd5b9f23c6ca77ebf!2sParadero%20Inka%20Kola%2C%203V79%2BCP5%2C%20Ip%2051.62%20paradero%20Inka%20Kola%20(op.5%2C%20Avenida%20Del%20Bierzo%2C%20Ventanilla%2007046!3m2!1d-11.936489!2d-77.13062939999999!5e1!3m2!1ses-419!2spe!4v1777141785387!5m2!1ses-419!2spe',
-                stops: ["UNAC Callao (Inicio)", "IMUPESA", "PESQUERO", "BAYER", "CARRILLO", "OQUENDO", "GRIFO REPSOL", "QUINCE", "MARQUEZ", "INKA COLA (Fin)"]
+                stops: ["UNAC Callao (Inicio)", "IMUPESA", "PESQUERO", "BAYER", "OQUENDO", "QUINCE", "MARQUEZ", "INKA COLA (Fin)"]
             },
             {
                 name: "UNAC / TELEFONO (10:15 PM)",
@@ -281,7 +297,6 @@
         }
         setInterval(updateTracker, 1000);
         window.onload = () => { selectRoute(0); initThree(); };
-        window.onresize = () => { renderer.setSize(document.getElementById('globe-container').clientWidth, 220); };
     </script>
 </body>
 </html>
