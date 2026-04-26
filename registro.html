@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UNAC | Registro y Padrón Oficial</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root { --accent: #ffc107; --dark: #050505; }
+        
+        body, html { 
+            margin: 0; padding: 0; min-height: 100vh; 
+            background-color: var(--dark);
+            font-family: 'Inter', sans-serif;
+            color: #ffffff; overflow-x: hidden;
+        }
+
+        /* ANIMACIONES */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        .main-wrapper {
+            position: relative; z-index: 10;
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            min-height: 100vh; width: 100%;
+        }
+
+        /* HEADER IDÉNTICO AL DE INICIO */
+        header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
+        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
+        .nav-link:hover, .active-link { color: var(--accent); }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
+        .nav-link:hover::after, .active-link::after { width: 100%; }
+
+        /* MENU MOVIL */
+        #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; }
+        #mobile-menu.active { display: flex; }
+
+        /* GLASSMORPHISM */
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
+        
+        input[type="text"] {
+            width: 100%; max-width: 400px; padding: 18px;
+            background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent);
+            color: #fff; border-radius: 12px; font-size: 1.2rem;
+            text-align: center; outline: none; transition: 0.3s;
+        }
+        input[type="text"]:focus { box-shadow: 0 0 15px rgba(255, 180, 0, 0.3); }
+
+        .btn-search {
+            background: var(--accent); color: #000; padding: 15px 40px;
+            border-radius: 10px; font-weight: 900; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+        }
+        .btn-search:hover { background: #fff; transform: scale(1.05); }
+
+        /* RESULTADOS */
+        .data-item { margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; text-align: left; }
+        .data-item label { color: var(--accent); font-size: 10px; text-transform: uppercase; font-weight: 800; display: block; letter-spacing: 1px; }
+        .data-item p { font-size: 1.1rem; margin-top: 4px; font-weight: 400; }
+
+        #globe-container { width: 100%; height: 300px; pointer-events: none; }
+
+        @media (max-width: 768px) { .nav-desktop { display: none; } header { padding: 25px 15px; } .section-title { font-size: 2rem; } }
+    </style>
+</head>
+<body>
+
+    <!-- MENÚ MÓVIL -->
+    <div id="mobile-menu">
+        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
+        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
+        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Registro</a>
+        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
+        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
+    </div>
+
+    <div class="main-wrapper">
+        <!-- HEADER (IDÉNTICO AL DE INICIO) -->
+        <header class="flex justify-between items-center relative z-20 animate-fade-up">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
+                <div class="flex flex-col text-left leading-none uppercase">
+                    <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
+                    <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
+                <a href="index.html" class="nav-link">Inicio</a>
+                <a href="rutas.html" class="nav-link">Rutas</a>
+                <a href="#" class="nav-link">Ticket</a>
+                <a href="registro.html" class="nav-link active-link">Registro</a>
+                <a href="#" class="nav-link">Noticias</a>
+                <a href="#" class="nav-link">Contacto</a>
+            </nav>
+            
+            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
+                MENU <i class="fa-solid fa-bars-staggered"></i>
+            </button>
+        </header>
+
+        <main class="max-w-4xl mx-auto px-4 py-12 flex flex-col items-center animate-fade-up">
+            <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2">Verificación Oficial 2026-A</span>
+            <h1 class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-10 text-center">Consulta de <span class="text-yellow-500">Padrón</span></h1>
+            
+            <!-- CAJA DE BÚSQUEDA -->
+            <div class="glass p-10 w-full max-w-xl text-center mb-8">
+                <input type="text" id="dniInput" placeholder="INGRESA TU DNI" maxlength="8">
+                <div class="mt-6">
+                    <button class="btn-search" id="searchBtn">Verificar Registro</button>
+                </div>
+            </div>
+
+            <!-- RESULTADOS -->
+            <div id="resultsBox" class="glass p-8 w-full max-w-xl hidden">
+                <div class="data-item"><label>Estudiante:</label><p id="resNombre">-</p></div>
+                <div class="data-item"><label>Código UNAC:</label><p id="resCodigo">-</p></div>
+                <div class="data-item"><label>Facultad:</label><p id="resFacultad">-</p></div>
+                <div class="data-item"><label>Horario Asignado:</label><p id="resHorario">-</p></div>
+                <div class="data-item"><label>Estado Delegado:</label><p id="resConforme">-</p></div>
+                
+                <div class="mt-6 p-4 bg-green-500/10 border border-green-500/30 text-green-400 rounded-xl font-black text-center text-sm uppercase tracking-widest">
+                    REGISTRO VALIDADO ✅
+                </div>
+            </div>
+
+            <!-- ERROR -->
+            <div id="errorBox" class="glass p-8 w-full max-w-xl hidden border-red-500/30">
+                <div class="text-center">
+                    <i class="fa-solid fa-circle-xmark text-red-500 text-5xl mb-4"></i>
+                    <h3 class="text-red-500 font-black uppercase tracking-widest">DNI no encontrado</h3>
+                    <p class="text-gray-400 text-sm mt-2 font-light">El número ingresado no figura en el padrón actual de la Ruta Ventanilla.</p>
+                </div>
+            </div>
+
+            <!-- GLOBO 3D ABAJO -->
+            <div id="globe-container" class="animate-float"></div>
+        </main>
+
+        <!-- FOOTER IDÉNTICO AL DE INICIO -->
+        <footer class="w-full py-10 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
+            <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
+            <span class="text-center text-[9px] text-gray-500 tracking-[1px] text-center px-4 uppercase font-light italic">
+                © 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.
+            </span>
+        </footer>
+    </div>
+
+    <script>
+        function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
+
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzvOKvaSny1fecoF3Sd18Nsu3GlQgNfvUtEA1bPHiFXJVSlbkmSO47bwS71_dTbC5-Q/exec';
+        const searchBtn = document.getElementById('searchBtn');
+        const resultsBox = document.getElementById('resultsBox');
+        const errorBox = document.getElementById('errorBox');
+
+        searchBtn.addEventListener('click', () => {
+            const dni = document.getElementById('dniInput').value.trim();
+            if(!dni) return alert("Por favor, ingresa un número de DNI.");
+
+            searchBtn.innerText = "PROCESANDO...";
+            searchBtn.disabled = true;
+            resultsBox.classList.add('hidden');
+            errorBox.classList.add('hidden');
+
+            fetch(API_URL + '?dni=' + dni)
+                .then(res => res.json())
+                .then(data => {
+                    searchBtn.innerText = "VERIFICAR REGISTRO";
+                    searchBtn.disabled = false;
+                    
+                    if(data.found) {
+                        const nombreCompleto = data.Nombres || "";
+                        const primerNombre = nombreCompleto.split(' ')[0];
+                        document.getElementById('resNombre').innerText = primerNombre + " ************";
+
+                        const codigoFull = data.Codigo.toString();
+                        document.getElementById('resCodigo').innerText = codigoFull.substring(0, 2) + "********";
+
+                        document.getElementById('resFacultad').innerText = data.Facultad;
+                        document.getElementById('resHorario').innerText = data.Horario;
+                        
+                        const conformeElem = document.getElementById('resConforme');
+                        const valorConforme = (data.Conforme || "Pendiente").toString().toUpperCase();
+                        conformeElem.innerText = valorConforme;
+                        conformeElem.style.color = (valorConforme === 'SÍ' || valorConforme === 'SI') ? '#a6f3b7' : '#ff4444';
+                        
+                        resultsBox.classList.remove('hidden');
+                    } else {
+                        errorBox.classList.remove('hidden');
+                    }
+                }).catch(() => {
+                    searchBtn.disabled = false;
+                    alert("Error en la conexión con el servidor.");
+                });
+        });
+
+        // ESFERA 3D (ALTA CALIDAD)
+        let scene, camera, renderer, globe;
+        function initThree() {
+            const container = document.getElementById('globe-container');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 100;
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            const geometry = new THREE.IcosahedronGeometry(28, 4); 
+            const material = new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.15 });
+            globe = new THREE.Mesh(geometry, material); scene.add(globe);
+            const ptsG = new THREE.IcosahedronGeometry(28.5, 4);
+            const ptsM = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, transparent: true, opacity: 0.4 });
+            globe.add(new THREE.Points(ptsG, ptsM));
+            animate();
+        }
+        function animate() { requestAnimationFrame(animate); globe.rotation.y += 0.002; renderer.render(scene, camera); }
+        window.onload = initThree;
+    </script>
+</body>
+</html>
