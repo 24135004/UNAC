@@ -3,305 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNAC | Monitor de Rutas Oficial</title>
+    <title>UNAC | Movilidad Inteligente</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        :root { --accent: #ffc107; --dark: #050505; }
+        :root { 
+            --accent: #ffc107; 
+            --dark: #050505;
+        }
         
         body, html { 
             margin: 0; padding: 0; min-height: 100vh; 
             background-color: var(--dark);
             font-family: 'Inter', sans-serif;
-            color: #ffffff; overflow-x: hidden;
+            color: #ffffff;
+            overflow-x: hidden;
         }
 
-        /* ANIMACIONES (Exactas de Inicio) */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        /* ANIMACIONES */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
         .animate-float { animation: float 4s ease-in-out infinite; }
 
+        /* FONDO */
         .main-wrapper {
-            position: relative; z-index: 10;
+            position: relative;
             background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), 
                         url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
-            background-size: cover; background-position: center; background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* NAVEGACIÓN (Copiada de Inicio) */
-        header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
+        header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 100; }
+
+        /* NAVEGACIÓN LIMPIA */
         .nav-link { 
             font-size: 11px; font-weight: 700; letter-spacing: 2px; 
             color: rgba(255, 255, 255, 0.6); transition: 0.3s;
             text-transform: uppercase; position: relative;
         }
         .nav-link:hover, .active-link { color: var(--accent); }
-        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
-        .active-link::after { width: 100%; }
-
-        /* MENU MOVIL (Copiado de Inicio) */
-        #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; }
-        #mobile-menu.active { display: flex; }
-
-        /* CARDS & GLASS */
-        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
-        .route-card { padding: 15px; transition: 0.4s; cursor: pointer; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
-        .route-card.active { border-color: var(--accent); background: rgba(255, 193, 7, 0.12); transform: scale(1.02); }
-        .route-card.disabled { opacity: 0.4; border-color: #ef4444; }
-
-        /* PARADEROS GRID */
-        .stops-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 15px; text-align: left; }
-        .stop-point { position: relative; padding-left: 20px; font-size: 9px; font-weight: 700; border-left: 1px solid #333; color: #aaa; text-transform: uppercase; line-height: 1.4; }
-        .stop-point::before { content: ''; position: absolute; left: -4px; top: 5px; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
-
-        /* HUD */
-        .hud-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 20px; position: relative; margin: 15px 0; }
-        .hud-fill { height: 100%; background: var(--accent); box-shadow: 0 0 15px var(--accent); border-radius: 20px; transition: width 1s linear; }
-
-        .img-small { width: 100%; height: 110px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); transition: 0.5s; }
-        #globe-container { width: 100%; height: 240px; display: flex; justify-content: center; align-items: center; pointer-events: none; }
-
-        /* RESPONSIVIDAD */
-        @media (max-width: 1024px) { 
-            .main-grid { display: flex; flex-direction: column; align-items: center; text-align: center; } 
-            .stops-grid { grid-template-columns: 1fr; margin: 0 auto; width: 100%; }
-            .route-card { width: 100%; text-align: center; }
-            .requirements-box { text-align: left !important; }
+        .nav-link::after {
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s;
         }
-        @media (max-width: 768px) { .nav-minimal { display: none; } header { padding: 25px 15px; } }
+        .nav-link:hover::after, .active-link::after { width: 100%; }
+
+        .content-box {
+            max-width: 1100px; width: 90%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 0; flex-grow: 1;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            line-height: 1; font-weight: 800; text-transform: uppercase;
+        }
+
+        #globe-box { width: 400px; height: 400px; }
+
+        .stats-area {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 15px; width: 90%; max-width: 1100px; margin-bottom: 40px;
+        }
+
+        .card-tech {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px 10px; border-radius: 15px;
+            text-align: center; transition: 0.3s;
+        }
+        .card-tech:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .card-tech i { color: var(--accent); font-size: 1.2rem; margin-bottom: 10px; display: block; }
+        .card-tech h3 { font-size: 1.5rem; font-weight: 800; margin: 0; }
+        .card-tech p { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+        @media (max-width: 768px) {
+            header { padding: 15px; }
+            .nav-minimal { display: none; } 
+            .content-box { flex-direction: column-reverse; text-align: center; padding-top: 0; }
+            #globe-box { width: 260px; height: 260px; margin-bottom: 10px; }
+            .stats-area { grid-template-columns: repeat(2, 1fr); margin-bottom: 30px; }
+            h1 { margin-top: 10px; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- MENÚ MÓVIL -->
-    <div id="mobile-menu">
-        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Rutas</a>
-        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Ticket</a>
-        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
-        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
-        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
-    </div>
-
-    <div class="main-wrapper">
-        <!-- HEADER (IDÉNTICO AL DE INICIO) -->
-        <header class="flex justify-between items-center relative z-20 animate-fade-up">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center">
-                    <i class="fa-solid fa-bus text-black text-lg"></i>
-                </div>
-                <div class="flex flex-col text-left">
-                    <span class="text-[10px] font-black tracking-widest leading-none uppercase">UNAC</span>
-                    <span class="text-[9px] text-yellow-500 font-bold uppercase">Movilidad</span>
-                </div>
+<div class="main-wrapper">
+    <!-- Header -->
+    <header class="flex justify-between items-center animate-fade-up">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center">
+                <i class="fa-solid fa-bus text-black text-lg"></i>
             </div>
+            <div class="flex flex-col text-left">
+                <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
+                <span class="text-[9px] text-yellow-500 font-bold uppercase">Movilidad</span>
+            </div>
+        </div>
 
-            <nav class="hidden md:flex gap-8 nav-minimal">
-                <a href="index.html" class="nav-link">Inicio</a>
-                <a href="rutas.html" class="nav-link active-link">Rutas</a>
-                <a href="#" class="nav-link">Ticket</a>
-                <a href="#" class="nav-link">Registro</a>
-                <a href="#" class="nav-link">Noticias</a>
-                <a href="#" class="nav-link">Contacto</a>
-            </nav>
+        <nav class="hidden md:flex gap-8 nav-minimal">
+            <a href="index.html" class="nav-link active-link">Inicio</a>
+            <a href="rutas.html" class="nav-link">Rutas</a>
+            <a href="#" class="nav-link">Registro</a>
+            <a href="#" class="nav-link">Noticias</a>
+            <a href="#" class="nav-link">Contacto</a>
+        </nav>
+        
+        <div class="md:hidden text-yellow-500 text-xl">
+            <i class="fa-solid fa-bars-staggered"></i>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-box">
+        <div class="text-side animate-fade-up text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-4">
+                <span class="h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                <span class="text-yellow-500 text-[9px] font-bold uppercase tracking-widest">Servicio Activo 2024-A</span>
+            </div>
             
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2 transition hover:bg-yellow-500 hover:text-black">
-                MENU <i class="fa-solid fa-bars-staggered"></i>
-            </button>
-        </header>
-
-        <main class="max-w-7xl mx-auto px-4 py-4 grid grid-cols-12 gap-8 main-grid animate-fade-up">
+            <h1>Movilidad <br><span class="text-yellow-500 italic opacity-90">Universitaria</span></h1>
+            <p class="mt-4 text-gray-400 text-sm max-w-md mx-auto md:mx-0 font-light">
+                Plataforma inteligente para la gestión y monitoreo de la movilidad RUTA VENTANILLA oficial de la Universidad Nacional del Callao.
+            </p>
             
-            <!-- PANEL IZQUIERDO -->
-            <div class="col-span-12 lg:col-span-4 space-y-6 flex flex-col items-center lg:items-start">
-                <h1 class="text-xl font-black uppercase italic tracking-tighter text-center lg:text-left w-full">Panel de <span class="text-yellow-500">Operación</span></h1>
-                
-                <div class="space-y-2 w-full flex flex-col items-center">
-                    <div onclick="selectRoute(0)" id="route-0" class="route-card glass active w-full">
-                        <p class="text-[9px] font-bold text-yellow-500 uppercase tracking-widest">5:15 AM • Lunes a Viernes</p>
-                        <h3 class="text-[9px] font-black uppercase leading-tight italic">SEDE UNAC / UNIVERSIDAD NACIONAL DEL CALLAO (UNAC)</h3>
-                    </div>
-                    <div onclick="selectRoute(1)" id="route-1" class="route-card glass w-full">
-                        <p class="text-[9px] font-bold text-yellow-500 uppercase tracking-widest">6:00 PM • Lunes a Viernes</p>
-                        <h3 class="text-[9px] font-black uppercase leading-tight italic">UNIVERSIDAD NACIONAL DEL CALLAO (UNAC) - SEDE UNAC</h3>
-                    </div>
-                    <div onclick="selectRoute(2)" id="route-2" class="route-card glass disabled w-full">
-                        <p class="text-[9px] font-bold text-red-500 uppercase tracking-widest">2:15 PM • Pendiente</p>
-                        <h3 class="text-[9px] font-black uppercase leading-tight italic">UNAC / INKA COLA</h3>
-                    </div>
-                    <div onclick="selectRoute(3)" id="route-3" class="route-card glass disabled w-full">
-                        <p class="text-[9px] font-bold text-red-500 uppercase tracking-widest">10:15 PM • Pendiente</p>
-                        <h3 class="text-[9px] font-black uppercase leading-tight italic">UNAC / TELEFONO</h3>
-                    </div>
-                </div>
-
-                <div class="glass p-6 border-l-4 border-yellow-500 shadow-xl w-full text-left requirements-box">
-                    <h4 class="text-[10px] font-black text-yellow-500 uppercase tracking-[4px] mb-5 border-b border-white/5 pb-2 italic">DOCUMENTACIÓN REQUERIDA</h4>
-                    <div class="space-y-4 text-[10px]">
-                        <div class="flex gap-4"><i class="fa-solid fa-id-card text-yellow-500 text-lg"></i> <div><p class="font-black text-white uppercase italic">Carnet Universitario</p><p class="text-gray-400 font-light mt-1">Obligatorio para el acceso oficial.</p></div></div>
-                        <div class="flex gap-4"><i class="fa-solid fa-address-card text-white text-lg"></i> <div><p class="font-black text-white uppercase italic">DNI Original</p><p class="text-gray-400 font-light mt-1">Opcional para verificación adicional.</p></div></div>
-                        <div class="flex gap-4"><i class="fa-solid fa-file-invoice text-yellow-500 text-lg"></i> <div><p class="font-black text-white uppercase italic">Constancia de Matrícula</p><p class="text-gray-400 font-light mt-1">Actualizada semestre vigente si no tiene carnet.</p></div></div>
-                    </div>
-                </div>
-
-                <!-- GLOBO 3D RELLENANDO ESPACIO -->
-                <div id="globe-container" class="animate-float"></div>
+            <!-- Botones -->
+            <div class="flex gap-3 mt-8 justify-center md:justify-start">
+                <a href="rutas.html" class="bg-yellow-500 text-black text-[11px] font-black px-7 py-3 rounded-lg hover:scale-105 transition shadow-lg shadow-yellow-500/20 flex items-center justify-center uppercase">Horarios</a>
+                <a href="rutas.html" class="bg-white/5 border border-white/10 text-[11px] font-bold px-7 py-3 rounded-lg hover:bg-white/10 transition flex items-center justify-center uppercase">Rutas</a>
             </div>
+        </div>
 
-            <!-- PANEL DERECHO -->
-            <div class="col-span-12 lg:col-span-8 space-y-4 w-full">
-                <div class="glass p-6">
-                    <div class="flex justify-between items-end">
-                        <p id="route-name" class="text-[10px] text-yellow-500 font-black uppercase tracking-widest">Monitor GPS...</p>
-                        <p id="clock" class="text-xl font-bold tracking-widest text-white">00:00:00</p>
-                    </div>
-                    <div class="hud-bar">
-                        <div id="bar-fill" class="hud-fill" style="width: 0%"></div>
-                        <div id="bus-icon" class="absolute top-[-10px] transition-all duration-1000" style="left: 0%;">
-                            <div class="bg-yellow-500 p-1.5 rounded-lg shadow-xl shadow-yellow-500/50"><i class="fa-solid fa-bus text-black text-[9px]"></i></div>
-                        </div>
-                    </div>
-                    <div class="flex justify-between text-[9px] text-gray-500 font-black uppercase italic tracking-tighter">
-                        <span id="p-orig">Origen</span>
-                        <span id="eta-txt" class="text-yellow-500 font-bold">MONITOR ACTIVO</span>
-                        <span id="p-dest">Destino</span>
-                    </div>
-                </div>
+        <div id="globe-box" class="animate-float"></div>
+    </main>
 
-                <div class="glass p-1 h-[380px] shadow-2xl overflow-hidden">
-                    <iframe id="main-map" src="" class="w-full h-full rounded-[18px]" frameborder="0"></iframe>
-                </div>
+    <!-- Stats Area -->
+    <section class="stats-area animate-fade-up">
+        <div class="card-tech">
+            <i class="fa-solid fa-route"></i>
+            <h3>02</h3>
+            <p>Unidades</p>
+        </div>
+        <div class="card-tech">
+            <i class="fa-solid fa-location-dot"></i>
+            <h3>35km</h3>
+            <p>Recorrido</p>
+        </div>
+        <div class="card-tech">
+            <i class="fa-solid fa-users"></i>
+            <h3>+600</h3>
+            <p>Usuarios</p>
+        </div>
+        <div class="card-tech">
+            <i class="fa-solid fa-clock"></i>
+            <h3>55m</h3>
+            <p>Frecuencia</p>
+        </div>
+    </section>
 
-                <div class="glass p-6">
-                    <h3 class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest border-b border-white/5 pb-2 text-center">Secuencia Operativa de Paraderos</h3>
-                    <div id="stops-container" class="stops-grid"></div>
-                </div>
+    <!-- Footer -->
+    <footer class="w-full py-10 flex flex-col items-center border-t border-white/5 bg-black/20">
+        <span class="text-[10px] font-bold tracking-[4px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
+        <span class="text-[9px] text-gray-500 tracking-[1px] text-center px-4">
+            © 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.
+        </span>
+    </footer>
+</div>
 
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-                    <div class="md:col-span-8 glass p-6 border-l-4 border-red-600 bg-red-950/10 text-left">
-                        <h5 class="text-red-500 font-black text-[11px] mb-4 uppercase tracking-[3px]">❗ DATO ADICIONAL IMPORTANTE</h5>
-                        <p class="text-[13px] leading-relaxed text-white font-medium mb-3 italic">
-                            AVISO ESTUDIANTIL: Debido a la alta demanda masiva, informamos que el último paradero con capacidad garantizada es <span class="text-yellow-500 font-black underline underline-offset-4 uppercase">CARSA VENTANILLA 😫</span>. No se confíen de cupos posteriores.
-                        </p>
-                        <p class="text-[11px] text-gray-300 italic border-t border-white/5 pt-3">Consulte con el <span class="text-white font-bold underline">delegado oficial 🧐</span> para verificar espacios reales 😰.</p>
-                    </div>
-                    <div class="md:col-span-4 flex flex-col gap-3">
-                        <img src="DSC07555-768x432.jpg" class="img-small shadow-2xl">
-                        <img src="DSC07588-768x432.jpg" class="img-small shadow-2xl">
-                    </div>
-                </div>
-            </div>
-        </main>
+<script>
+    let scene, camera, renderer, globe;
+    const container = document.getElementById('globe-box');
 
-        <!-- FOOTER IDÉNTICO AL INICIO -->
-        <footer class="w-full py-10 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
-            <span class="text-center text-[10px] font-bold tracking-[4px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
-            <span class="text-center text-[9px] text-gray-500 tracking-[1px] text-center px-4 uppercase font-light italic">
-                © 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.
-            </span>
-        </footer>
-    </div>
+    function init() {
+        if (!container) return;
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.z = 100;
 
-    <script>
-        function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
 
-        const routeData = [
-            {
-                name: "SEDE UNAC / CALLAO (5:15 AM)",
-                orig: "Sede UNAC", dest: "Callao", tS: 5.25, tE: 6.75,
-                map: 'https://www.google.com/maps/embed?pb=!1m62!1m12!1m3!1d159337.9280060247!2d-77.1556698885926!3d-11.941967764977532!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m47!3e0!4m3!3m2!1d-11.823069!2d-77.13256539999999!4m3!3m2!1d-11.8252305!2d-77.1234052!4m3!3m2!1d-11.843182599999999!2d-77.101874!4m3!3m2!1d-11.8375611!2d-77.11113209999999!4m5!1s0x9105d43d3b9d9f15%3A0x7484f44b11f271b!2sPolicl%C3%ADnico%20Emanuel%2C%20Ventanilla%2007076!3m2!1d-11.841529999999999!2d-77.11502!4m5!1s0x9105d41212110f83%3A0x3381ebbdfb7c3a11!2sCajamarca%2C%20Mi%20Per%C3%BA%2007056!3m2!1d-11.85413!2d-77.12089!4m3!3m2!1d-11.859558199999999!2d-77.124529!4m3!3m2!1d-11.8754478!2d-77.1269141!4m3!3m2!1d-12.040581399999999!2d-77.1160577!4m5!1s0x9105cb910984762b%3A0x104327c627fa29ad!2sUniversidad%20Nacional%20del%20Callao%2C%20Av.%20Juan%20Pablo%20%E2%85%A1%20306%2C%20Bellavista%2007011!3m2!1d-12.0613052!2d-77.11724869999999!5e1!3m2!1ses-419!2spe!4v1777142468277!5m2!1ses-419!2spe',
-                stops: ["Sede UNAC (Inicio)", "Hogar", "Ov. Zapallal", "Cruce Ventanilla", "Policlínico", "Av. Trujillo", "Semáforo", "Carsa Ventanilla", "QUINCE (15)", "UNAC Callao (Fin)"]
-            },
-            {
-                name: "UNIVERSIDAD NACIONAL DEL CALLAO (UNAC) - SEDE UNAC",
-                orig: "Callao", dest: "Sede UNAC", tS: 18, tE: 20,
-                map: 'https://www.google.com/maps/embed?pb=!1m54!1m12!1m3!1d91283.5448213373!2d-77.11522911083303!3d-11.904422407959084!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m39!3e0!4m3!3m2!1d-12.0618527!2d-77.11811399999999!4m5!1s0x9105cbefb611a025%3A0xc0bf38abdac64504!2sPalomino%2C%20Bellavista%2007011!3m2!1d-12.057409999999999!2d-77.11646!4m3!3m2!1d-12.040162599999999!2d-77.1169468!4m5!1s0x9105d47287f4ff0d%3A0x291fbd59642651e8!2sHuaura%2C%20Mi%20Per%C3%BA%2007056!3m2!1d-11.85585!2d-77.12836999999999!4m3!3m2!1d-11.8431261!2d-77.1019199!4m3!3m2!1d-11.8244667!2d-77.1229334!4m3!3m2!1d-11.8233842!2d-77.1250032!4m5!1s0x9105d526b243bda5%3A0x4f54a232b468d4dd!2sUNAC%20-%20VENTANILLA%2C%205VG8%2BJM6%2C%20Ventanilla%2007076!3m2!1d-11.823452099999999!2d-77.13334929999999!5e1!3m2!1ses-419!2v1777147929441!5m2!1ses-419!2spe',
-                stops: ["UNAC (Inicio)", "IMUPESA", "PESQUERO", "BAYER", "OQUENDO", "QUINCE", "MARQUEZ", "INKA COLA", "8", "SEGUNDO", "CENTRO (inh.)", "TELEFONO", "HUARA", "TRUJILLO", "POLICLINICO", "ZAPALLAL", "SEDE UNAC (Fin)"]
-            },
-            {
-                name: "UNAC / INKA COLA (2:15 PM)",
-                orig: "Callao", dest: "Inka Kola", tS: 14.25, tE: 15.25,
-                map: 'https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d2960.532240448023!2d-77.13256416046117!3d-11.938150732395275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x9105cb910984762b%3A0x104327c627fa29ad!2sUniversidad%20Nacional%20del%20Callao%2C%20Av.%20Juan%20Pablo%20%E2%85%A1%20306%2C%20Bellavista%2007011!3m2!1d-12.0613052!2d-77.11724869999999!4m5!1s0x9105d3108cef4201%3A0xd5b9f23c6ca77ebf!2sParadero%20Inka%20Kola%2C%203V79%2BCP5%2C%20Ip%2051.62%20paradero%20Inka%20Kola%20(op.5%2C%20Avenida%20Del%20Bierzo%2C%20Ventanilla%2007046!3m2!1d-11.936489!2d-77.13062939999999!5e1!3m2!1ses-419!2spe!4v1777141785387!5m2!1ses-419!2spe',
-                stops: ["UNAC Callao", "OQUENDO", "QUINCE", "MARQUEZ", "INKA COLA (Fin)"]
-            },
-            {
-                name: "UNAC / TELEFONO (10:15 PM)",
-                orig: "Callao", dest: "Ventanilla", tS: 22.25, tE: 23.5,
-                map: 'https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d158073.67879229266!2d-77.20666131339017!3d-11.97076932739913!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x9105cb910984762b%3A0x104327c627fa29ad!2sUniversidad%20Nacional%20del%20Callao%2C%20Av.%20Juan%20Pablo%20%E2%85%A1%20306%2C%20Bellavista%2007011!3m2!1d-12.0613052!2d-77.11724869999999!4m5!1s0x9105d38d44d9dc71%3A0xf9cf5da526344420!2sMetro%20Ventanilla%2C%20Ventanilla%2007051!3m2!1d-11.87674!2d-77.12642!5e1!3m2!1ses-419!2spe!4v1777141648764!5m2!1ses-419!2spe',
-                stops: ["UNAC Callao", "OQUENDO", "QUINCE", "INKA COLA", "OCHO", "SEGUNDO", "TELEFONO (Fin)"]
-            }
-        ];
+        const geometry = new THREE.IcosahedronGeometry(35, 2);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xffc107,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15
+        });
+        globe = new THREE.Mesh(geometry, material);
+        scene.add(globe);
 
-        let activeIdx = 0;
-        function selectRoute(idx) {
-            activeIdx = idx;
-            document.querySelectorAll('.route-card').forEach(c => c.classList.remove('active'));
-            document.getElementById(`route-${idx}`).classList.add('active');
-            const r = routeData[idx];
-            document.getElementById('main-map').src = r.map;
-            document.getElementById('route-name').innerText = r.name;
-            document.getElementById('p-orig').innerText = r.orig;
-            document.getElementById('p-dest').innerText = r.dest;
-            const container = document.getElementById('stops-container');
-            container.innerHTML = "";
-            r.stops.forEach(s => {
-                const div = document.createElement('div');
-                div.className = "stop-point";
-                div.innerText = s;
-                if(s.includes("inh.")) div.style.color = "#ff4444";
-                container.appendChild(div);
-            });
-            updateTracker();
+        const pointsGeom = new THREE.IcosahedronGeometry(35.5, 2);
+        const pointsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.6, transparent: true, opacity: 0.5 });
+        globe.add(new THREE.Points(pointsGeom, pointsMat));
+
+        animate();
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        if (globe) {
+            globe.rotation.y += 0.002;
+            globe.rotation.x += 0.001;
         }
+        renderer.render(scene, camera);
+    }
 
-        // ESFERA 3D ALTA CALIDAD (DE INICIO)
-        let scene, camera, renderer, globe;
-        function initThree() {
-            const container = document.getElementById('globe-container');
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.z = 100;
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setPixelRatio(window.devicePixelRatio); // Calidad Retina/Móvil
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
-            const geometry = new THREE.IcosahedronGeometry(28, 4); 
-            const material = new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.18 });
-            globe = new THREE.Mesh(geometry, material); scene.add(globe);
-            const ptsG = new THREE.IcosahedronGeometry(28.5, 4);
-            const ptsM = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, transparent: true, opacity: 0.5 });
-            globe.add(new THREE.Points(ptsG, ptsM));
-            animate();
-        }
-        function animate() { requestAnimationFrame(animate); globe.rotation.y += 0.002; renderer.render(scene, camera); }
+    window.addEventListener('resize', () => {
+        if (!container || !container.clientWidth) return;
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    });
 
-        function updateTracker() {
-            const now = new Date();
-            const h = now.getHours() + (now.getMinutes() / 60);
-            const d = now.getDay();
-            document.getElementById('clock').innerText = now.toLocaleTimeString();
-            const c = routeData[activeIdx];
-            const isRun = (d >= 1 && d <= 5) && (h >= c.tS && h <= c.tE);
-            const fill = document.getElementById('bar-fill');
-            const icon = document.getElementById('bus-icon');
-            if(isRun) {
-                const pr = ((h - c.tS) / (c.tE - c.tS)) * 100;
-                fill.style.width = pr + "%"; icon.style.left = pr + "%";
-                document.getElementById('eta-txt').innerText = "EN TRÁNSITO";
-            } else {
-                fill.style.width = "0%"; icon.style.left = "0%";
-                document.getElementById('eta-txt').innerText = "FUERA DE HORARIO";
-            }
-        }
-        setInterval(updateTracker, 1000);
-        window.onload = () => { selectRoute(0); initThree(); };
-    </script>
+    window.onload = init;
+</script>
 </body>
 </html>
