@@ -34,20 +34,22 @@
             min-height: 100vh; width: 100%;
         }
 
-        /* HEADER IDÉNTICO AL DE INICIO */
+        /* HEADER */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
         .nav-link:hover::after, .active-link::after { width: 100%; }
 
-        /* MENU MOVIL */
         #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; }
         #mobile-menu.active { display: flex; }
 
         /* GLASSMORPHISM */
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
         
+        /* FORMULARIO CONTAINER */
+        .form-container { width: 100%; height: 700px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255, 193, 7, 0.2); background: rgba(255,255,255,0.02); }
+
         input[type="text"] {
             width: 100%; max-width: 400px; padding: 18px;
             background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent);
@@ -68,9 +70,13 @@
         .data-item label { color: var(--accent); font-size: 10px; text-transform: uppercase; font-weight: 800; display: block; letter-spacing: 1px; }
         .data-item p { font-size: 1.1rem; margin-top: 4px; font-weight: 400; }
 
-        #globe-container { width: 100%; height: 300px; pointer-events: none; }
+        #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: -30px; }
 
-        @media (max-width: 768px) { .nav-desktop { display: none; } header { padding: 25px 15px; } .section-title { font-size: 2rem; } }
+        @media (max-width: 768px) { 
+            .nav-desktop { display: none; } 
+            .form-container { height: 800px; }
+            h2 { font-size: 2.2rem !important; }
+        }
     </style>
 </head>
 <body>
@@ -87,7 +93,7 @@
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER (IDÉNTICO AL DE INICIO) -->
+        <!-- HEADER -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
@@ -111,45 +117,67 @@
             </button>
         </header>
 
-        <main class="max-w-4xl mx-auto px-4 py-12 flex flex-col items-center animate-fade-up">
-            <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2">Verificación Oficial 2026-A</span>
-            <h1 class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-10 text-center">Consulta de <span class="text-yellow-500">Padrón</span></h1>
+        <main class="max-w-5xl mx-auto px-4 py-8 flex flex-col items-center">
             
-            <!-- CAJA DE BÚSQUEDA -->
-            <div class="glass p-10 w-full max-w-xl text-center mb-8">
-                <input type="text" id="dniInput" placeholder="INGRESA TU DNI" maxlength="8">
-                <div class="mt-6">
-                    <button class="btn-search" id="searchBtn">Verificar Registro</button>
-                </div>
-            </div>
-
-            <!-- RESULTADOS -->
-            <div id="resultsBox" class="glass p-8 w-full max-w-xl hidden">
-                <div class="data-item"><label>Estudiante:</label><p id="resNombre">-</p></div>
-                <div class="data-item"><label>Código UNAC:</label><p id="resCodigo">-</p></div>
-                <div class="data-item"><label>Facultad:</label><p id="resFacultad">-</p></div>
-                <div class="data-item"><label>Horario Asignado:</label><p id="resHorario">-</p></div>
-                <div class="data-item"><label>Estado Delegado:</label><p id="resConforme">-</p></div>
+            <!-- SECCIÓN 1: FORMULARIO DE REGISTRO -->
+            <div class="w-full text-center mb-20 animate-fade-up">
+                <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">PASO 01: INSCRIPCIÓN</span>
+                <h2 class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-8">Formulario de <span class="text-yellow-500">Registro</span></h2>
                 
-                <div class="mt-6 p-4 bg-green-500/10 border border-green-500/30 text-green-400 rounded-xl font-black text-center text-sm uppercase tracking-widest">
-                    REGISTRO VALIDADO ✅
+                <div class="form-container glass">
+                    <!-- Link corregido para que cargue correctamente en web -->
+                    <iframe 
+                        src="https://docs.google.com/forms/d/e/1FAIpQLSc5WSGfVJaDvTaZ4HNSEEim4G-1m3nzOYZlT_UgvzOBfObKew/viewform?embedded=true" 
+                        width="100%" 
+                        height="100%" 
+                        frameborder="0" 
+                        marginheight="0" 
+                        marginwidth="0">
+                        Cargando formulario...
+                    </iframe>
                 </div>
             </div>
 
-            <!-- ERROR -->
-            <div id="errorBox" class="glass p-8 w-full max-w-xl hidden border-red-500/30">
-                <div class="text-center">
-                    <i class="fa-solid fa-circle-xmark text-red-500 text-5xl mb-4"></i>
-                    <h3 class="text-red-500 font-black uppercase tracking-widest">DNI no encontrado</h3>
-                    <p class="text-gray-400 text-sm mt-2 font-light">El número ingresado no figura en el padrón actual de la Ruta Ventanilla.</p>
+            <!-- SECCIÓN 2: VERIFICACIÓN DE PADRÓN -->
+            <div class="w-full text-center mb-10 animate-fade-up" style="animation-delay: 0.2s;">
+                <div class="w-full h-px bg-white/5 mb-16"></div>
+                <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">PASO 02: Verificación Oficial 2026-A</span>
+                <h2 class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-10">Consulta de <span class="text-yellow-500">Padrón</span></h2>
+                
+                <div class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500/50">
+                    <input type="text" id="dniInput" placeholder="N° DE DNI" maxlength="8">
+                    <div class="mt-6">
+                        <button class="btn-search" id="searchBtn">Verificar Registro</button>
+                    </div>
+                </div>
+
+                <!-- RESULTADOS -->
+                <div id="resultsBox" class="glass p-8 w-full max-w-xl mx-auto hidden animate-fade-up">
+                    <div class="data-item"><label>Estudiante:</label><p id="resNombre">-</p></div>
+                    <div class="data-item"><label>Código UNAC:</label><p id="resCodigo">-</p></div>
+                    <div class="data-item"><label>Facultad:</label><p id="resFacultad">-</p></div>
+                    <div class="data-item"><label>Horario Asignado:</label><p id="resHorario">-</p></div>
+                    <div class="data-item"><label>Estado Delegado:</label><p id="resConforme">-</p></div>
+                    
+                    <div class="mt-6 p-4 bg-green-500/10 border border-green-500/30 text-green-400 rounded-xl font-black text-center text-sm uppercase tracking-widest">
+                        REGISTRO VALIDADO ✅
+                    </div>
+                </div>
+
+                <!-- ERROR -->
+                <div id="errorBox" class="glass p-8 w-full max-w-xl mx-auto hidden border-red-500/30">
+                    <div class="text-center">
+                        <i class="fa-solid fa-circle-xmark text-red-500 text-5xl mb-4"></i>
+                        <h3 class="text-red-500 font-black uppercase tracking-widest">DNI no encontrado</h3>
+                        <p class="text-gray-400 text-sm mt-2">Si ya te registraste arriba, espera 24 horas para que el sistema se actualice.</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- GLOBO 3D ABAJO -->
+            <!-- GLOBO 3D -->
             <div id="globe-container" class="animate-float"></div>
         </main>
 
-        <!-- FOOTER IDÉNTICO AL DE INICIO -->
         <footer class="w-full py-10 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
             <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
             <span class="text-center text-[9px] text-gray-500 tracking-[1px] text-center px-4 uppercase font-light italic">
@@ -168,9 +196,9 @@
 
         searchBtn.addEventListener('click', () => {
             const dni = document.getElementById('dniInput').value.trim();
-            if(!dni) return alert("Por favor, ingresa un número de DNI.");
+            if(!dni) return alert("Ingresa tu DNI.");
 
-            searchBtn.innerText = "PROCESANDO...";
+            searchBtn.innerText = "BUSCANDO...";
             searchBtn.disabled = true;
             resultsBox.classList.add('hidden');
             errorBox.classList.add('hidden');
@@ -180,34 +208,26 @@
                 .then(data => {
                     searchBtn.innerText = "VERIFICAR REGISTRO";
                     searchBtn.disabled = false;
-                    
                     if(data.found) {
-                        const nombreCompleto = data.Nombres || "";
-                        const primerNombre = nombreCompleto.split(' ')[0];
-                        document.getElementById('resNombre').innerText = primerNombre + " ************";
-
-                        const codigoFull = data.Codigo.toString();
-                        document.getElementById('resCodigo').innerText = codigoFull.substring(0, 2) + "********";
-
+                        document.getElementById('resNombre').innerText = data.Nombres.split(' ')[0] + " ************";
+                        document.getElementById('resCodigo').innerText = data.Codigo.toString().substring(0,2) + "********";
                         document.getElementById('resFacultad').innerText = data.Facultad;
                         document.getElementById('resHorario').innerText = data.Horario;
-                        
                         const conformeElem = document.getElementById('resConforme');
-                        const valorConforme = (data.Conforme || "Pendiente").toString().toUpperCase();
-                        conformeElem.innerText = valorConforme;
-                        conformeElem.style.color = (valorConforme === 'SÍ' || valorConforme === 'SI') ? '#a6f3b7' : '#ff4444';
-                        
+                        const valor = (data.Conforme || "NO").toString().toUpperCase();
+                        conformeElem.innerText = valor;
+                        conformeElem.style.color = (valor === 'SÍ' || valor === 'SI') ? '#a6f3b7' : '#ff4444';
                         resultsBox.classList.remove('hidden');
                     } else {
                         errorBox.classList.remove('hidden');
                     }
                 }).catch(() => {
                     searchBtn.disabled = false;
-                    alert("Error en la conexión con el servidor.");
+                    alert("Error de conexión.");
                 });
         });
 
-        // ESFERA 3D (ALTA CALIDAD)
+        // TRES.JS - ESFERA 3D
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
@@ -218,16 +238,31 @@
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
-            const geometry = new THREE.IcosahedronGeometry(28, 4); 
+
+            const geometry = new THREE.IcosahedronGeometry(30, 4); 
             const material = new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.15 });
-            globe = new THREE.Mesh(geometry, material); scene.add(globe);
-            const ptsG = new THREE.IcosahedronGeometry(28.5, 4);
-            const ptsM = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, transparent: true, opacity: 0.4 });
+            globe = new THREE.Mesh(geometry, material); 
+            scene.add(globe);
+
+            const ptsG = new THREE.IcosahedronGeometry(30.5, 4);
+            const ptsM = new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, transparent: true, opacity: 0.3 });
             globe.add(new THREE.Points(ptsG, ptsM));
+
             animate();
         }
-        function animate() { requestAnimationFrame(animate); globe.rotation.y += 0.002; renderer.render(scene, camera); }
+        function animate() { 
+            requestAnimationFrame(animate); 
+            globe.rotation.y += 0.002; 
+            renderer.render(scene, camera); 
+        }
+
         window.onload = initThree;
+        window.onresize = () => {
+            const container = document.getElementById('globe-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        };
     </script>
 </body>
 </html>
