@@ -1,1 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNAC | Acceso Delegados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
+    <style>
+        :root { --accent: #ffc107; --dark: #050505; }
+        body { 
+            background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+            font-family: 'Inter', sans-serif;
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .glass-login {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4) !important;
+            border: 1px solid rgba(255, 193, 7, 0.2) !important;
+            color: white !important;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.1);
+        }
+        .btn-login {
+            background: var(--accent);
+            color: black;
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 193, 7, 0.2);
+            background: #fff;
+        }
+        .label-custom {
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glass-login text-center">
+        <!-- Logo -->
+        <div class="flex justify-center mb-6">
+            <div class="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="fa-solid fa-user-shield text-black text-2xl"></i>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-black italic uppercase mb-2">Panel Delegados</h2>
+        <p class="text-gray-400 text-xs mb-8 uppercase tracking-widest">Ingrese sus credenciales</p>
+
+        <form id="loginForm">
+            <div class="text-left">
+                <label class="label-custom">Documento de Identidad</label>
+                <input type="text" id="dni" placeholder="N° de DNI" maxlength="8" required>
+                
+                <label class="label-custom">Contraseña de Sistema</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-login mt-4">
+                Ingresar al Sistema
+            </button>
+        </form>
+
+        <div class="mt-8">
+            <a href="javascript:window.close();" class="text-[10px] text-gray-500 hover:text-white uppercase tracking-widest transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Volver o Cerrar
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dni = document.getElementById('dni').value;
+            const pass = document.getElementById('password').value;
+
+            // Aquí puedes agregar la lógica de validación
+            alert("Iniciando sesión para el DNI: " + dni + "\n(Conectando con base de datos de delegados...)");
+            
+            // Ejemplo: if(dni === '123' && pass === '123') { window.location.href = 'panel_control.html'; }
+        });
+    </script>
+</body>
+</html>
