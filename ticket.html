@@ -7,7 +7,6 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Librería para generar QRs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -27,26 +26,24 @@
             min-height: 100vh; width: 100%;
         }
 
-        /* HEADER */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
-        .nav-link:hover::after, .active-link::after { width: 100%; }
 
         #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; }
         #mobile-menu.active { display: flex; }
 
-        /* GLASS */
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
         
         .btn-action {
-            background: var(--accent); color: #000; padding: 15px 30px;
+            background: var(--accent); color: #000; padding: 15px 35px;
             border-radius: 10px; font-weight: 900; font-size: 11px;
             text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
         }
         .btn-action:hover:not(:disabled) { background: #fff; transform: scale(1.05); }
-        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .btn-lock { background: #333; color: #777; cursor: not-allowed; }
 
         input {
             width: 100%; max-width: 400px; padding: 18px;
@@ -55,39 +52,32 @@
             text-align: center; outline: none; margin-bottom: 20px;
         }
 
-        /* DISEÑO TICKET */
-        #ticket-display {
-            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
-            border: 2px solid var(--accent);
-            border-radius: 20px;
-            padding: 30px;
-            position: relative;
-            max-width: 350px;
-            margin: 20px auto;
-            box-shadow: 0 0 30px rgba(255, 193, 7, 0.2);
+        #globe-container { width: 100%; height: 250px; pointer-events: none; }
+        
+        .btn-acceso {
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: var(--accent);
+            padding: 10px 25px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-radius: 50px;
+            transition: 0.3s;
+            margin-top: -20px;
         }
-        #qrcode {
-            background: white;
-            padding: 10px;
-            border-radius: 10px;
-            display: inline-block;
-            margin: 20px 0;
-        }
-
-        #globe-container { width: 100%; height: 300px; pointer-events: none; }
+        .btn-acceso:hover { background: var(--accent); color: #000; }
     </style>
 </head>
 <body>
 
-    <!-- MENÚ MÓVIL -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline">Ticket</a>
-        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
-        <a href="acceso.html" class="text-xl font-black uppercase tracking-[4px] text-white">Acceso</a>
-        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
+        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500 underline">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
@@ -99,89 +89,78 @@
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
-
             <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link">Rutas</a>
                 <a href="ticket.html" class="nav-link active-link">Ticket</a>
                 <a href="registro.html" class="nav-link">Registro</a>
-                <a href="acceso.html" class="nav-link">Acceso</a>
+                <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs">MENU</button>
+            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-xl"><i class="fa-solid fa-bars"></i></button>
         </header>
 
-        <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
+        <main class="max-w-4xl mx-auto px-4 py-12 flex flex-col items-center min-h-[80vh]">
             
             <div class="text-center mb-12 animate-fade-up">
                 <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">SISTEMA DE ABORDAJE</span>
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Solicitar <span class="text-yellow-500">Pase QR</span></h1>
                 <p class="text-gray-400 max-w-2xl mx-auto text-sm font-light">
-                    Solo estudiantes registrados en el padrón oficial pueden generar su ticket para el horario de las 5:15 AM.
+                    Solo alumnos registrados podrán generar su pase.
                 </p>
             </div>
 
-            <!-- PASO 1: VERIFICACIÓN -->
-            <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
-                <h2 class="text-sm font-black uppercase tracking-widest mb-6">1. Verifica tu Registro</h2>
-                <input type="text" id="dniInput" placeholder="INGRESA TU DNI" maxlength="8">
+            <!-- BUSCADOR -->
+            <div id="step-verify" class="glass p-8 w-full max-w-xl mx-auto text-center border-t-2 border-yellow-500 animate-fade-up">
+                <h2 class="text-xs font-black uppercase tracking-widest mb-6 text-white/70">Ingresa tu DNI para continuar</h2>
+                <input type="text" id="dniInput" placeholder="N° DE DNI" maxlength="8">
                 <div>
                     <button class="btn-action" id="verifyBtn">Verificar Alumno</button>
                 </div>
             </div>
 
-            <!-- PASO 2: SOLICITUD (OCULTO AL INICIO) -->
-            <div id="step-request" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-green-500 hidden animate-fade-up">
-                <h2 class="text-sm font-black uppercase tracking-widest mb-2 text-green-400">¡Alumno Verificado!</h2>
-                <p id="welcomeName" class="text-xl font-bold mb-6 italic text-white"></p>
+            <!-- RESULTADO: ALUMNO ENCONTRADO PERO BLOQUEADO -->
+            <div id="step-locked" class="glass p-8 w-full max-w-xl mx-auto text-center border-t-2 border-orange-500 hidden animate-fade-up">
+                <h2 class="text-sm font-black uppercase tracking-widest mb-2 text-orange-400 italic">Alumno Verificado ✅</h2>
+                <p id="welcomeName" class="text-xl font-bold mb-6 text-white uppercase"></p>
                 
-                <div class="bg-white/5 p-6 rounded-xl border border-white/10 text-left mb-6">
-                    <label class="text-[10px] text-yellow-500 font-black block uppercase mb-2">Selecciona Horario:</label>
-                    <div class="flex items-center gap-4">
-                        <input type="radio" checked id="h1" class="w-4 h-4 accent-yellow-500">
-                        <label for="h1" class="text-sm font-bold">SOLICITAR PASE MOVILIDAD - 5:15 AM</label>
+                <div class="bg-black/40 p-5 rounded-xl border border-white/10 text-left mb-6">
+                    <label class="text-[9px] text-yellow-500 font-black block uppercase mb-3">Horario disponible:</label>
+                    <div class="flex items-center gap-3 opacity-50">
+                        <i class="fa-solid fa-clock text-yellow-500"></i>
+                        <span class="text-sm font-bold">RUTA VENTANILLA - 5:15 AM</span>
                     </div>
                 </div>
 
-                <button class="btn-action w-full" id="generateBtn">Generar mi Ticket QR</button>
+                <button class="btn-action btn-lock w-full mb-3" disabled>Generar Ticket QR</button>
+                <p class="text-[10px] text-orange-500 font-bold uppercase tracking-widest italic">⚠️ Esta función aún no está habilitada en el sistema.</p>
             </div>
 
-            <!-- TICKET FINAL (OCULTO AL INICIO) -->
-            <div id="ticket-display" class="hidden animate-fade-up text-center">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="text-left">
-                        <p class="text-yellow-500 text-[10px] font-black uppercase">UNAC MOVILIDAD</p>
-                        <h3 class="text-lg font-black italic">PASE DE ABORDAJE</h3>
-                    </div>
-                    <i class="fa-solid fa-bus text-yellow-500 text-2xl"></i>
-                </div>
-                
-                <div id="qrcode" class="mx-auto"></div>
-                
-                <div class="space-y-2 text-left border-t border-white/10 pt-4 mt-2">
-                    <p class="text-[9px] text-gray-500 font-black uppercase">Pasajero:</p>
-                    <p id="ticketName" class="text-sm font-bold uppercase"></p>
-                    <div class="flex justify-between">
-                        <div>
-                            <p class="text-[9px] text-gray-500 font-black uppercase">Horario:</p>
-                            <p class="text-sm font-bold">05:15 AM</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-[9px] text-gray-500 font-black uppercase">Ruta:</p>
-                            <p class="text-sm font-bold">Ventanilla</p>
-                        </div>
-                    </div>
-                </div>
-                <p class="mt-6 text-[8px] text-gray-500 uppercase tracking-widest italic">Presentar al delegado antes de subir</p>
+            <!-- ERROR: NO ENCONTRADO -->
+            <div id="error-box" class="glass p-8 w-full max-w-xl mx-auto text-center border-t-2 border-red-600 hidden animate-fade-up">
+                <i class="fa-solid fa-circle-xmark text-red-500 text-4xl mb-4"></i>
+                <h3 class="text-red-500 font-black uppercase tracking-widest text-lg">DNI no encontrado</h3>
+                <p class="text-gray-300 text-xs mt-3 leading-relaxed">
+                    Usted no figura en el padrón actual. Por favor, <b>rellene el formulario de registro</b> en la sección correspondiente para validar su acceso.
+                </p>
+                <a href="registro.html" class="inline-block mt-5 text-[10px] font-black uppercase text-yellow-500 underline">Ir al Registro</a>
             </div>
 
+            <!-- GLOBO 3D -->
             <div id="globe-container"></div>
+
+            <!-- BOTÓN ACCESO DELEGADOS -->
+            <a href="acceso.html" class="btn-acceso animate-fade-up" style="animation-delay: 0.5s;">
+                <i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados
+            </a>
+
         </main>
 
-        <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
+        <footer class="w-full py-10 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
             <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
-            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">© 2026 UNAC - Movilidad Universitaria.</span>
+            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase font-light italic">
+                © 2026 UNAC - Movilidad Universitaria.
+            </span>
         </footer>
     </div>
 
@@ -189,63 +168,42 @@
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
 
         const API_URL = 'https://script.google.com/macros/s/AKfycbz6US3Io8FglgIqVyA70KpjLSTSIydz1zh5TPNgR2ihOko1zlE560PluIsgAwhqOjYiAA/exec';
-        let studentData = null;
 
-        // VERIFICACIÓN DE DNI
         document.getElementById('verifyBtn').addEventListener('click', function() {
             const dni = document.getElementById('dniInput').value.trim();
-            if(dni.length < 8) return alert("DNI inválido.");
+            if(dni.length < 8) return alert("DNI incompleto");
 
-            this.innerText = "VERIFICANDO...";
+            this.innerText = "PROCESANDO...";
             this.disabled = true;
 
             fetch(`${API_URL}?dni=${dni}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(data => {
-                    this.innerText = "VERIFICAR ALUMNO";
+                    this.innerText = "Verificar Alumno";
                     this.disabled = false;
+                    
+                    document.getElementById('step-verify').classList.add('hidden');
+                    document.getElementById('error-box').classList.add('hidden');
+                    document.getElementById('step-locked').classList.add('hidden');
+
                     if(data.found) {
-                        studentData = data;
-                        document.getElementById('step-verify').classList.add('hidden');
-                        document.getElementById('step-request').classList.remove('hidden');
-                        document.getElementById('welcomeName').innerText = "Hola, " + data.Nombres.split(' ')[0];
+                        document.getElementById('step-locked').classList.remove('hidden');
+                        document.getElementById('welcomeName').innerText = data.Nombres.split(' ')[0] + " " + data.Apellidos.split(' ')[0];
                     } else {
-                        alert("No estás registrado en el padrón. Por favor, llena el formulario de registro primero.");
+                        document.getElementById('error-box').classList.remove('hidden');
                     }
                 })
                 .catch(e => {
                     this.disabled = false;
-                    alert("Error de conexión.");
+                    alert("Error de conexión con el padrón.");
                 });
         });
 
-        // GENERACIÓN DE TICKET Y QR
-        document.getElementById('generateBtn').addEventListener('click', function() {
-            document.getElementById('step-request').classList.add('hidden');
-            document.getElementById('ticket-display').classList.remove('hidden');
-            document.getElementById('ticketName').innerText = studentData.Nombres + " " + studentData.Apellidos;
-
-            // Limpiar QR previo si existe
-            document.getElementById('qrcode').innerHTML = "";
-            
-            // Generar nuevo QR con datos del alumno
-            // Formato: DNI|NOMBRE|TURNO|VALIDACION
-            const qrText = `UNAC-515|${studentData.DNI}|${studentData.Nombres}|05:15AM`;
-            
-            new QRCode(document.getElementById("qrcode"), {
-                text: qrText,
-                width: 180,
-                height: 180,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-        });
-
-        // GLOBO 3D
+        // TRES.JS GLOBO
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
+            if(!container) return;
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.z = 100;
