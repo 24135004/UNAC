@@ -20,7 +20,7 @@
             color: #ffffff; overflow-x: hidden;
         }
 
-        /* ANIMACIONES EXACTAS DE INICIO */
+        /* ANIMACIONES */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
@@ -34,14 +34,18 @@
             min-height: 100vh; width: 100%;
         }
 
-        /* HEADER EXACTO AL INICIO */
+        /* HEADER IDÉNTICO AL DE INICIO */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
-        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
+        .nav-link { 
+            font-size: 11px; font-weight: 700; letter-spacing: 2px; 
+            color: rgba(255, 255, 255, 0.6); transition: 0.3s;
+            text-transform: uppercase; position: relative;
+        }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
         .nav-link:hover::after, .active-link::after { width: 100%; }
 
-        /* MENU MOVIL OVERLAY */
+        /* MENU MOVIL */
         #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 30px; }
         #mobile-menu.active { display: flex; }
 
@@ -49,33 +53,31 @@
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
         .route-card { padding: 15px; transition: 0.4s; cursor: pointer; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
         .route-card.active { border-color: var(--accent); background: rgba(255, 193, 7, 0.12); transform: scale(1.02); }
-        .route-card.disabled { opacity: 0.4; border-color: #ef4444; }
+        .route-card.disabled { opacity: 0.5; border-color: #ef4444; }
 
-        /* PARADEROS GRID - TU DISEÑO ORIGINAL */
+        /* PARADEROS GRID */
         .stops-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 15px; text-align: left; }
-        .stop-point { position: relative; padding-left: 20px; font-size: 9px; font-weight: 700; border-left: 1px solid #333; color: #aaa; text-transform: uppercase; line-height: 1.4; }
+        .stop-point { position: relative; padding-left: 18px; font-size: 9px; font-weight: 700; border-left: 1px solid #333; color: #aaa; text-transform: uppercase; line-height: 1.4; }
         .stop-point::before { content: ''; position: absolute; left: -4px; top: 4px; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
 
-        /* HUD */
-        .hud-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 20px; position: relative; margin: 15px 0; }
-        .hud-fill { height: 100%; background: var(--accent); box-shadow: 0 0 15px var(--accent); border-radius: 20px; transition: width 1s linear; }
-
         .img-small { width: 100%; height: 110px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); transition: 0.5s; }
-        #globe-container { width: 100%; height: 240px; display: flex; justify-content: center; align-items: center; pointer-events: none; }
+        #globe-container { width: 100%; height: 220px; display: flex; justify-content: center; align-items: center; pointer-events: none; }
 
-        /* --- CORRECCIÓN FINAL CENTRADO MÓVIL --- */
+        /* --- CORRECCIÓN VISTA MÓVIL CENTRADA --- */
         @media (max-width: 1024px) { 
-            .main-grid { display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; width: 100% !important; margin: 0 auto !important; } 
-            .col-span-12 { width: 100% !important; display: flex; flex-direction: column; align-items: center; }
+            .main-grid { display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; } 
+            .col-side, .col-main { width: 100% !important; max-width: 100% !important; }
             .stops-grid { grid-template-columns: 1fr; margin: 0 auto; width: 90%; }
-            .route-card { width: 100%; max-width: 450px; margin: 0 auto; text-align: center !important; }
-            .requirements-box { text-align: left !important; margin: 0 auto; width: 100%; max-width: 450px; }
+            .route-card { width: 100%; text-align: center !important; margin: 0 auto; }
+            .requirements-box { text-align: left !important; margin: 0 auto; width: 100%; }
             h1 { text-align: center !important; }
-            .alert-side { text-align: left !important; }
+            #globe-container { margin: 0 auto; }
         }
         
         @media (min-width: 1025px) {
             .main-grid { display: grid; grid-template-columns: repeat(12, 1fr); }
+            .col-side { grid-column: span 4 / span 4; }
+            .col-main { grid-column: span 8 / span 8; }
             .route-card { text-align: left; }
         }
 
@@ -84,7 +86,7 @@
 </head>
 <body>
 
-    <!-- MENÚ MÓVIL (VISIBLE SOLO EN CELULAR) -->
+    <!-- MENÚ MÓVIL (6 ENLACES) -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
@@ -96,7 +98,7 @@
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER EXACTO AL DE INICIO -->
+        <!-- HEADER IDÉNTICO AL DE INICIO -->
         <header class="flex justify-between items-center animate-fade-up relative z-20">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center">
@@ -117,6 +119,7 @@
                 <a href="#" class="nav-link">Contacto</a>
             </nav>
             
+            <!-- BOTÓN MENU MÓVIL -->
             <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
                 MENU <i class="fa-solid fa-bars-staggered"></i>
             </button>
@@ -125,8 +128,8 @@
         <main class="max-w-7xl mx-auto px-4 py-4 main-grid animate-fade-up">
             
             <!-- PANEL IZQUIERDO -->
-            <div class="col-span-12 lg:col-span-4 space-y-6 flex flex-col items-center lg:items-start">
-                <h1 class="text-xl font-black uppercase italic tracking-tighter text-center lg:text-left w-full">Panel de <span class="text-yellow-500">Operación</span></h1>
+            <div class="col-side space-y-6 flex flex-col items-center lg:items-start">
+                <h1 class="text-xl font-black uppercase italic tracking-tighter w-full text-center lg:text-left">Panel de <span class="text-yellow-500">Operación</span></h1>
                 
                 <div class="space-y-2 w-full flex flex-col items-center">
                     <div onclick="selectRoute(0)" id="route-0" class="route-card glass active w-full">
@@ -147,12 +150,12 @@
                     </div>
                 </div>
 
-                <div class="glass p-6 border-l-4 border-yellow-500 shadow-xl w-full text-left requirements-box">
-                    <h4 class="text-[10px] font-black text-yellow-500 uppercase tracking-[4px] mb-5 border-b border-white/5 pb-2 italic">DOCUMENTACIÓN REQUERIDA</h4>
+                <div class="glass p-6 border-l-4 border-yellow-500 shadow-xl w-full requirements-box">
+                    <h4 class="text-[10px] font-black text-yellow-500 uppercase tracking-[4px] mb-5 border-b border-white/5 pb-2 italic text-left">DOCUMENTACIÓN REQUERIDA</h4>
                     <div class="space-y-4 text-[10px]">
-                        <div class="flex gap-4"><i class="fa-solid fa-id-card text-yellow-500 text-lg"></i> <div><p class="font-black text-white uppercase italic">Carnet Universitario Vigente</p><p class="text-gray-400 font-light mt-1">Obligatorio para acceder al servicio de movilidad.</p></div></div>
-                        <div class="flex gap-4"><i class="fa-solid fa-address-card text-white text-lg"></i> <div><p class="font-black text-white uppercase italic">DNI Original</p><p class="text-gray-400 font-light mt-1">Opcional para verificación de identidad adicional.</p></div></div>
-                        <div class="flex gap-4"><i class="fa-solid fa-file-invoice text-yellow-500 text-lg"></i> <div><p class="font-black text-white uppercase italic">Constancia de Matrícula</p><p class="text-gray-400 font-light mt-1">Actualizada semestre vigente, si no tiene carnet.</p></div></div>
+                        <div class="flex gap-4"><i class="fa-solid fa-id-card text-yellow-500 text-lg"></i> <div><p class="font-black text-white uppercase italic">Carnet Universitario Vigente</p><p class="text-gray-400 font-light mt-1">Obligatorio para acceder al servicio oficial.</p></div></div>
+                        <div class="flex gap-4"><i class="fa-solid fa-address-card text-white text-lg"></i> <div><p class="font-black text-white uppercase italic">DNI Original</p><p class="text-gray-400 font-light mt-1">Opcional para verificación adicional.</p></div></div>
+                        <div class="flex gap-4"><i class="fa-solid fa-file-invoice text-yellow-500 text-lg"></i> <div><p class="font-black text-white uppercase italic">Constancia de Matrícula</p><p class="text-gray-400 font-light mt-1">Actualizada semestre 2024-B.</p></div></div>
                     </div>
                 </div>
 
@@ -160,10 +163,10 @@
             </div>
 
             <!-- PANEL DERECHO -->
-            <div class="col-span-12 lg:col-span-8 space-y-4 w-full">
+            <div class="col-main space-y-4 w-full">
                 <div class="glass p-6">
                     <div class="flex justify-between items-end">
-                        <p id="route-name" class="text-[10px] text-yellow-500 font-black uppercase tracking-widest">Monitor GPS...</p>
+                        <p id="route-name" class="text-[10px] text-yellow-500 font-black uppercase tracking-widest">Sincronizando GPS...</p>
                         <p id="clock" class="text-xl font-bold tracking-widest text-white">00:00:00</p>
                     </div>
                     <div class="hud-bar">
@@ -189,12 +192,12 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-                    <div class="md:col-span-8 glass p-6 border-l-4 border-red-600 bg-red-950/10 alert-side">
+                    <div class="md:col-span-8 glass p-6 border-l-4 border-red-600 bg-red-950/10 text-left">
                         <h5 class="text-red-500 font-black text-[11px] mb-4 uppercase tracking-[3px]">❗ DATO ADICIONAL IMPORTANTE</h5>
                         <p class="text-[13px] leading-relaxed text-white font-medium mb-3 italic">
-                            AVISO ESTUDIANTIL: Debido a la alta demanda masiva, informamos que el último paradero con capacidad garantizada es <span class="text-yellow-500 font-black underline underline-offset-4 uppercase">CARSA VENTANILLA 😫</span>. No se confíen de cupos posteriores.
+                            AVISO ESTUDIANTIL: Debido a la alta demanda masiva, informamos que el último paradero con capacidad garantizada es <span class="text-yellow-500 font-black underline underline-offset-4 uppercase">CARSA VENTANILLA 😫</span>. No se confíen de cupos posteriores 🙄.
                         </p>
-                        <p class="text-[11px] text-gray-300 italic border-t border-white/5 pt-3">Comuníquense con el <span class="text-white font-bold underline">delegado 🧐</span> para verificar espacios reales 😰.</p>
+                        <p class="text-[11px] text-gray-300 italic border-t border-white/5 pt-3">Comuníquense con el <span class="text-white font-bold underline">delegado oficial 🧐</span> para verificar espacios reales 😰.</p>
                     </div>
                     <div class="md:col-span-4 flex flex-col gap-3">
                         <img src="DSC07555-768x432.jpg" class="img-small shadow-2xl">
@@ -204,8 +207,8 @@
             </div>
         </main>
 
-        <!-- FOOTER EXACTO AL DE INICIO -->
-        <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
+        <!-- FOOTER IDÉNTICO AL DE INICIO (IMAGEN 1 / IMAGEN 6) -->
+        <footer class="w-full py-10 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
             <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
             <span class="text-center text-[9px] text-gray-500 tracking-[1px] text-center px-4 uppercase font-light italic">
                 © 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.
@@ -265,7 +268,6 @@
             updateTracker();
         }
 
-        // ESFERA 3D
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
@@ -276,10 +278,10 @@
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
-            const geometry = new THREE.IcosahedronGeometry(30, 4); 
-            const material = new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.18 });
+            const geometry = new THREE.IcosahedronGeometry(28, 4); 
+            const material = new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.15 });
             globe = new THREE.Mesh(geometry, material); scene.add(globe);
-            const ptsG = new THREE.IcosahedronGeometry(30.5, 4);
+            const ptsG = new THREE.IcosahedronGeometry(28.5, 4);
             const ptsM = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, transparent: true, opacity: 0.4 });
             globe.add(new THREE.Points(ptsG, ptsM));
             animate();
@@ -306,7 +308,6 @@
         }
         setInterval(updateTracker, 1000);
         window.onload = () => { selectRoute(0); initThree(); };
-        window.onresize = () => { if(renderer) renderer.setSize(document.getElementById('globe-container').clientWidth, 220); };
     </script>
 </body>
 </html>
