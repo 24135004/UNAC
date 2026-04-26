@@ -20,7 +20,7 @@
             color: #ffffff; overflow-x: hidden;
         }
 
-        /* ANIMACIONES EXACTAS DE INICIO */
+        /* ANIMACIONES EXACTAS */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
@@ -34,7 +34,7 @@
             min-height: 100vh; width: 100%;
         }
 
-        /* HEADER EXACTO AL INICIO */
+        /* HEADER */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
@@ -51,7 +51,7 @@
         .route-card.active { border-color: var(--accent); background: rgba(255, 193, 7, 0.12); transform: scale(1.02); }
         .route-card.disabled { opacity: 0.4; border-color: #ef4444; }
 
-        /* PARADEROS GRID - TU DISEÑO ORIGINAL */
+        /* PARADEROS GRID */
         .stops-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 15px; text-align: left; }
         .stop-point { position: relative; padding-left: 20px; font-size: 9px; font-weight: 700; border-left: 1px solid #333; color: #aaa; text-transform: uppercase; line-height: 1.4; }
         .stop-point::before { content: ''; position: absolute; left: -4px; top: 4px; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
@@ -63,7 +63,6 @@
         .img-small { width: 100%; height: 110px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); transition: 0.5s; }
         #globe-container { width: 100%; height: 240px; display: flex; justify-content: center; align-items: center; pointer-events: none; }
 
-        /* --- CORRECCIÓN FINAL CENTRADO MÓVIL --- */
         @media (max-width: 1024px) { 
             .main-grid { display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; width: 100% !important; margin: 0 auto !important; } 
             .col-span-12 { width: 100% !important; display: flex; flex-direction: column; align-items: center; }
@@ -84,20 +83,19 @@
 </head>
 <body>
 
-    <!-- MENÚ MÓVIL (VISIBLE SOLO EN CELULAR) -->
+    <!-- MENÚ MÓVIL ACTUALIZADO -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
         <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Rutas</a>
-        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Ticket</a>
-        <!-- ENLACE REGISTRO CORREGIDO -->
+        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-white">Ticket</a>
         <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
-        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
-        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
+        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER EXACTO AL DE INICIO -->
+        <!-- HEADER ACTUALIZADO -->
         <header class="flex justify-between items-center animate-fade-up relative z-20">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center">
@@ -112,11 +110,10 @@
             <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link active-link">Rutas</a>
-                <a href="#" class="nav-link">Ticket</a>
-                <!-- ENLACE REGISTRO CORREGIDO -->
+                <a href="ticket.html" class="nav-link">Ticket</a>
                 <a href="registro.html" class="nav-link">Registro</a>
-                <a href="#" class="nav-link">Noticias</a>
-                <a href="#" class="nav-link">Contacto</a>
+                <a href="noticias.html" class="nav-link">Noticias</a>
+                <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
             
             <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
@@ -206,7 +203,6 @@
             </div>
         </main>
 
-        <!-- FOOTER EXACTO AL DE INICIO -->
         <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
             <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
             <span class="text-center text-[9px] text-gray-500 tracking-[1px] text-center px-4 uppercase font-light italic">
@@ -267,7 +263,6 @@
             updateTracker();
         }
 
-        // ESFERA 3D
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
@@ -286,7 +281,7 @@
             globe.add(new THREE.Points(ptsG, ptsM));
             animate();
         }
-        function animate() { requestAnimationFrame(animate); globe.rotation.y += 0.002; renderer.render(scene, camera); }
+        function animate() { requestAnimationFrame(animate); if(globe) globe.rotation.y += 0.002; renderer.render(scene, camera); }
 
         function updateTracker() {
             const now = new Date();
