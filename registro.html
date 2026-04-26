@@ -81,7 +81,7 @@
 </head>
 <body>
 
-    <!-- MENÚ MÓVIL ACTUALIZADO -->
+    <!-- MENÚ MÓVIL -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
@@ -93,7 +93,7 @@
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER ACTUALIZADO -->
+        <!-- HEADER -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
@@ -168,7 +168,7 @@
                     <div class="text-center">
                         <i class="fa-solid fa-circle-xmark text-red-500 text-5xl mb-4"></i>
                         <h3 class="text-red-500 font-black uppercase tracking-widest">DNI no encontrado</h3>
-                        <p class="text-gray-400 text-sm mt-2">Si ya te registraste arriba, espera 24 horas para que el sistema se actualice.</p>
+                        <p class="text-gray-400 text-sm mt-2">Si ya te registraste arriba, espera unos segundos para que el sistema procese tu entrada.</p>
                     </div>
                 </div>
             </div>
@@ -188,41 +188,49 @@
     <script>
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
 
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzvOKvaSny1fecoF3Sd18Nsu3GlQgNfvUtEA1bPHiFXJVSlbkmSO47bwS71_dTbC5-Q/exec';
+        // TU LINK DE GOOGLE APPS SCRIPT ACTUALIZADO
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyEGYqYMXU5tQXnUT8RI_5fy7p7DG_yVzPE3CqLzybdTtdD64ewRGG6AU4rOUuFGy48Ig/exec';
+        
         const searchBtn = document.getElementById('searchBtn');
         const resultsBox = document.getElementById('resultsBox');
         const errorBox = document.getElementById('errorBox');
 
         searchBtn.addEventListener('click', () => {
             const dni = document.getElementById('dniInput').value.trim();
-            if(!dni) return alert("Ingresa tu DNI.");
+            if(!dni || dni.length < 8) return alert("Ingresa un DNI válido de 8 dígitos.");
 
             searchBtn.innerText = "BUSCANDO...";
             searchBtn.disabled = true;
             resultsBox.classList.add('hidden');
             errorBox.classList.add('hidden');
 
-            fetch(API_URL + '?dni=' + dni)
+            // Añadimos cache-busting (?t=...) para asegurar que la actualización sea inmediata y no use datos guardados
+            fetch(`${API_URL}?dni=${dni}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(data => {
                     searchBtn.innerText = "VERIFICAR REGISTRO";
                     searchBtn.disabled = false;
                     if(data.found) {
+                        // Formato de visualización tal como estaba en tu código original
                         document.getElementById('resNombre').innerText = data.Nombres.split(' ')[0] + " ************";
                         document.getElementById('resCodigo').innerText = data.Codigo.toString().substring(0,2) + "********";
                         document.getElementById('resFacultad').innerText = data.Facultad;
                         document.getElementById('resHorario').innerText = data.Horario;
+                        
                         const conformeElem = document.getElementById('resConforme');
                         const valor = (data.Conforme || "NO").toString().toUpperCase();
                         conformeElem.innerText = valor;
                         conformeElem.style.color = (valor === 'SÍ' || valor === 'SI') ? '#a6f3b7' : '#ff4444';
+                        
                         resultsBox.classList.remove('hidden');
                     } else {
                         errorBox.classList.remove('hidden');
                     }
-                }).catch(() => {
+                }).catch((err) => {
+                    searchBtn.innerText = "VERIFICAR REGISTRO";
                     searchBtn.disabled = false;
-                    alert("Error de conexión.");
+                    alert("Error de conexión con la base de datos.");
+                    console.error(err);
                 });
         });
 
