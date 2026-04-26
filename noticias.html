@@ -46,32 +46,12 @@
         .sub-title { color: var(--accent); font-weight: 800; margin-bottom: 15px; display: block; font-size: 1rem; border-bottom: 1px solid rgba(255,193,7,0.2); padding-bottom: 5px; }
         .item { margin-bottom: 12px; padding-left: 15px; color: #ddd; font-size: 0.9rem; border-left: 2px solid rgba(255,255,255,0.1); }
 
-        /* CALENDARIO MODIFICADO A UNA SOLA FILA */
-        .calendar-grid { 
-            display: grid; 
-            grid-template-columns: repeat(5, 1fr); /* FUERZA 5 COLUMNAS */
-            gap: 6px; 
-            margin-top: 15px; 
-        }
-        .cal-day { 
-            background: rgba(255,255,255,0.04); 
-            border-radius: 10px; 
-            padding: 10px 5px; /* REDUCIDO PARA QUE CUADRE */
-            border: 1px solid rgba(255,255,255,0.08); 
-            text-align: center;
-        }
-        .cal-day.monday-red { border-color: #f85149; background: rgba(248, 81, 73, 0.1); }
-        .cal-header { font-size: 0.65rem; color: var(--accent); font-weight: 900; display: block; margin-bottom: 8px; text-transform: uppercase; }
-        .cal-day.monday-red .cal-header { color: #ffb3b0; }
-        .cal-event { 
-            background: rgba(0,0,0,0.3); 
-            border-radius: 4px; 
-            padding: 5px 3px; 
-            margin-bottom: 4px; 
-            font-size: 0.6rem; /* REDUCIDO PARA QUE CUADRE */
-            border-left: 2px solid var(--accent); 
-            line-height: 1.1;
-        }
+        /* CRONOGRAMA UNIFICADO */
+        .schedule-box { background: rgba(255,193,7,0.05); border: 1px solid rgba(255,193,7,0.2); border-radius: 15px; padding: 20px; display: flex; gap: 20px; justify-content: center; margin-top: 15px; }
+        .schedule-item { background: rgba(0,0,0,0.4); border-radius: 10px; padding: 15px; border-left: 4px solid var(--accent); min-width: 180px; text-align: center; }
+        .schedule-item i { font-size: 1.2rem; color: var(--accent); margin-bottom: 8px; display: block; }
+        .schedule-item span { font-size: 0.7rem; font-weight: 900; color: #aaa; text-transform: uppercase; display: block; }
+        .schedule-item p { font-size: 1.2rem; font-weight: 900; color: #fff; margin-top: 2px; }
 
         /* GRÁFICAS */
         .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 30px 0; }
@@ -88,8 +68,8 @@
         @media (max-width: 768px) {
             .nav-desktop { display: none; }
             .dashboard-grid { grid-template-columns: 1fr; }
-            .cal-header { font-size: 0.55rem; }
-            .cal-event { font-size: 0.5rem; }
+            .schedule-box { flex-direction: column; align-items: center; }
+            .schedule-item { width: 100%; }
         }
     </style>
 </head>
@@ -107,7 +87,6 @@
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
@@ -129,7 +108,6 @@
 
         <main class="max-w-4xl mx-auto px-4 py-12">
             
-            <!-- TITULO DE LA SECCIÓN -->
             <div class="text-center mb-16 animate-fade-up">
                 <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">Mantente informado</span>
                 <h1 class="text-5xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Noticias y <span class="text-yellow-500">Avisos</span></h1>
@@ -138,51 +116,33 @@
                 </p>
             </div>
 
-            <!-- NOTICIA 1 -->
+            <!-- NOTICIA 1 ACTUALIZADA -->
             <div class="news-card glass animate-fade-up">
                 <span class="news-tag">COMUNICADO OFICIAL</span>
-                <h2 class="news-title">📢 ACTUALIZACIÓN DE HORARIOS (SEMANA DEL 13 AL 17 DE ABRIL) 📢</h2>
-                <p class="mb-6">Estimados compañeros 🤝, tras una reciente reunión de coordinación entre los delegados de las distintas rutas 🗣️📋, se han establecido los horarios de retorno para la semana del 13 al 17 de abril 📅. Es importante precisar que esta programación es exclusiva para dicha semana ⚠️ y responde a una organización intercalada con la ruta de San Juan de Lurigancho (SJL) 🔄📍.</p>
+                <h2 class="news-title">📢 COMUNICADO OFICIAL: MOVILIDAD VENTANILLA 📢</h2>
+                <p class="mb-6">Estimados compañeros, les informo la programación oficial y única vigente para la semana del 26 de abril al 1 de mayo. 📅<br><br>Esta información se les comunica de manera directa para asegurar que todos cuenten con los horarios confirmados para sus traslados:</p>
 
-                <span class="sub-title">🗓️ CRONOGRAMA SEMANAL (Lunes 13 al Viernes 17 de abril):</span>
-                <div class="calendar-grid">
-                    <div class="cal-day monday-red">
-                        <span class="cal-header">Lunes 13</span>
-                        <div class="cal-event">🏫 5:15 AM<br><small>UNAC</small></div>
-                        <div class="cal-event">🚍 6:00 PM<br><small>SEDE</small></div>
-                        <p class="text-[7px] font-black text-red-400 leading-tight">VIRTUAL</p>
+                <span class="sub-title">🗓️ CRONOGRAMA SEMANAL (Lunes a Viernes):</span>
+                <div class="schedule-box">
+                    <div class="schedule-item">
+                        <i class="fa-solid fa-school"></i>
+                        <span>Salida Mañana</span>
+                        <p>5:15 AM</p>
                     </div>
-                    <div class="cal-day">
-                        <span class="cal-header">Martes 14</span>
-                        <div class="cal-event">🏫 5:15 AM</div>
-                        <div class="cal-event">🚍 6:00 PM</div>
-                    </div>
-                    <div class="cal-day">
-                        <span class="cal-header">Miércoles 15</span>
-                        <div class="cal-event">🏫 5:15 AM</div>
-                        <div class="cal-event">🚍 6:00 PM</div>
-                    </div>
-                    <div class="cal-day">
-                        <span class="cal-header">Jueves 16</span>
-                        <div class="cal-event">🏫 5:15 AM</div>
-                        <div class="cal-event">🚍 6:00 PM</div>
-                    </div>
-                    <div class="cal-day">
-                        <span class="cal-header">Viernes 17</span>
-                        <div class="cal-event">🏫 5:15 AM</div>
-                        <div class="cal-event">🚍 6:00 PM</div>
+                    <div class="schedule-item">
+                        <i class="fa-solid fa-bus"></i>
+                        <span>Salida Tarde/Noche</span>
+                        <p>6:00 PM</p>
                     </div>
                 </div>
 
-                <div class="mt-8">
-                    <span class="sub-title">⚠️ CONSIDERACIONES IMPORTANTES:</span>
-                    <div class="item"><b>Gestión por Demanda:</b> Como delegados, somos plenamente conscientes de que la ruta de Ventanilla presenta la mayor demanda de la universidad. Por ello, estamos trabajando firmemente para que los horarios se ajusten a nuestras necesidades reales.</div>
-                    <div class="item"><b>Naturaleza del Servicio:</b> Al ser una fase de coordinación intercalada con otras rutas, existirán cambios obligatorios en el futuro próximo. Estos horarios no son definitivos y están sujetos a evaluación constante.</div>
-                    <div class="item"><b>Prevención:</b> Les recordamos que las gestiones administrativas tomando tiempo. Se les solicita tomar sus precauciones y estar atentos a las confirmaciones oficiales sobre cualquier variación.</div>
+                <div class="mt-10">
+                    <span class="sub-title">⚠️ SOBRE LOS TURNOS ADICIONALES:</span>
+                    <p class="text-sm mb-4">Soy plenamente consciente de la gran demanda que tiene nuestra ruta de Ventanilla y de la necesidad urgente de contar con más horarios. Sin embargo, les informo que el turno de las <b>02:15 PM</b> y demás horarios adicionales aún no han sido habilitados por las autoridades. 🚫</p>
+                    <p class="text-sm italic text-gray-300">Les pido las disculpas del caso por esta situación que limita nuestro transporte. Como su delegado, me encuentro gestionando y presionando constantemente para que estos turnos se activen lo antes posible. No dejaré de insistir ante las instancias correspondientes, ya que nuestra seguridad y puntualidad son prioridad. 🛡️💪</p>
                 </div>
-                <p class="mt-4">Les pido las disculpas del caso si los horarios que se han añadido no son totalmente de su agrado 😔🙏. Como saben, no somos la única ruta que solicita recursos y nos toca coordinar y compartir espacios con otros servicios. 🚌🤝 ✅</p>
-                <p class="mt-4 italic text-gray-300">Agradezco de corazón su paciencia ante la demora de estas rutas ⏳✨. Lastimosamente, nuestras autoridades a veces hacen caso omiso a nuestros pedidos 🚫🏛️, pero como su delegado, seguiré gestionando con fuerza un servicio que priorice su bienestar y seguridad por encima de todo. 🛡️💪 ¡Saben bien que Ventanilla tiene la mayor demanda y por eso no dejaré de insistir! 🔥📢 ✅</p>
-                <p class="footer-sig">Atentamente,<br>Delegado Sebastian 🎓 Ventanilla - UNAC</p>
+                <p class="mt-6 font-bold text-yellow-500 text-sm">Les recomiendo tomar las precauciones necesarias para sus retornos y estar atentos a este canal para cualquier actualización inmediata. ⏳🔥</p>
+                <p class="footer-sig">Atentamente,<br>Delegado Sebastian 🎓<br>Movilidad Ventanilla - UNAC 🦁✨</p>
             </div>
 
             <!-- NOTICIA 2: CUMPLEAÑOS -->
@@ -273,6 +233,7 @@
     <script>
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
 
+        // CONFIGURACIÓN DE GRÁFICAS
         Chart.register(ChartDataLabels);
         function renderCharts() {
             const commonOptions = {
@@ -327,6 +288,7 @@
             });
         }
 
+        // ESFERA 3D
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
@@ -341,6 +303,7 @@
             animate();
         }
         function animate() { requestAnimationFrame(animate); globe.rotation.y += 0.002; renderer.render(scene, camera); }
+        
         window.onload = () => { initThree(); renderCharts(); };
     </script>
 </body>
