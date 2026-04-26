@@ -81,19 +81,19 @@
 </head>
 <body>
 
-    <!-- MENÚ MÓVIL -->
+    <!-- MENÚ MÓVIL ACTUALIZADO -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
         <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
-        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Ticket</a>
+        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-white">Ticket</a>
         <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Registro</a>
-        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
-        <a href="#" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
+        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER -->
+        <!-- HEADER ACTUALIZADO -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
@@ -106,10 +106,10 @@
             <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link">Rutas</a>
-                <a href="#" class="nav-link">Ticket</a>
+                <a href="ticket.html" class="nav-link">Ticket</a>
                 <a href="registro.html" class="nav-link active-link">Registro</a>
-                <a href="#" class="nav-link">Noticias</a>
-                <a href="#" class="nav-link">Contacto</a>
+                <a href="noticias.html" class="nav-link">Noticias</a>
+                <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
             
             <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
@@ -125,7 +125,6 @@
                 <h2 class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-8">Formulario de <span class="text-yellow-500">Registro</span></h2>
                 
                 <div class="form-container glass">
-                    <!-- Link corregido para que cargue correctamente en web -->
                     <iframe 
                         src="https://docs.google.com/forms/d/e/1FAIpQLSc5WSGfVJaDvTaZ4HNSEEim4G-1m3nzOYZlT_UgvzOBfObKew/viewform?embedded=true" 
                         width="100%" 
@@ -231,6 +230,7 @@
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
+            if(!container) return;
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.z = 100;
@@ -252,13 +252,14 @@
         }
         function animate() { 
             requestAnimationFrame(animate); 
-            globe.rotation.y += 0.002; 
+            if(globe) globe.rotation.y += 0.002; 
             renderer.render(scene, camera); 
         }
 
         window.onload = initThree;
         window.onresize = () => {
             const container = document.getElementById('globe-container');
+            if(!container) return;
             camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
