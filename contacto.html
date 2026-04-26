@@ -11,14 +11,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        :root { --accent: #ffc107; --dark: #050505; }
+        :root { --accent: #ffc107; --dark: #050505; --fire: #ff4500; }
         body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
 
         /* ANIMACIONES */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        /* GIRO 3D PARA LOS CÍRCULOS */
+        @keyframes spin3D {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        /* EFECTO FUEGO DORADO */
+        @keyframes fireBorder {
+            0%, 100% { border-color: #ffc107; box-shadow: 0 0 10px #ffc107, 0 0 20px #ff4500, inset 0 0 5px #ffc107; }
+            50% { border-color: #ffffff; box-shadow: 0 0 20px #ff8c00, 0 0 40px #ff4500, inset 0 0 15px #ff8c00; }
+        }
+
+        /* BRILLO EN CARTILLAS */
+        @keyframes cardGlow {
+            0% { border-color: rgba(255, 193, 7, 0.1); box-shadow: 0 0 5px rgba(255, 193, 7, 0.05); }
+            100% { border-color: rgba(255, 193, 7, 0.5); box-shadow: 0 0 25px rgba(255, 193, 7, 0.2); }
+        }
 
         .main-wrapper {
             position: relative; z-index: 10;
@@ -28,21 +44,49 @@
             min-height: 100vh; width: 100%;
         }
 
-        /* HEADER */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
-        .nav-link:hover::after, .active-link::after { width: 100%; }
 
         #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; }
         #mobile-menu.active { display: flex; }
 
-        /* GLASSMORPHISM */
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
         
-        .card-delegate { padding: 30px 20px; text-align: center; transition: 0.3s; border-bottom: 3px solid transparent; }
-        .card-delegate:hover { border-color: var(--accent); transform: translateY(-5px); background: rgba(255, 255, 255, 0.05); }
+        .card-delegate { 
+            padding: 30px 20px; 
+            text-align: center; 
+            transition: 0.4s; 
+            animation: cardGlow 3s infinite alternate;
+        }
+        .card-delegate:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.05); }
+
+        /* CONTENEDOR 3D */
+        .circle-container {
+            perspective: 1000px;
+            width: 85px; height: 85px;
+            margin: 0 auto 20px;
+        }
+
+        .circle-fire {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid var(--accent);
+            animation: fireBorder 1.5s infinite alternate, spin3D 5s infinite linear;
+            transform-style: preserve-3d;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .no-download {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
 
         .btn-whatsapp {
             background: var(--accent); color: #000; width: 100%; display: block;
@@ -54,25 +98,21 @@
         .transparency-item { background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); margin-bottom: 15px; }
 
         #globe-container { width: 100%; height: 300px; pointer-events: none; }
-
-        @media (max-width: 768px) { .nav-desktop { display: none; } }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
-    <!-- MENÚ MÓVIL -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-white">Ticket</a>
-        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
-        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
-        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Contacto</a>
+        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase text-white">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase text-yellow-500 underline">Contacto</a>
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
@@ -81,7 +121,6 @@
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
-
             <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link">Rutas</a>
@@ -90,8 +129,7 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link active-link">Contacto</a>
             </nav>
-            
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs">
+            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
                 MENU <i class="fa-solid fa-bars-staggered"></i>
             </button>
         </header>
@@ -101,56 +139,56 @@
             <div class="text-center mb-16 animate-fade-up">
                 <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">ATENCIÓN AL ESTUDIANTE</span>
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Delegados de <span class="text-yellow-500">Ruta</span></h1>
-                <p class="text-gray-400 max-w-2xl mx-auto text-sm font-light">Comunícate directamente con los delegados encargados de la Ruta Ventanilla para resolver cualquier duda sobre paraderos, cupos o incidencias.</p>
             </div>
 
-            <!-- GRID DE DELEGADOS -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-20 animate-fade-up">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mb-20 animate-fade-up">
                 <!-- Antonella -->
                 <div class="card-delegate glass">
-                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl border border-white/10">👩‍💼</div>
+                    <div class="circle-container"><div class="circle-fire text-3xl">👩‍💼</div></div>
                     <h3 class="text-lg font-black uppercase italic leading-tight mb-1">Antonella Flores</h3>
-                    <p class="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-4">C. CONTABLES</p>
+                    <p class="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-2">C. CONTABLES</p>
+                    <p class="text-white/60 text-[9px] font-bold uppercase mb-3">DELEGADA DE TURNO NOCHE</p>
                     <p class="text-gray-400 text-xs mb-4 italic">✨ 📑 🚌 📈</p>
-                    <a href="https://wa.me/51971302428" target="_blank" class="btn-whatsapp"><i class="fa-brands fa-whatsapp mr-2"></i> Contactar</a>
+                    <a href="https://wa.me/51971302428" target="_blank" class="btn-whatsapp">Contactar</a>
                 </div>
 
                 <!-- Sebastian -->
-                <div class="card-delegate glass border-yellow-500/30">
-                    <div class="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl border border-yellow-500/20">👨‍💼</div>
+                <div class="card-delegate glass">
+                    <div class="circle-container">
+                        <div class="circle-fire">
+                            <img src="Gemini_Generated_Image_4maqb4maqb4maqb4.png" class="no-download" oncontextmenu="return false;" ondragstart="return false;">
+                        </div>
+                    </div>
                     <h3 class="text-lg font-black uppercase italic leading-tight mb-1">Sebastian De La Cruz</h3>
-                    <p class="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-4">ING. QUÍMICA</p>
+                    <p class="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-2">ING. QUÍMICA</p>
+                    <p class="text-white/60 text-[9px] font-bold uppercase mb-3">DELEGADO</p>
                     <p class="text-gray-400 text-xs mb-4 italic">🧪 ⚗️ 🚌 ⚙️</p>
-                    <a href="https://wa.me/51917002183" target="_blank" class="btn-whatsapp"><i class="fa-brands fa-whatsapp mr-2"></i> Contactar</a>
+                    <a href="https://wa.me/51917002183" target="_blank" class="btn-whatsapp">Contactar</a>
                 </div>
 
                 <!-- Jefry -->
                 <div class="card-delegate glass">
-                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl border border-white/10">👨‍💼</div>
+                    <div class="circle-container"><div class="circle-fire text-3xl">👨‍💼</div></div>
                     <h3 class="text-lg font-black uppercase italic leading-tight mb-1">Jefry Cuya</h3>
-                    <p class="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-4">FIEE</p>
+                    <p class="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-2">FIEE</p>
+                    <p class="text-white/60 text-[9px] font-bold uppercase mb-3">DELEGADO DE TURNO DIA</p>
                     <p class="text-gray-400 text-xs mb-4 italic">⚡ 🔌 🚌 🛠️</p>
-                    <a href="https://wa.me/51994052971" target="_blank" class="btn-whatsapp"><i class="fa-brands fa-whatsapp mr-2"></i> Contactar</a>
+                    <a href="https://wa.me/51994052971" target="_blank" class="btn-whatsapp">Contactar</a>
                 </div>
             </div>
 
-            <!-- TRANSPARENCIA -->
+            <!-- TRANSPARENCIA ORIGINAL COMPLETA -->
             <div class="w-full max-w-3xl glass p-10 animate-fade-up">
-                <div class="text-center mb-8">
-                    <h2 class="text-xl font-black uppercase italic text-yellow-500 tracking-widest">📘 Propósito y Transparencia 🚀</h2>
-                </div>
-                
+                <div class="text-center mb-8"><h2 class="text-xl font-black uppercase italic text-yellow-500 tracking-widest">📘 Propósito y Transparencia 🚀</h2></div>
                 <div class="space-y-4">
                     <div class="transparency-item">
                         <b class="text-yellow-500 text-sm block mb-1 uppercase font-black">Fomentar el Desarrollo e Innovación 💡</b>
                         <p class="text-xs text-gray-300 leading-relaxed">Buscamos optimizar los procesos de transporte mediante herramientas digitales y tecnológicas de vanguardia para beneficio de la comunidad.</p>
                     </div>
-                    
                     <div class="transparency-item">
                         <b class="text-yellow-500 text-sm block mb-1 uppercase font-black">Gestión Académica 🚌</b>
                         <p class="text-xs text-gray-300 leading-relaxed">Facilitar la organización de la movilidad estudiantil de manera eficiente y moderna para todos los usuarios registrados.</p>
                     </div>
-                    
                     <div class="transparency-item">
                         <b class="text-yellow-500 text-sm block mb-1 uppercase font-black">Neutralidad Total 🚫</b>
                         <p class="text-xs text-gray-300 leading-relaxed">No tenemos fines políticos ni malintencionados. Este espacio es ajeno a cualquier ideología externa a la gestión de servicios universitarios.</p>
@@ -158,21 +196,17 @@
                 </div>
             </div>
 
-            <div id="globe-container" class="animate-float"></div>
+            <div id="globe-container"></div>
         </main>
 
         <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
             <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
-            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">
-                © 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.
-            </span>
+            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
         </footer>
     </div>
 
     <script>
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
-
-        // TRES.JS ESFERA
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
@@ -182,11 +216,11 @@
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
-            globe = new THREE.Mesh(new THREE.IcosahedronGeometry(30, 4), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.15 }));
+            globe = new THREE.Mesh(new THREE.IcosahedronGeometry(30, 4), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.1 }));
             scene.add(globe);
             animate();
         }
-        function animate() { requestAnimationFrame(animate); globe.rotation.y += 0.002; renderer.render(scene, camera); }
+        function animate() { requestAnimationFrame(animate); if(globe) globe.rotation.y += 0.002; renderer.render(scene, camera); }
         window.onload = initThree;
     </script>
 </body>
