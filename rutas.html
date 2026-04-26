@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNAC | Monitor de Flota Oficial</title>
+    <title>UNAC | Monitor de Rutas Oficial</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -20,10 +20,10 @@
             color: #ffffff; overflow-x: hidden;
         }
 
-        /* ANIMACIONES */
+        /* ANIMACIONES EXACTAS DE INICIO */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
         .animate-float { animation: float 4s ease-in-out infinite; }
 
         .main-wrapper {
@@ -31,54 +31,56 @@
             background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), 
                         url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
             background-size: cover; background-position: center; background-attachment: fixed;
-            min-height: 100vh; width: 100%;
+            min-height: 100vh;
         }
 
-        /* NAVEGACIÓN IDÉNTICA AL INICIO */
+        /* HEADER IDÉNTICO AL DE INICIO */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
-        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
+        .nav-link { 
+            font-size: 11px; font-weight: 700; letter-spacing: 2px; 
+            color: rgba(255, 255, 255, 0.6); transition: 0.3s;
+            text-transform: uppercase; position: relative;
+        }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
         .active-link::after { width: 100%; }
 
-        /* MENU MOVIL */
+        /* MENU MOVIL OVERLAY */
         #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; }
         #mobile-menu.active { display: flex; }
 
-        /* CARDS GLASSMORPHISM */
+        /* CARDS GLASS */
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
-        .route-card { padding: 18px 15px; transition: 0.4s; cursor: pointer; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
+        .route-card { padding: 15px; transition: 0.4s; cursor: pointer; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
         .route-card.active { border-color: var(--accent); background: rgba(255, 193, 7, 0.12); transform: scale(1.02); }
-        .route-card.disabled { opacity: 0.6; border-color: #ff3333; }
+        .route-card.disabled { opacity: 0.4; border-color: #ef4444; }
 
-        /* PARADEROS GRID */
-        .stops-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 15px; text-align: left; }
-        .stop-point { position: relative; padding-left: 18px; font-size: 9px; font-weight: 700; border-left: 1px solid #333; color: #aaa; text-transform: uppercase; line-height: 1.4; }
-        .stop-point::before { content: ''; position: absolute; left: -4px; top: 4px; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+        /* PARADEROS GRID - TU DISEÑO ORIGINAL */
+        .stops-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 15px; }
+        .stop-point { position: relative; padding-left: 20px; font-size: 9px; font-weight: 700; border-left: 1px solid #333; color: #aaa; text-transform: uppercase; line-height: 1.4; }
+        .stop-point::before { content: ''; position: absolute; left: -4px; top: 5px; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
 
         /* HUD */
         .hud-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 20px; position: relative; margin: 15px 0; }
         .hud-fill { height: 100%; background: var(--accent); box-shadow: 0 0 15px var(--accent); border-radius: 20px; transition: width 1s linear; }
 
         .img-small { width: 100%; height: 110px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); transition: 0.5s; }
-        #globe-container { width: 100%; height: 220px; display: flex; justify-content: center; align-items: center; pointer-events: none; }
+        #globe-container { width: 100%; height: 240px; display: flex; justify-content: center; align-items: center; pointer-events: none; }
 
-        /* --- CORRECCIONES VISTA MÓVIL (Centrado y Orden) --- */
+        /* RESPONSIVIDAD: SOLO MÓVIL SE CENTRA */
         @media (max-width: 1024px) { 
-            .main-grid { display: flex; flex-direction: column; align-items: center; width: 100%; } 
-            .col-span-12 { width: 100% !important; }
-            .stops-grid { grid-template-columns: 1fr; margin: 0 auto; width: 90%; }
-            .route-card { width: 100%; text-align: center; margin: 0 auto; }
-            .requirements-box { text-align: left !important; width: 100%; margin: 0 auto; }
-            h1 { text-align: center !important; }
-            .alert-text { text-align: center !important; }
+            .main-grid { display: flex; flex-direction: column; align-items: center; text-align: center; } 
+            .stops-grid { grid-template-columns: 1fr; margin: 0 auto; width: 100%; }
+            .route-card { width: 100%; text-align: center; }
+            .requirements-box { text-align: left !important; }
+        }
+        
+        @media (min-width: 1025px) {
+            .main-grid { display: grid; grid-template-columns: repeat(12, 1fr); }
+            .route-card { text-align: left; }
         }
 
-        @media (max-width: 768px) { 
-            .nav-desktop { display: none; } 
-            header { padding: 25px 15px; }
-            .img-small { height: 130px; } /* Un poco más grandes en móvil para que luzcan */
-        }
+        @media (max-width: 768px) { .nav-desktop { display: none; } }
     </style>
 </head>
 <body>
@@ -94,21 +96,22 @@
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER (IDÉNTICO AL DE INICIO) -->
+        <!-- HEADER (IDÉNTICO A INICIO) -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
-                <div class="flex flex-col text-left">
-                    <span class="text-[10px] font-black tracking-widest leading-none uppercase">UNAC</span>
-                    <span class="text-[9px] text-yellow-500 font-bold uppercase">Movilidad</span>
+                <div class="flex flex-col text-left leading-none uppercase">
+                    <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
+                    <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
 
-            <nav class="hidden md:flex gap-8 nav-minimal">
+            <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link active-link">Rutas</a>
                 <a href="#" class="nav-link">Ticket</a>
                 <a href="#" class="nav-link">Registro</a>
+                <a href="#" class="nav-link">Noticias</a>
                 <a href="#" class="nav-link">Contacto</a>
             </nav>
             
@@ -121,29 +124,29 @@
             
             <!-- PANEL IZQUIERDO -->
             <div class="col-span-12 lg:col-span-4 space-y-6 flex flex-col items-center lg:items-start">
-                <h1 class="text-2xl font-black uppercase italic tracking-tighter text-center lg:text-left w-full">Panel de <span class="text-yellow-500">Operación</span></h1>
+                <h1 class="text-xl font-black uppercase italic tracking-tighter text-center lg:text-left w-full">Panel de <span class="text-yellow-500">Operación</span></h1>
                 
-                <div class="space-y-3 w-full flex flex-col items-center">
-                    <div onclick="selectRoute(0)" id="route-0" class="route-card glass active">
-                        <p class="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">5:15 AM • Lunes a Viernes</p>
+                <div class="space-y-2 w-full flex flex-col items-center">
+                    <div onclick="selectRoute(0)" id="route-0" class="route-card glass active w-full">
+                        <p class="text-[9px] font-bold text-yellow-500 uppercase tracking-widest">5:15 AM • Lunes a Viernes</p>
                         <h3 class="text-[9px] font-black uppercase leading-tight italic">SEDE UNAC / UNIVERSIDAD NACIONAL DEL CALLAO (UNAC)</h3>
                     </div>
-                    <div onclick="selectRoute(1)" id="route-1" class="route-card glass">
-                        <p class="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">6:00 PM • Lunes a Viernes</p>
+                    <div onclick="selectRoute(1)" id="route-1" class="route-card glass w-full">
+                        <p class="text-[9px] font-bold text-yellow-500 uppercase tracking-widest">6:00 PM • Lunes a Viernes</p>
                         <h3 class="text-[9px] font-black uppercase leading-tight italic">UNIVERSIDAD NACIONAL DEL CALLAO (UNAC) - SEDE UNAC</h3>
                     </div>
-                    <div onclick="selectRoute(2)" id="route-2" class="route-card glass disabled">
-                        <p class="text-[10px] font-bold text-red-500 uppercase tracking-widest">2:15 PM • Pendiente</p>
+                    <div onclick="selectRoute(2)" id="route-2" class="route-card glass disabled w-full">
+                        <p class="text-[9px] font-bold text-red-500 uppercase tracking-widest">2:15 PM • Pendiente</p>
                         <h3 class="text-[9px] font-black uppercase leading-tight italic">UNAC / INKA COLA</h3>
                     </div>
-                    <div onclick="selectRoute(3)" id="route-3" class="route-card glass disabled">
-                        <p class="text-[10px] font-bold text-red-500 uppercase tracking-widest">10:15 PM • Pendiente</p>
+                    <div onclick="selectRoute(3)" id="route-3" class="route-card glass disabled w-full">
+                        <p class="text-[9px] font-bold text-red-500 uppercase tracking-widest">10:15 PM • Pendiente</p>
                         <h3 class="text-[9px] font-black uppercase leading-tight italic">UNAC / TELEFONO</h3>
                     </div>
                 </div>
 
-                <div class="glass p-6 border-l-4 border-yellow-500 shadow-xl w-full requirements-box">
-                    <h4 class="text-[11px] font-black text-yellow-500 uppercase tracking-[4px] mb-5 border-b border-white/5 pb-2 italic text-center lg:text-left">DOCUMENTACIÓN REQUERIDA</h4>
+                <div class="glass p-6 border-l-4 border-yellow-500 shadow-xl w-full text-left requirements-box">
+                    <h4 class="text-[10px] font-black text-yellow-500 uppercase tracking-[4px] mb-5 border-b border-white/5 pb-2 italic text-center lg:text-left">DOCUMENTACIÓN REQUERIDA</h4>
                     <div class="space-y-4 text-[10px]">
                         <div class="flex gap-4"><i class="fa-solid fa-id-card text-yellow-500 text-lg"></i> <div><p class="font-black text-white uppercase italic">Carnet Universitario</p><p class="text-gray-400 font-light mt-1">Obligatorio para el acceso oficial.</p></div></div>
                         <div class="flex gap-4"><i class="fa-solid fa-address-card text-white text-lg"></i> <div><p class="font-black text-white uppercase italic">DNI Original</p><p class="text-gray-400 font-light mt-1">Opcional para verificación adicional.</p></div></div>
@@ -151,6 +154,7 @@
                     </div>
                 </div>
 
+                <!-- GLOBO 3D ALTA CALIDAD -->
                 <div id="globe-container" class="animate-float"></div>
             </div>
 
@@ -169,7 +173,7 @@
                     </div>
                     <div class="flex justify-between text-[9px] text-gray-500 font-black uppercase italic tracking-tighter">
                         <span id="p-orig">Origen</span>
-                        <span id="eta-txt" class="text-yellow-500 font-bold">SERVICIO ACTIVO</span>
+                        <span id="eta-txt" class="text-yellow-500 font-bold">MONITOR ACTIVO</span>
                         <span id="p-dest">Destino</span>
                     </div>
                 </div>
@@ -179,17 +183,17 @@
                 </div>
 
                 <div class="glass p-6">
-                    <h3 class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest border-b border-white/5 pb-2 text-center">Secuencia de Paraderos</h3>
+                    <h3 class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest border-b border-white/5 pb-2 text-center">Secuencia Operativa de Paraderos</h3>
                     <div id="stops-container" class="stops-grid"></div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-                    <div class="md:col-span-8 glass p-6 border-l-4 border-red-600 bg-red-950/10 alert-text">
-                        <h5 class="text-red-500 font-black text-[11px] mb-3 uppercase tracking-[3px]">❗ DATO ADICIONAL IMPORTANTE</h5>
-                        <p class="text-[13px] leading-relaxed text-white font-medium mb-3 italic">
+                    <div class="md:col-span-8 glass p-6 border-l-4 border-red-600 bg-red-950/10 text-left">
+                        <h5 class="text-red-500 font-black text-[11px] mb-4 uppercase tracking-[3px]">❗ DATO ADICIONAL IMPORTANTE</h5>
+                        <p class="text-[13px] leading-relaxed text-white font-medium mb-3 italic text-center lg:text-left">
                             AVISO ESTUDIANTIL: Debido a la alta demanda masiva, informamos que el último paradero con capacidad garantizada es <span class="text-yellow-500 font-black underline underline-offset-4 uppercase">CARSA VENTANILLA 😫</span>. No se confíen de cupos posteriores.
                         </p>
-                        <p class="text-[11px] text-gray-300 italic border-t border-white/5 pt-3">Consulte con el <span class="text-white font-bold underline">delegado oficial 🧐</span> para verificar espacios reales 😰.</p>
+                        <p class="text-[11px] text-gray-300 italic border-t border-white/5 pt-3 text-center lg:text-left">Consulte con el <span class="text-white font-bold underline">delegado oficial 🧐</span> para verificar espacios reales 😰.</p>
                     </div>
                     <div class="md:col-span-4 flex flex-col gap-3">
                         <img src="DSC07555-768x432.jpg" class="img-small shadow-2xl">
@@ -199,7 +203,7 @@
             </div>
         </main>
 
-        <!-- FOOTER IDÉNTICO AL DE INICIO (COMO LA IMAGEN 1) -->
+        <!-- FOOTER IDÉNTICO AL DE INICIO (IMAGEN 1) -->
         <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
             <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
             <span class="text-center text-[9px] text-gray-500 tracking-[1px] text-center px-4 uppercase font-light italic">
@@ -222,19 +226,19 @@
                 name: "UNIVERSIDAD NACIONAL DEL CALLAO (UNAC) - SEDE UNAC",
                 orig: "Callao", dest: "Sede UNAC", tS: 18, tE: 20,
                 map: 'https://www.google.com/maps/embed?pb=!1m54!1m12!1m3!1d91283.5448213373!2d-77.11522911083303!3d-11.904422407959084!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m39!3e0!4m3!3m2!1d-12.0618527!2d-77.11811399999999!4m5!1s0x9105cbefb611a025%3A0xc0bf38abdac64504!2sPalomino%2C%20Bellavista%2007011!3m2!1d-12.057409999999999!2d-77.11646!4m3!3m2!1d-12.040162599999999!2d-77.1169468!4m5!1s0x9105d47287f4ff0d%3A0x291fbd59642651e8!2sHuaura%2C%20Mi%20Per%C3%BA%2007056!3m2!1d-11.85585!2d-77.12836999999999!4m3!3m2!1d-11.8431261!2d-77.1019199!4m3!3m2!1d-11.8244667!2d-77.1229334!4m3!3m2!1d-11.8233842!2d-77.1250032!4m5!1s0x9105d526b243bda5%3A0x4f54a232b468d4dd!2sUNAC%20-%20VENTANILLA%2C%205VG8%2BJM6%2C%20Ventanilla%2007076!3m2!1d-11.823452099999999!2d-77.13334929999999!5e1!3m2!1ses-419!2v1777147929441!5m2!1ses-419!2spe',
-                stops: ["UNAC Callao (Inicio)", "IMUPESA", "PESQUERO", "BAYER", "CARRILLO", "OQUENDO", "MARQUEZ", "INKA COLA", "SANTA FE", "OCHO", "SEGUNDO", "CENTRO (inh.)", "TELEFONO", "HUARA", "TRUJILLO", "POLICLINICO", "ZAPALLAL", "SEDE UNAC (Fin)"]
+                stops: ["UNAC Callao (Inicio)", "IMUPESA", "PESQUERO", "BAYER", "CARRILLO", "OQUENDO", "GRIFO REPSOL", "QUINCE (15)", "MARQUEZ", "INKA COLA", "SANTA FE", "OCHO", "SEGUNDO", "CENTRO (inh.)", "TERCERO", "LICENCIADOS", "TELEFONO", "HUARA", "TRUJILLO", "MODULOS AZULES", "PARADERO BUSES", "POLICLINICO", "GRIFO REPSOL", "CRUCE", "DONOFOFRIO", "OV. ZAPALLAL", "FUNDICION", "FLECHA", "HOGAR", "SEDE UNAC (Fin)"]
             },
             {
                 name: "UNAC / INKA COLA",
                 orig: "Callao", dest: "Inka Kola", tS: 14.25, tE: 15.25,
                 map: 'https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d2960.532240448023!2d-77.13256416046117!3d-11.938150732395275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x9105cb910984762b%3A0x104327c627fa29ad!2sUniversidad%20Nacional%20del%20Callao%2C%20Av.%20Juan%20Pablo%20%E2%85%A1%20306%2C%20Bellavista%2007011!3m2!1d-12.0613052!2d-77.11724869999999!4m5!1s0x9105d3108cef4201%3A0xd5b9f23c6ca77ebf!2sParadero%20Inka%20Kola%2C%203V79%2BCP5%2C%20Ip%2051.62%20paradero%20Inka%20Kola%20(op.5%2C%20Avenida%20Del%20Bierzo%2C%20Ventanilla%2007046!3m2!1d-11.936489!2d-77.13062939999999!5e1!3m2!1ses-419!2spe!4v1777141785387!5m2!1ses-419!2spe',
-                stops: ["UNAC Callao", "OQUENDO", "QUINCE", "MARQUEZ", "INKA COLA (Fin)"]
+                stops: ["UNAC Callao (Inicio)", "IMUPESA", "PESQUERO", "BAYER", "CARRILLO", "OQUENDO", "GRIFO REPSOL", "QUINCE", "MARQUEZ", "INKA COLA (Fin)"]
             },
             {
                 name: "UNAC / TELEFONO",
                 orig: "Callao", dest: "Ventanilla", tS: 22.25, tE: 23.5,
                 map: 'https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d158073.67879229266!2d-77.20666131339017!3d-11.97076932739913!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x9105cb910984762b%3A0x104327c627fa29ad!2sUniversidad%20Nacional%20del%20Callao%2C%20Av.%20Juan%20Pablo%20%E2%85%A1%20306%2C%20Bellavista%2007011!3m2!1d-12.0613052!2d-77.11724869999999!4m5!1s0x9105d38d44d9dc71%3A0xf9cf5da526344420!2sMetro%20Ventanilla%2C%20Ventanilla%2007051!3m2!1d-11.87674!2d-77.12642!5e1!3m2!1ses-419!2spe!4v1777141648764!5m2!1ses-419!2spe',
-                stops: ["UNAC Callao", "OQUENDO", "QUINCE", "INKA COLA", "OCHO", "SEGUNDO", "TELEFONO (Fin)"]
+                stops: ["UNAC Callao (Inicio)", "IMUPESA", "PESQUERO", "BAYER", "OQUENDO", "GRIFO REPSOL", "QUINCE", "MARQUEZ", "INKA COLA", "SANTA FE", "OCHO", "SEGUNDO", "CENTRO (inh.)", "TERCERO", "LICENCIADOS", "TELEFONO (Fin)"]
             }
         ];
 
@@ -260,7 +264,6 @@
             updateTracker();
         }
 
-        // ESFERA 3D ALTA CALIDAD
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
