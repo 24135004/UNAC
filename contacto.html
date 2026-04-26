@@ -18,16 +18,10 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
 
-        /* GIRO 3D PARA LOS CÍRCULOS */
-        @keyframes spin3D {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(360deg); }
-        }
-
-        /* EFECTO FUEGO DORADO */
-        @keyframes fireBorder {
-            0%, 100% { border-color: #ffc107; box-shadow: 0 0 10px #ffc107, 0 0 20px #ff4500, inset 0 0 5px #ffc107; }
-            50% { border-color: #ffffff; box-shadow: 0 0 20px #ff8c00, 0 0 40px #ff4500, inset 0 0 15px #ff8c00; }
+        /* GIRO DEL BORDE DE FUEGO */
+        @keyframes rotateFire {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* BRILLO EN CARTILLAS */
@@ -60,24 +54,40 @@
             transition: 0.4s; 
             animation: cardGlow 3s infinite alternate;
         }
-        .card-delegate:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.05); }
 
-        /* CONTENEDOR 3D */
-        .circle-container {
-            perspective: 1000px;
-            width: 85px; height: 85px;
+        /* CONTENEDOR DEL CÍRCULO CON GIRO DE FUEGO */
+        .circle-fire-wrapper {
+            position: relative;
+            width: 90px; height: 90px;
             margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; /* Esto hace que el degradado parezca un borde */
+            padding: 3px;
         }
 
-        .circle-fire {
+        /* El elemento que gira (el fuego) */
+        .circle-fire-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 150%; height: 150%;
+            background: conic-gradient(transparent, transparent, #ffc107, #ff4500, #ffc107);
+            animation: rotateFire 2s linear infinite;
+        }
+
+        /* Fondo interno del círculo para que no gire el contenido */
+        .inner-circle {
+            position: relative;
+            z-index: 2;
             width: 100%; height: 100%;
+            background: #050505;
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            border: 3px solid var(--accent);
-            animation: fireBorder 1.5s infinite alternate, spin3D 5s infinite linear;
-            transform-style: preserve-3d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
-            background: #000;
         }
 
         .no-download {
@@ -97,7 +107,7 @@
 
         .transparency-item { background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent); margin-bottom: 15px; }
 
-        #globe-container { width: 100%; height: 300px; pointer-events: none; }
+        #globe-container { width: 100%; height: 250px; pointer-events: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -136,15 +146,20 @@
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
             
+            <!-- TÍTULO Y DESCRIPCIÓN CORREGIDOS -->
             <div class="text-center mb-16 animate-fade-up">
                 <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">ATENCIÓN AL ESTUDIANTE</span>
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Delegados de <span class="text-yellow-500">Ruta</span></h1>
+                <p class="text-gray-400 max-w-2xl mx-auto text-sm font-light leading-relaxed">
+                    Comunícate directamente con los delegados encargados de la Ruta Ventanilla para resolver cualquier duda sobre paraderos, cupos o incidencias.
+                </p>
             </div>
 
+            <!-- GRID DE DELEGADOS -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mb-20 animate-fade-up">
                 <!-- Antonella -->
                 <div class="card-delegate glass">
-                    <div class="circle-container"><div class="circle-fire text-3xl">👩‍💼</div></div>
+                    <div class="circle-fire-wrapper"><div class="inner-circle text-3xl">👩‍💼</div></div>
                     <h3 class="text-lg font-black uppercase italic leading-tight mb-1">Antonella Flores</h3>
                     <p class="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-2">C. CONTABLES</p>
                     <p class="text-white/60 text-[9px] font-bold uppercase mb-3">DELEGADA DE TURNO NOCHE</p>
@@ -154,8 +169,8 @@
 
                 <!-- Sebastian -->
                 <div class="card-delegate glass">
-                    <div class="circle-container">
-                        <div class="circle-fire">
+                    <div class="circle-fire-wrapper">
+                        <div class="inner-circle">
                             <img src="Gemini_Generated_Image_4maqb4maqb4maqb4.png" class="no-download" oncontextmenu="return false;" ondragstart="return false;">
                         </div>
                     </div>
@@ -168,7 +183,7 @@
 
                 <!-- Jefry -->
                 <div class="card-delegate glass">
-                    <div class="circle-container"><div class="circle-fire text-3xl">👨‍💼</div></div>
+                    <div class="circle-fire-wrapper"><div class="inner-circle text-3xl">👨‍💼</div></div>
                     <h3 class="text-lg font-black uppercase italic leading-tight mb-1">Jefry Cuya</h3>
                     <p class="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-2">FIEE</p>
                     <p class="text-white/60 text-[9px] font-bold uppercase mb-3">DELEGADO DE TURNO DIA</p>
@@ -177,7 +192,7 @@
                 </div>
             </div>
 
-            <!-- TRANSPARENCIA ORIGINAL COMPLETA -->
+            <!-- TRANSPARENCIA ORIGINAL -->
             <div class="w-full max-w-3xl glass p-10 animate-fade-up">
                 <div class="text-center mb-8"><h2 class="text-xl font-black uppercase italic text-yellow-500 tracking-widest">📘 Propósito y Transparencia 🚀</h2></div>
                 <div class="space-y-4">
