@@ -225,17 +225,33 @@
             }
 
             // Lógica Tarde: Abre 5:00 PM (17:00) y Cierra 6:00 PM (18:00)
-            const cardT = document.getElementById('card-tarde');
-            const badgeT = document.getElementById('badge-t');
-            if (h === 17) {
-                cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto";
-                document.getElementById('info-t').innerText = "Disponible para generar";
-            } else {
-                cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado";
-                if(h === 16 && m >= 45) document.getElementById('info-t').innerText = "Abre a las 4:45 PM";
-                else document.getElementById('info-t').innerText = "Finalizado (6:00 PM)";
-            }
-        }
+const cardT = document.getElementById('card-tarde');
+const badgeT = document.getElementById('badge-t');
+const infoT = document.getElementById('info-t');
+
+if (h === 17) {
+    // ABIERTO: Exactamente de 17:00:00 a 17:59:59
+    cardT.classList.remove('locked'); 
+    badgeT.innerText = "Abierto"; 
+    badgeT.className = "badge-img badge-abierto";
+    infoT.innerText = "Disponible para generar";
+} else {
+    // CERRADO: Cualquier otra hora
+    cardT.classList.add('locked'); 
+    badgeT.innerText = "Cerrado"; 
+    badgeT.className = "badge-img badge-cerrado";
+
+    if (h === 16 && m >= 45) {
+        // Si son entre las 4:45 PM y las 4:59 PM
+        infoT.innerText = "Abre a las 5:00 PM";
+    } else if (h === 16 && m >= 40) {
+        // Antes de las 4:45 PM
+        infoT.innerText = "Abre hoy 5:00 PM";
+    } else {
+        // A partir de las 6:00 PM (h >= 18)
+        infoT.innerText = "Finalizado (6:00 PM)";
+    }
+}
         setInterval(updateClock, 1000);
         updateClock();
 
