@@ -55,7 +55,6 @@
             animation: cardGlow 3s infinite alternate;
         }
 
-        /* CONTENEDOR DEL CÍRCULO CON GIRO DE FUEGO */
         .circle-fire-wrapper {
             position: relative;
             width: 90px; height: 90px;
@@ -64,11 +63,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden; /* Esto hace que el degradado parezca un borde */
+            overflow: hidden;
             padding: 3px;
         }
 
-        /* El elemento que gira (el fuego) */
         .circle-fire-wrapper::before {
             content: '';
             position: absolute;
@@ -77,7 +75,6 @@
             animation: rotateFire 2s linear infinite;
         }
 
-        /* Fondo interno del círculo para que no gire el contenido */
         .inner-circle {
             position: relative;
             z-index: 2;
@@ -146,7 +143,6 @@
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
             
-            <!-- TÍTULO Y DESCRIPCIÓN CORREGIDOS -->
             <div class="text-center mb-16 animate-fade-up">
                 <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">ATENCIÓN AL ESTUDIANTE</span>
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Delegados de <span class="text-yellow-500">Ruta</span></h1>
@@ -181,9 +177,13 @@
                     <a href="https://wa.me/51917002183" target="_blank" class="btn-whatsapp">Contactar</a>
                 </div>
 
-                <!-- Jefry -->
+                <!-- Jefry CORREGIDO -->
                 <div class="card-delegate glass">
-                    <div class="circle-fire-wrapper"><div class="inner-circle text-3xl">👨‍💼</div></div>
+                    <div class="circle-fire-wrapper">
+                        <div class="inner-circle">
+                            <img src="6fbaed81-a42a-4e02-aa46-61e2a4a21be7.jpg" class="no-download" oncontextmenu="return false;" ondragstart="return false;">
+                        </div>
+                    </div>
                     <h3 class="text-lg font-black uppercase italic leading-tight mb-1">Jefry Cuya</h3>
                     <p class="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-2">FIEE</p>
                     <p class="text-white/60 text-[9px] font-bold uppercase mb-3">DELEGADO DE TURNO DIA</p>
