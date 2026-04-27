@@ -203,20 +203,15 @@
     </div>
 
     <script>
+        // --- CONFIGURACIÓN DE LINKS ---
         const LINK_1_BD = 'https://script.google.com/macros/s/AKfycbwsrBKWFy0QQujSkHJ6Ybr_dlmm9S_LdWGyE0aagcJC_-e9bqRbSZrQuNlENM65fJiYSQ/exec';
         const LINK_2_SINCRO = 'https://script.google.com/macros/s/AKfycbxcimdYmvKhLPNSZ8JvA9qUz8B777fdJQ0LQ1B-iInLi_vnlHvKamg1HcTG06K5Mzaz/exec';
 
-        // LISTA DE PRIORIDAD EN ORDEN SUMINISTRADA
-        const LISTA_PRIORIDAD = [
-            "70694926", "61313420", "70533533", "72995814", "75441962", 
-            "71726830", "60882501", "74826659", "61268955", "74233547", 
-            "60992185", "61508922", "77087281", "60496379", "75181015", 
-            "61038909", "61331640", "70718321", "74647344", "72424198", 
-            "71686600", "62744970", "74092525", "70850238", "74640542", 
-            "77572173", "72869380", "60795944", "70632476", "70993479", 
-            "71351971", "60166378", "73292433", "72607184", "70743121", 
-            "70629809", "74539012", "61167232", "61057836", "70700848"
-        ];
+        // --- CAMBIAR HORARIOS AQUÍ ---
+        const HORARIOS = {
+            manana: { abre: 21, cierra: 7 }, // De 9:00 PM a 7:00 AM
+            tarde: { h_abre: 17, m_abre: 10, h_cierra: 18, m_cierra: 0 } // De 5:10 PM a 6:00 PM
+        };
 
         let alumno = null;
         let pollInterval = null;
@@ -227,40 +222,32 @@
             const h = now.getHours();
             const m = now.getMinutes();
 
-            // Lógica Mañana: 9pm a 7am
+            // Lógica Mañana
             const cardM = document.getElementById('card-mañana');
             const badgeM = document.getElementById('badge-m');
             const infoM = document.getElementById('info-m');
-            if (h >= 21 || h < 7) {
+            if (h >= HORARIOS.manana.abre || h < HORARIOS.manana.cierra) {
                 cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto";
                 infoM.innerText = "Disponible";
             } else {
                 cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado";
-                infoM.innerText = "Abre a las 9:00 PM";
+                infoM.innerText = `Abre a las ${HORARIOS.manana.abre}:00 PM`;
             }
 
-            // Lógica Tarde: Habilitar a las 5:10 PM (17:10) y cerrar a las 6:00 PM (18:00)
+            // Lógica Tarde
             const cardT = document.getElementById('card-tarde');
             const badgeT = document.getElementById('badge-t');
             const infoT = document.getElementById('info-t');
+            const actualMin = h * 60 + m;
+            const abreMin = HORARIOS.tarde.h_abre * 60 + HORARIOS.tarde.m_abre;
+            const cierraMin = HORARIOS.tarde.h_cierra * 60 + HORARIOS.tarde.m_cierra;
 
-            const isOpenT = (h === 17 && m >= 10);
-
-            if (isOpenT) {
-                cardT.classList.remove('locked'); 
-                badgeT.innerText = "Abierto"; 
-                badgeT.className = "badge-img badge-abierto";
+            if (actualMin >= abreMin && actualMin < cierraMin) {
+                cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto";
                 infoT.innerText = "Disponible para generar";
             } else {
-                cardT.classList.add('locked'); 
-                badgeT.innerText = "Cerrado"; 
-                badgeT.className = "badge-img badge-cerrado";
-                
-                if (h < 17 || (h === 17 && m < 10)) {
-                    infoT.innerText = "Abre a las 5:10 PM";
-                } else {
-                    infoT.innerText = "Finalizado (6:00 PM)";
-                }
+                cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado";
+                infoT.innerText = (actualMin < abreMin) ? "Abre a las 5:10 PM" : "Finalizado (6:00 PM)";
             }
         }
         setInterval(updateClock, 1000);
@@ -289,42 +276,44 @@
             document.getElementById('step-selection').classList.add('hidden');
             document.getElementById('step-loading').classList.remove('hidden');
 
+            // SOLICITUD AL LINK 2 (Excel) PARA OBTENER EL ORDEN REAL
             fetch(`${LINK_2_SINCRO}?dni=${alumno.dni}&accion=solicitar_cola`).then(r => r.json()).then(res => {
                 document.getElementById('step-loading').classList.add('hidden');
                 document.getElementById('step-ticket').classList.remove('hidden');
 
-                // LÓGICA DE PRIORIDAD PARA LA TARDE
-                let orden = res.orden;
-                const posPrioridad = LISTA_PRIORIDAD.indexOf(alumno.dni);
-                if (turno === 'TARDE' && posPrioridad !== -1) {
-                    orden = posPrioridad + 1; // Asigna el número según tu lista
-                }
-
+                const ordenExcel = res.orden; // EL ORDEN VIENE DIRECTO DEL SERVIDOR
                 const fecha = new Date().toLocaleDateString();
                 const dataQR = btoa(`UNAC-OFFICIAL|${alumno.dni}|${turno}|${fecha}`);
 
-                if(turno === 'TARDE' && orden <= 40) {
-                    document.getElementById('premium-ticket').classList.remove('hidden');
-                    document.getElementById('p-fecha').innerText = fecha;
-                    document.getElementById('p-asiento').innerText = orden;
-                    document.getElementById('td-nom').innerText = alumno.Estudiante;
-                    document.getElementById('td-fac').innerText = alumno.Facultad || "UNAC";
-                    document.getElementById('td-cod').innerText = alumno.Codigo || "------";
-                    document.getElementById('td-dni').innerText = alumno.dni;
-                    document.getElementById('qrcode-p').innerHTML = "";
-                    new QRCode(document.getElementById("qrcode-p"), { text: dataQR, width: 150, height: 150 });
-                } else {
-                    document.getElementById('std-ticket').classList.remove('hidden');
-                    document.getElementById('ticketName').innerText = alumno.Estudiante;
-                    document.getElementById('ticketInfo').innerText = `${turno} | ${fecha}`;
-                    document.getElementById('qrcode').innerHTML = "";
-                    new QRCode(document.getElementById("qrcode"), { text: dataQR, width: 200, height: 200 });
-                }
+                // TIMEOUT DE SEGURIDAD PARA ASEGURAR QUE EL CUADRO QR APAREZCA SIEMPRE
+                setTimeout(() => {
+                    if(ordenExcel <= 40) {
+                        document.getElementById('premium-ticket').classList.remove('hidden');
+                        document.getElementById('std-ticket').classList.add('hidden');
+                        document.getElementById('p-fecha').innerText = fecha;
+                        document.getElementById('p-asiento').innerText = ordenExcel;
+                        document.getElementById('td-nom').innerText = alumno.Estudiante;
+                        document.getElementById('td-fac').innerText = alumno.Facultad || "UNAC";
+                        document.getElementById('td-cod').innerText = alumno.Codigo || "------";
+                        document.getElementById('td-dni').innerText = alumno.dni;
+                        document.getElementById('qrcode-p').innerHTML = "";
+                        new QRCode(document.getElementById("qrcode-p"), { text: dataQR, width: 160, height: 160 });
+                    } else {
+                        document.getElementById('std-ticket').classList.remove('hidden');
+                        document.getElementById('premium-ticket').classList.add('hidden');
+                        document.getElementById('ticketName').innerText = alumno.Estudiante;
+                        document.getElementById('ticketInfo').innerText = `${turno} | ${fecha}`;
+                        document.getElementById('qrcode').innerHTML = "";
+                        new QRCode(document.getElementById("qrcode"), { text: dataQR, width: 200, height: 200 });
+                    }
+                }, 200);
+
                 esperarSincronizacion();
             });
         }
 
         function esperarSincronizacion() {
+            if(pollInterval) clearInterval(pollInterval);
             pollInterval = setInterval(() => {
                 fetch(`${LINK_2_SINCRO}?dni=${alumno.dni}&accion=consultar`).then(r => r.json()).then(data => {
                     if(data.asistio === true) {
