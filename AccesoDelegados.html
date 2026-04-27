@@ -150,9 +150,9 @@
     </div>
 
     <script>
-        // TRES DELEGADOS HABILITADOS
+        // CONFIGURACIÓN
         const DELEGADOS = ["71886034", "77570731", "63229248"];
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbKI_Y8K4wsSHrzyikJeGdS0HPXtulCI1SoKtPcWg_0tYjxxJS8AU3a6WHH-GrvcFE/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwikhlAlKoQQPLzsll-9lEI7U2Rujz0NToqNQtQe6e5LdvrjTkbVa0IEJEfjEkrG1Hw/exec";
         
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
         let delegadoActivo = "";
@@ -193,14 +193,20 @@
 
         async function onScanSuccess(decodedText) {
             try {
-                const decrypted = atob(decodedText);
-                if (!decrypted.startsWith("UNAC-OFFICIAL")) return;
+                // Vincular con tickets (Soporta base64 o texto plano separado por pipes)
+                let decodedInfo = decodedText;
+                if(!decodedText.includes('|')) {
+                    try { decodedInfo = atob(decodedText); } catch(e) {}
+                }
 
-                const [firma, dniAlumno, turno, fecha] = decrypted.split('|');
+                if (!decodedInfo.startsWith("UNAC-OFFICIAL")) return;
 
+                const [firma, dniAlumno, turno, fecha] = decodedInfo.split('|');
+
+                // Validar duplicado local
                 if (scannedData.some(item => item.dni === dniAlumno)) {
-                    notificar("YA USADO", false);
-                    return alert("⚠️ DNI YA REGISTRADO EN ESTA LISTA.");
+                    notificar("YA REGISTRADO", false);
+                    return;
                 }
 
                 const registro = {
@@ -211,10 +217,11 @@
                     delegado: delegadoActivo
                 };
 
+                // Guardado local para permanencia en plataforma
                 scannedData.push(registro);
                 localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
                 
-                // NOTIFICACIÓN RELÁMPAGO
+                // Efecto visual
                 const flash = document.getElementById('flash-notif');
                 flash.style.display = 'block';
                 setTimeout(() => { flash.style.display = 'none'; }, 1500);
@@ -222,8 +229,10 @@
                 renderList();
                 notificar("VÁLIDO ✅", true);
 
-                // --- SINCRONIZACIÓN INSTANTÁNEA ---
-                fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=marcar_asistencia`);
+                // --- GUARDADO AUTOMÁTICO AL EXCEL (SINCRO) ---
+                fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`, {
+                    mode: 'no-cors'
+                });
 
             } catch (e) {
                 console.log("Error de lectura");
@@ -234,10 +243,9 @@
             document.getElementById('contador').innerText = scannedData.length;
             const lista = document.getElementById('listaEscaneo');
             if (scannedData.length === 0) {
-                lista.innerHTML = '<p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros.</p>';
+                lista.innerHTML = '<p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros en este turno.</p>';
                 return;
             }
-            // DISEÑO MÁS DETALLADO PARA EL REGISTRO LOCAL
             lista.innerHTML = scannedData.map(item => `
                 <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border-l-4 border-yellow-500 animate-fade-in mb-2">
                     <div class="w-10 h-10 bg-yellow-500/10 rounded-full flex items-center justify-center text-yellow-500">
@@ -261,12 +269,14 @@
             const el = document.getElementById('scan-status');
             el.innerText = msg;
             el.className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
-            new Audio(exito ? 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3' : 'https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3').play().catch(()=>{});
+            try {
+                new Audio(exito ? 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3' : 'https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3').play();
+            } catch(e){}
         }
 
         async function enviarYReiniciar() {
             if (scannedData.length === 0) return alert("No hay datos.");
-            if (!confirm("¿Deseas sincronizar todos los datos y limpiar el panel?")) return;
+            if (!confirm("¿Deseas finalizar el turno y sincronizar el Registro final?")) return;
 
             const btn = document.querySelector('button[onclick="enviarYReiniciar()"]');
             btn.innerText = "SINCRONIZANDO...";
