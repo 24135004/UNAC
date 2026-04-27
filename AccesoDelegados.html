@@ -43,9 +43,9 @@
         #reader {
             width: 100% !important; border: none !important;
             border-radius: 15px; overflow: hidden;
-            background: #000;
+            background: #000; min-height: 250px;
         }
-        /* Ocultar elementos automáticos de la librería */
+        /* Limpieza de la interfaz de la librería */
         #reader__dashboard, #reader img { display: none !important; }
 
         .hidden { display: none; }
@@ -117,17 +117,17 @@
         <!-- ESCÁNER CON BOTONES DE DISEÑO ORIGINAL -->
         <div class="glass p-4 mb-6 relative">
             <div class="flex gap-2 mb-4">
-                <button onclick="activarCamaraPost()" class="flex-1 bg-yellow-500 text-black font-black py-2 rounded-lg text-[10px] uppercase shadow-lg">
+                <button onclick="controlarCamara(true)" class="flex-1 bg-yellow-500 text-black font-black py-2 rounded-lg text-[10px] uppercase shadow-lg shadow-yellow-500/10">
                     <i class="fa-solid fa-camera mr-1"></i> Activar Cámara
                 </button>
-                <button onclick="apagarCamaraPost()" class="flex-1 bg-red-600 text-white font-black py-2 rounded-lg text-[10px] uppercase">
+                <button onclick="controlarCamara(false)" class="flex-1 bg-red-600 text-white font-black py-2 rounded-lg text-[10px] uppercase">
                     <i class="fa-solid fa-video-slash mr-1"></i> Apagar
                 </button>
             </div>
 
             <div id="reader"></div>
 
-            <!-- NOTIFICACIÓN RÁPIDA -->
+            <!-- NOTIFICACIÓN RELÁMPAGO -->
             <div id="scan-notif">
                 <i class="fa-solid fa-circle-check text-4xl mb-2"></i><br>
                 <span class="text-xl font-black uppercase italic tracking-tighter">Escaneo Verificado</span><br>
@@ -156,7 +156,7 @@
             <div id="listaEscaneo" class="space-y-3 max-h-52 overflow-y-auto pr-2"></div>
         </div>
 
-        <!-- BOTÓN SINCRONIZAR -->
+        <!-- BOTÓN SINCRONIZAR ORIGINAL -->
         <button onclick="enviarYReiniciar()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl uppercase text-xs transition shadow-xl mb-10">
             <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Finalizar y Sincronizar Excel
         </button>
@@ -186,32 +186,36 @@
             }
         }
 
-        async function activarCamaraPost() {
-            if (!html5Qr) html5Qr = new Html5Qrcode("reader");
+        async function controlarCamara(encender) {
+            const statusEl = document.getElementById('scan-status');
             
-            // Forzar solicitud de cámara trasera
-            const config = { fps: 25, qrbox: { width: 250, height: 250 } };
-            
-            html5Qr.start({ facingMode: "environment" }, config, onScanSuccess)
+            if (encender) {
+                if (html5Qr && html5Qr.isScanning) return; // Ya está encendida
+
+                html5Qr = new Html5Qrcode("reader");
+                const config = { fps: 20, qrbox: { width: 250, height: 250 } };
+
+                // Intenta usar la cámara trasera directamente
+                html5Qr.start({ facingMode: "environment" }, config, onScanSuccess)
                 .then(() => {
-                    document.getElementById('scan-status').innerText = "CÁMARA ACTIVA";
+                    statusEl.innerText = "CÁMARA TRASERA ACTIVA";
                 })
                 .catch(err => {
-                    // Fallback si falla environment
-                    html5Qr.start({ facingMode: "user" }, config, onScanSuccess);
+                    console.error(err);
+                    alert("Error al iniciar cámara. Por favor, asegúrese de otorgar permisos.");
                 });
-        }
-
-        function apagarCamaraPost() {
-            if (html5Qr) {
-                html5Qr.stop().then(() => {
-                    document.getElementById('scan-status').innerText = "APAGADA";
-                }).catch(() => {});
+            } else {
+                if (html5Qr) {
+                    html5Qr.stop().then(() => {
+                        html5Qr.clear();
+                        statusEl.innerText = "APAGADA";
+                    }).catch(err => console.log("Error al detener:", err));
+                }
             }
         }
 
         function regresarLogin() {
-            apagarCamaraPost();
+            controlarCamara(false);
             document.getElementById('login-container').classList.remove('hidden');
             document.getElementById('scanner-container').classList.add('hidden');
         }
@@ -225,33 +229,33 @@
 
                 if (scannedData.some(item => item.dni === dniAlumno)) {
                     notificar("YA USADO", false);
-                    return alert("⚠️ ESTE DNI YA FUE ESCANEADO.");
+                    return alert("⚠️ DNI YA ESCANEADO.");
                 }
 
                 const registro = {
                     dni: dniAlumno,
                     turno: turno,
                     hora_scan: new Date().toLocaleTimeString(),
-                    delegado: delegadoActivo
                 };
 
                 scannedData.push(registro);
                 localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
                 
-                // NOTIFICACIÓN RELÁMPAGO
+                // NOTIFICACIÓN RELÁMPAGO VISUAL
                 const notif = document.getElementById('scan-notif');
                 document.getElementById('scan-time').innerText = registro.hora_scan;
                 notif.style.display = "block";
-                setTimeout(() => notif.style.display = "none", 1200);
+                setTimeout(() => notif.style.display = "none", 1500);
 
                 renderList();
                 notificar("VÁLIDO ✅", true);
 
-                // SINCRONIZACIÓN INSTANTÁNEA CON LA VENTANA DE TICKETS
+                // --- SINCRONIZACIÓN INSTANTÁNEA ---
+                // Envía señal rápida para que la ventana de tickets del alumno se actualice
                 fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=abordar`, { method: 'POST', mode: 'no-cors' });
 
             } catch (e) {
-                console.log("Error lectura");
+                console.log("Error de lectura");
             }
         }
 
@@ -283,24 +287,16 @@
         async function enviarYReiniciar() {
             if (scannedData.length === 0) return alert("No hay datos.");
             if (!confirm("¿Deseas enviar todo al Excel y vaciar el panel?")) return;
-
             const btn = document.querySelector('button[onclick="enviarYReiniciar()"]');
             btn.innerText = "SINCRONIZANDO...";
             btn.disabled = true;
-
             try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ accion: "finalizar", datos: scannedData })
-                });
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: "finalizar", datos: scannedData }) });
                 alert("✅ Sincronización exitosa.");
                 scannedData = [];
                 localStorage.removeItem('scanned_unac');
                 renderList();
-            } catch (e) {
-                alert("Error de red.");
-            }
+            } catch (e) { alert("Error de red."); }
             btn.innerText = "Finalizar y Sincronizar Excel";
             btn.disabled = false;
         }
