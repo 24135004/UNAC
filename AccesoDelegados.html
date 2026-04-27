@@ -47,9 +47,24 @@
         .hidden { display: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+
+        /* NOTIFICACIÓN RÁPIDA (FLOTANTE) */
+        #flash-notif {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 9999; background: #10b981; color: white; padding: 20px 40px;
+            border-radius: 15px; font-weight: 900; text-align: center;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.5); display: none;
+            border: 2px solid white; pointer-events: none;
+        }
     </style>
 </head>
 <body>
+
+    <!-- NOTIFICACIÓN RELÁMPAGO -->
+    <div id="flash-notif">
+        <i class="fa-solid fa-circle-check text-4xl mb-2"></i><br>
+        <span class="text-xl uppercase italic">Escaneo Exitoso</span>
+    </div>
 
     <!-- CABECERA ESTILO ORIGINAL -->
     <header class="w-full max-w-lg p-6 flex justify-between items-center z-20">
@@ -87,7 +102,7 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 2: ESCÁNER Y ESTADÍSTICAS (DISEÑO ORIGINAL) -->
+    <!-- SECCIÓN 2: ESCÁNER Y ESTADÍSTICAS -->
     <div id="scanner-container" class="w-full max-w-lg px-4 py-4 hidden animate-fade-in">
         
         <div class="flex justify-between items-center mb-6 px-2">
@@ -169,57 +184,56 @@
         function iniciarSistema() {
             checkAutoReset();
             renderList();
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 250 });
             html5QrcodeScanner.render(onScanSuccess);
         }
 
         function checkAutoReset() {
             const h = new Date().getHours();
             const currentShift = (h < 12) ? 'MAÑANA' : 'TARDE';
-            const lastShift = localStorage.getItem('last_shift_name');
-            
             document.getElementById('label-turno').innerText = "TURNO: " + currentShift;
-
-            if (lastShift && lastShift !== currentShift) {
-                if (scannedData.length > 0) alert("Cambiando turno. Se recomienda sincronizar datos.");
-            }
             localStorage.setItem('last_shift_name', currentShift);
         }
 
-        function onScanSuccess(decodedText) {
+        async function onScanSuccess(decodedText) {
             try {
                 const decrypted = atob(decodedText);
-                if (!decrypted.startsWith("UNAC-OFFICIAL")) {
-                    notificar("QR NO VÁLIDO", false);
-                    return;
-                }
+                if (!decrypted.startsWith("UNAC-OFFICIAL")) return;
 
                 const [firma, dniAlumno, turno, fecha] = decrypted.split('|');
 
-                // VALIDACIÓN DE UN SOLO USO
                 if (scannedData.some(item => item.dni === dniAlumno)) {
-                    notificar("YA ESCANEADO", false);
-                    alert("⚠️ ALERTA: Este ticket ya fue utilizado por el DNI " + dniAlumno);
-                    return;
+                    notificar("YA USADO", false);
+                    return alert("⚠️ YA ESCANEADO.");
                 }
 
-                // REGISTRO EXITOSO
+                // REGISTRO
                 const registro = {
                     dni: dniAlumno,
                     turno: turno,
-                    fecha_ticket: fecha,
                     hora_scan: new Date().toLocaleTimeString(),
                     fecha_scan: new Date().toLocaleDateString(),
-                    delegado: delegadoActivo
                 };
 
                 scannedData.push(registro);
                 localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
+                
+                // NOTIFICACIÓN RELÁMPAGO VISUAL
+                const notif = document.getElementById('flash-notif');
+                notif.style.display = 'block';
+                setTimeout(() => { notif.style.display = 'none'; }, 1200);
+
                 renderList();
                 notificar("VÁLIDO ✅", true);
 
+                // --- SINCRONIZACIÓN INSTANTÁNEA ---
+                fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=marcar_asistencia`, {
+                    method: 'POST',
+                    mode: 'no-cors'
+                });
+
             } catch (e) {
-                notificar("ERROR LECTURA", false);
+                console.log("Error lectura");
             }
         }
 
@@ -231,10 +245,10 @@
                 return;
             }
             lista.innerHTML = scannedData.map(item => `
-                <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-4 border-yellow-500 animate-fade-in">
+                <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-4 border-yellow-500 animate-fade-in mb-2">
                     <div class="flex flex-col">
                         <span class="text-[11px] font-black uppercase text-white">ALUMNO: ${item.dni}</span>
-                        <span class="text-[8px] text-gray-500 uppercase font-bold">${item.turno} | ${item.fecha_ticket}</span>
+                        <span class="text-[8px] text-gray-500 uppercase font-bold">${item.turno}</span>
                     </div>
                     <span class="text-[10px] font-bold text-yellow-500">${item.hora_scan}</span>
                 </div>
@@ -245,13 +259,12 @@
             const el = document.getElementById('scan-status');
             el.innerText = msg;
             el.className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
-            const audio = new Audio(exito ? 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3' : 'https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3');
-            audio.play();
+            new Audio(exito ? 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3' : 'https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3').play().catch(()=>{});
         }
 
         async function enviarYReiniciar() {
-            if (scannedData.length === 0) return alert("No hay datos para enviar.");
-            if (!confirm("¿Deseas enviar " + scannedData.length + " registros al Excel y limpiar el panel?")) return;
+            if (scannedData.length === 0) return alert("No hay datos.");
+            if (!confirm("¿Deseas enviar todo al Excel y vaciar el panel?")) return;
 
             const btn = document.querySelector('button[onclick="enviarYReiniciar()"]');
             btn.innerText = "SINCRONIZANDO...";
@@ -261,15 +274,14 @@
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify(scannedData)
+                    body: JSON.stringify({ accion: "finalizar_turno", datos: scannedData })
                 });
-                
-                alert("✅ Datos enviados correctamente.");
+                alert("✅ Sincronización exitosa.");
                 scannedData = [];
-                localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
+                localStorage.removeItem('scanned_unac');
                 renderList();
             } catch (e) {
-                alert("Error al conectar con el servidor.");
+                alert("Error de conexión.");
             }
             btn.innerText = "Finalizar y Sincronizar Excel";
             btn.disabled = false;
