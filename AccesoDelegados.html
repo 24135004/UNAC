@@ -3,300 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNAC | Panel de Control Delegados</title>
+    <title>UNAC | Pase de Movilidad</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Librería de Escaneo QR -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
         :root { --accent: #ffc107; --dark: #050505; }
-        body { 
-            background-color: var(--dark);
-            font-family: 'Inter', sans-serif;
-            color: white;
-            margin: 0; min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-        }
-        input {
-            width: 100%; background: rgba(0,0,0,0.5) !important;
-            border: 1px solid rgba(255,193,7,0.3) !important;
-            color: white !important; padding: 15px; border-radius: 10px;
-            margin-bottom: 15px; outline: none; text-align: center;
-        }
-        input:focus { border-color: var(--accent) !important; }
-        .btn-gold {
-            background: var(--accent); color: black;
-            width: 100%; padding: 15px; border-radius: 10px;
-            font-weight: 900; text-transform: uppercase; transition: 0.3s;
-            cursor: pointer;
-        }
-        .btn-gold:hover { transform: scale(1.02); background: white; }
+        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
         
-        #reader {
-            width: 100% !important; border: none !important;
-            border-radius: 15px; overflow: hidden;
-        }
-        .hidden { display: none; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .animate-float { animation: float 4s ease-in-out infinite; }
 
-        /* NOTIFICACIÓN RELÁMPAGO */
-        #flash-notif {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 9999; background: #10b981; color: white; padding: 25px 50px;
-            border-radius: 20px; font-weight: 900; text-align: center;
-            box-shadow: 0 0 50px rgba(16, 185, 129, 0.6); display: none;
-            border: 2px solid white; pointer-events: none;
+        .main-wrapper { 
+            position: relative; z-index: 10; 
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
+            background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; width: 100%; 
         }
+
+        header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
+        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
+        .nav-link:hover, .active-link { color: var(--accent); }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
+        .nav-link:hover::after, .active-link::after { width: 100%; }
+
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
+        input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; }
+        .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; }
+        
+        .card-panorama {
+            position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
+            height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background-size: cover; background-position: center; transition: 0.4s; cursor: pointer;
+        }
+        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
+        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
+        .badge-cerrado { background: #ef4444; color: white; }
+        .badge-abierto { background: #10b981; color: white; }
+        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
+
+        .ticket-white { background: #ffffff; color: #333333; border: 2px dashed #ffc107; border-radius: 15px; padding: 25px; width: 100%; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .asiento-num { color: #e53e3e; font-size: 80px; font-weight: 900; line-height: 1; margin: 5px 0; }
+        .table-data { width: 100%; font-size: 10px; text-align: left; border-top: 1px solid #eee; margin-top: 20px; padding-top: 10px; }
+        .table-data td { padding: 4px 0; font-weight: 900; text-transform: uppercase; }
+        .table-data .val { text-align: right; color: #666; font-weight: 500; }
+        #qrcode-p img { margin: 0 auto; border: 4px solid white; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <div id="flash-notif">
-        <i class="fa-solid fa-circle-check text-5xl mb-2"></i><br>
-        <span class="text-2xl uppercase italic tracking-tighter">Escaneo Verificado</span>
-    </div>
-
-    <!-- CABECERA ESTILO ORIGINAL -->
-    <header class="w-full max-w-lg p-6 flex justify-between items-center z-20">
-        <div class="flex items-center gap-3">
-            <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg">
-                <i class="fa-solid fa-user-shield text-black text-lg"></i>
+    <div class="main-wrapper">
+        <header class="flex justify-between items-center relative z-20 animate-fade-up">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
+                <div class="flex flex-col text-left leading-none uppercase">
+                    <span class="text-[10px] font-black tracking-widest leading-none text-white">UNAC</span>
+                    <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
+                </div>
             </div>
-            <div class="flex flex-col text-left leading-none uppercase">
-                <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
-                <span class="text-[9px] text-yellow-500 font-bold">Delegados</span>
-            </div>
-        </div>
-        <button onclick="window.close()" class="text-[10px] font-black text-gray-500 uppercase tracking-widest hover:text-red-500 transition">
-            Cerrar Panel <i class="fa-solid fa-xmark ml-1"></i>
-        </button>
-    </header>
+            <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
+        </header>
 
-    <!-- SECCIÓN 1: LOGIN -->
-    <div id="login-container" class="w-full max-w-sm px-6 mt-10 text-center animate-fade-in">
-        <div class="mb-8">
-            <h1 class="text-3xl font-black uppercase italic tracking-tighter">Acceso <span class="text-yellow-500">Restringido</span></h1>
-            <p class="text-gray-500 text-[10px] tracking-widest uppercase mt-2">Ingrese sus credenciales de delegado</p>
-        </div>
-
-        <div class="glass p-8">
-            <div class="text-left mb-4">
-                <label class="text-[9px] font-black text-yellow-500 uppercase tracking-widest ml-1">Documento DNI</label>
-                <input type="text" id="userDni" placeholder="7XXXXXXX" maxlength="8">
-                
-                <label class="text-[9px] font-black text-yellow-500 uppercase tracking-widest ml-1">Contraseña</label>
-                <input type="password" id="userPass" placeholder="••••••••">
+        <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
+            
+            <div id="main-header" class="text-center mb-10 animate-fade-up">
+                <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Tickets <span class="text-yellow-500">Oficiales</span></h1>
             </div>
-            <button onclick="intentarLogin()" class="btn-gold shadow-lg shadow-yellow-500/20">Entrar al Sistema</button>
-            <p id="errorLogin" class="text-red-500 text-[10px] font-bold mt-4 hidden uppercase tracking-widest">Credenciales incorrectas</p>
-        </div>
-    </div>
 
-    <!-- SECCIÓN 2: ESCÁNER Y ESTADÍSTICAS -->
-    <div id="scanner-container" class="w-full max-w-lg px-4 py-4 hidden animate-fade-in">
-        
-        <div class="flex justify-between items-center mb-6 px-2">
-            <div>
-                <h2 class="text-xl font-black italic uppercase">Panel de <span class="text-yellow-500">Control</span></h2>
-                <p id="delegadoNombre" class="text-gray-500 text-[9px] uppercase font-bold tracking-widest"></p>
+            <!-- PASO 1: VERIFICACIÓN -->
+            <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
+                <input type="text" id="dniInput" placeholder="INGRESE SU DNI" maxlength="8">
+                <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
             </div>
-            <button onclick="regresarLogin()" class="bg-white/5 border border-white/10 text-[9px] px-3 py-1.5 rounded-lg font-black uppercase text-gray-400 hover:text-white transition">
-                <i class="fa-solid fa-arrow-left mr-1"></i> Regresar
-            </button>
-        </div>
 
-        <div class="glass p-4 mb-6">
-            <div class="flex items-center gap-2 mb-4 text-yellow-500">
-                <i class="fa-solid fa-camera text-xs"></i>
-                <span class="text-[10px] font-black uppercase tracking-widest">Lector de Tickets</span>
-            </div>
-            <div id="reader"></div>
-        </div>
+            <!-- PASO 2: SELECCIÓN -->
+            <div id="step-selection" class="w-full max-w-xl mx-auto hidden animate-fade-up">
+                <div class="glass p-6 mb-8 text-center border-l-4 border-yellow-500">
+                    <h2 id="welcomeName" class="text-xl font-black uppercase italic text-white"></h2>
+                    <p id="displayDni" class="text-[10px] text-gray-500 font-bold tracking-widest"></p>
+                </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-6 text-center">
-            <div class="glass p-5 border-b-2 border-yellow-500">
-                <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Pasajeros Hoy</span>
-                <span id="contador" class="text-4xl font-black text-yellow-500">0</span>
+                <div id="card-tarde" class="card-panorama card-t-img" onclick="generarTicket('TARDE')">
+                    <span id="badge-t" class="badge-img">Cerrado</span>
+                    <div class="shift-title text-white">Turno Tarde</div>
+                    <div class="salida-text text-white">SALIDA: 06:00 PM</div>
+                    <p id="info-t" class="text-[9px] text-white/60 mt-3 uppercase font-bold tracking-widest"></p>
+                </div>
             </div>
-            <div class="glass p-5 border-b-2 border-green-500">
-                <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Estado Lector</span>
-                <span id="scan-status" class="text-[10px] font-black text-green-500 uppercase">Esperando...</span>
-            </div>
-        </div>
 
-        <!-- HISTORIAL LOCAL DETALLADO -->
-        <div class="glass p-6 mb-6">
-            <h3 class="text-[10px] font-black uppercase text-gray-400 mb-4 border-b border-white/10 pb-2 flex justify-between">
-                <span>Registro Detallado</span>
-                <span id="label-turno" class="text-yellow-500">TURNO: --</span>
-            </h3>
-            <div id="listaEscaneo" class="space-y-3 max-h-64 overflow-y-auto pr-2">
-                <p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros en este turno.</p>
+            <!-- PASO 3: TICKET FINAL -->
+            <div id="step-ticket" class="w-full max-w-2xl mx-auto text-center hidden animate-fade-up">
+                <div id="premium-ticket" class="ticket-white animate-fade-up">
+                    <div class="fecha-ticket text-yellow-600 font-black text-xl" id="p-fecha"></div>
+                    <div class="border-t border-gray-100 my-4"></div>
+                    <p style="font-size: 13px; font-weight: bold; color: #444;">NÚMERO DE ASIENTO:</p>
+                    <div class="asiento-num" id="p-asiento">--</div>
+                    <div class="border-t border-gray-100 my-4"></div>
+                    <table class="table-data">
+                        <tr><td>Estudiante:</td><td class="val" id="td-nom"></td></tr>
+                        <tr><td>DNI:</td><td class="val" id="td-dni"></td></tr>
+                        <tr><td>Turno:</td><td class="val">TARDE</td></tr>
+                    </table>
+                    <div id="qrcode-p" class="my-6 flex justify-center"></div>
+                    <p class="text-[9px] text-yellow-600 font-bold uppercase">Ticket prioritario asignado por orden de llegada</p>
+                </div>
             </div>
-        </div>
 
-        <button onclick="enviarYReiniciar()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl uppercase text-xs transition shadow-xl mb-10">
-            <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Finalizar y Sincronizar Excel
-        </button>
+        </main>
     </div>
 
     <script>
-        // CONFIGURACIÓN
-        const DELEGADOS = ["71886034", "77570731", "63229248"];
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwikhlAlKoQQPLzsll-9lEI7U2Rujz0NToqNQtQe6e5LdvrjTkbVa0IEJEfjEkrG1Hw/exec";
-        
-        let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
-        let delegadoActivo = "";
-        let html5QrcodeScanner;
+        const LINK_1_BD = 'https://script.google.com/macros/s/AKfycbwsrBKWFy0QQujSkHJ6Ybr_dlmm9S_LdWGyE0aagcJC_-e9bqRbSZrQuNlENM65fJiYSQ/exec';
+        const LINK_2_SINCRO = 'https://script.google.com/macros/s/AKfycbxcimdYmvKhLPNSZ8JvA9qUz8B777fdJQ0LQ1B-iInLi_vnlHvKamg1HcTG06K5Mzaz/exec';
 
-        function intentarLogin() {
-            const dni = document.getElementById('userDni').value;
-            const pass = document.getElementById('userPass').value;
-            if (DELEGADOS.includes(dni) && dni === pass) {
-                delegadoActivo = dni;
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('scanner-container').classList.remove('hidden');
-                document.getElementById('delegadoNombre').innerText = "Delegado ID: " + dni;
-                iniciarSistema();
+        // LA LISTA EXACTA EN ORDEN
+        const LISTA_OFICIAL = [
+            "70694926", "61313420", "70533533", "72995814", "75441962", 
+            "71726830", "60882501", "74826659", "61268955", "74233547", 
+            "60992185", "61508922", "77087281", "60496379", "75181015", 
+            "61038909", "61331640", "70718321", "74647344", "72424198", 
+            "71686600", "62744970", "74092525", "70850238", "74640542", 
+            "77572173", "72869380", "60795944", "70632476", "70993479", 
+            "71351971", "60166378", "73292433", "72607184", "70743121", 
+            "70629809", "74539012", "61167232", "61057836", "70700848"
+        ];
+
+        let alumno = null;
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+            const h = now.getHours();
+            const m = now.getMinutes();
+
+            const cardT = document.getElementById('card-tarde');
+            const badgeT = document.getElementById('badge-t');
+            const infoT = document.getElementById('info-t');
+
+            // Habilitar solo si es 17:10 (5:10 PM) o más tarde
+            const isOpenT = (h === 17 && m >= 10) || (h > 17);
+
+            if (isOpenT) {
+                cardT.classList.remove('locked'); 
+                badgeT.innerText = "Abierto"; 
+                badgeT.className = "badge-img badge-abierto";
+                infoT.innerText = "¡Ya puedes generar tu ticket!";
             } else {
-                document.getElementById('errorLogin').classList.remove('hidden');
+                cardT.classList.add('locked'); 
+                badgeT.innerText = "Cerrado"; 
+                badgeT.className = "badge-img badge-cerrado";
+                infoT.innerText = "Disponible a las 5:10 PM";
             }
         }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        function regresarLogin() {
-            if(html5QrcodeScanner) html5QrcodeScanner.clear();
-            document.getElementById('login-container').classList.remove('hidden');
-            document.getElementById('scanner-container').classList.add('hidden');
-        }
-
-        function iniciarSistema() {
-            checkAutoReset();
-            renderList();
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 250 });
-            html5QrcodeScanner.render(onScanSuccess);
-        }
-
-        function checkAutoReset() {
-            const h = new Date().getHours();
-            const currentShift = (h < 12) ? 'MAÑANA' : 'TARDE';
-            document.getElementById('label-turno').innerText = "TURNO: " + currentShift;
-        }
-
-        async function onScanSuccess(decodedText) {
-            try {
-                // Vincular con tickets (Soporta base64 o texto plano separado por pipes)
-                let decodedInfo = decodedText;
-                if(!decodedText.includes('|')) {
-                    try { decodedInfo = atob(decodedText); } catch(e) {}
+        document.getElementById('verifyBtn').addEventListener('click', function() {
+            const dni = document.getElementById('dniInput').value.trim();
+            if(dni.length < 8) return alert("DNI Inválido");
+            this.innerText = "VERIFICANDO...";
+            
+            fetch(`${LINK_1_BD}?dni=${dni}`).then(r => r.json()).then(data => {
+                if(data.found) {
+                    alumno = data; alumno.dni = dni;
+                    document.getElementById('welcomeName').innerText = "HOLA, " + data.Estudiante;
+                    document.getElementById('displayDni').innerText = "DNI: " + dni;
+                    document.getElementById('step-verify').classList.add('hidden');
+                    document.getElementById('step-selection').classList.remove('hidden');
+                } else {
+                    alert("DNI no registrado."); this.innerText = "Verificar Alumno";
                 }
+            });
+        });
 
-                if (!decodedInfo.startsWith("UNAC-OFFICIAL")) return;
+        function generarTicket(turno) {
+            const now = new Date();
+            const h = now.getHours();
+            const m = now.getMinutes();
 
-                const [firma, dniAlumno, turno, fecha] = decodedInfo.split('|');
-
-                // Validar duplicado local
-                if (scannedData.some(item => item.dni === dniAlumno)) {
-                    notificar("YA REGISTRADO", false);
-                    return;
-                }
-
-                const registro = {
-                    dni: dniAlumno,
-                    turno: turno,
-                    hora_scan: new Date().toLocaleTimeString(),
-                    fecha_scan: new Date().toLocaleDateString(),
-                    delegado: delegadoActivo
-                };
-
-                // Guardado local para permanencia en plataforma
-                scannedData.push(registro);
-                localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
-                
-                // Efecto visual
-                const flash = document.getElementById('flash-notif');
-                flash.style.display = 'block';
-                setTimeout(() => { flash.style.display = 'none'; }, 1500);
-
-                renderList();
-                notificar("VÁLIDO ✅", true);
-
-                // --- GUARDADO AUTOMÁTICO AL EXCEL (SINCRO) ---
-                fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`, {
-                    mode: 'no-cors'
-                });
-
-            } catch (e) {
-                console.log("Error de lectura");
-            }
-        }
-
-        function renderList() {
-            document.getElementById('contador').innerText = scannedData.length;
-            const lista = document.getElementById('listaEscaneo');
-            if (scannedData.length === 0) {
-                lista.innerHTML = '<p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros en este turno.</p>';
+            // Bloqueo de seguridad: No generar antes de las 5:10 PM
+            if (h < 17 || (h === 17 && m < 10)) {
+                alert("El sistema se habilitará exactamente a las 5:10 PM.");
                 return;
             }
-            lista.innerHTML = scannedData.map(item => `
-                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border-l-4 border-yellow-500 animate-fade-in mb-2">
-                    <div class="w-10 h-10 bg-yellow-500/10 rounded-full flex items-center justify-center text-yellow-500">
-                        <i class="fa-solid fa-user-check"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <span class="text-sm font-black text-white">ALUMNO: ${item.dni}</span>
-                            <span class="text-[9px] font-bold text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">${item.hora_scan}</span>
-                        </div>
-                        <div class="flex gap-3 mt-1">
-                            <span class="text-[9px] text-gray-400 uppercase font-bold"><i class="fa-solid fa-clock mr-1"></i> ${item.turno}</span>
-                            <span class="text-[9px] text-gray-400 uppercase font-bold"><i class="fa-solid fa-calendar mr-1"></i> ${item.fecha_scan}</span>
-                        </div>
-                    </div>
-                </div>
-            `).reverse().join('');
-        }
 
-        function notificar(msg, exito) {
-            const el = document.getElementById('scan-status');
-            el.innerText = msg;
-            el.className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
-            try {
-                new Audio(exito ? 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3' : 'https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3').play();
-            } catch(e){}
-        }
+            document.getElementById('step-selection').classList.add('hidden');
+            document.getElementById('step-ticket').classList.remove('hidden');
 
-        async function enviarYReiniciar() {
-            if (scannedData.length === 0) return alert("No hay datos.");
-            if (!confirm("¿Deseas finalizar el turno y sincronizar el Registro final?")) return;
+            // BUSCAR POSICIÓN EN LA LISTA
+            const pos = LISTA_OFICIAL.indexOf(alumno.dni);
+            const numeroAsiento = pos !== -1 ? (pos + 1) : "SN"; // Si no está en los 40, pone Sin Número
 
-            const btn = document.querySelector('button[onclick="enviarYReiniciar()"]');
-            btn.innerText = "SINCRONIZANDO...";
-            btn.disabled = true;
+            const fecha = now.toLocaleDateString();
+            document.getElementById('p-fecha').innerText = fecha;
+            document.getElementById('p-asiento').innerText = numeroAsiento;
+            document.getElementById('td-nom').innerText = alumno.Estudiante;
+            document.getElementById('td-dni').innerText = alumno.dni;
 
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ datos: scannedData })
-                });
-                alert("✅ Sincronización completa.");
-                scannedData = [];
-                localStorage.removeItem('scanned_unac');
-                renderList();
-            } catch (e) {
-                alert("Error de conexión.");
-            }
-            btn.innerText = "Finalizar y Sincronizar Excel";
-            btn.disabled = false;
+            const dataQR = btoa(`UNAC|${alumno.dni}|${numeroAsiento}|${fecha}`);
+            document.getElementById('qrcode-p').innerHTML = "";
+            new QRCode(document.getElementById("qrcode-p"), { 
+                text: dataQR, 
+                width: 180, 
+                height: 180,
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            // Registrar en Excel (Sincronización en segundo plano)
+            fetch(`${LINK_2_SINCRO}?dni=${alumno.dni}&accion=solicitar_cola`).catch(e => console.log("Error reg"));
         }
     </script>
 </body>
