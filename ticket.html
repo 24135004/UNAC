@@ -26,7 +26,7 @@
             background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; width: 100%; 
         }
 
-        /* --- BARRA DE NAVEGACIÓN (ESTILO REGISTRO SOLICITADO) --- */
+        /* HEADER NAV CON ANIMACIÓN SUBRAYADO */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
@@ -61,24 +61,27 @@
         .table-data { width: 100%; font-size: 10px; text-align: left; border-top: 1px solid #eee; margin-top: 20px; padding-top: 10px; }
         .table-data td { padding: 4px 0; font-weight: 900; text-transform: uppercase; }
         .table-data .val { text-align: right; color: #666; font-weight: 500; }
-        
+
+        .status-badge { font-size: 9px; font-weight: 900; padding: 4px 12px; border-radius: 50px; text-transform: uppercase; }
+        .badge-open { background: #10b981; color: white; }
+
         #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: -30px; }
+        #qrcode img, #qrcode-p img { margin: 0 auto; border: 4px solid white; border-radius: 5px; }
     </style>
 </head>
 <body>
 
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="#" class="text-xl font-black uppercase text-white">Inicio</a>
-        <a href="#" class="text-xl font-black uppercase text-white">Rutas</a>
-        <a href="#" class="text-xl font-black uppercase text-yellow-500 underline">Ticket</a>
-        <a href="#" class="text-xl font-black uppercase text-white">Registro</a>
-        <a href="#" class="text-xl font-black uppercase text-white">Noticias</a>
-        <a href="#" class="text-xl font-black uppercase text-white">Contacto</a>
+        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500 underline">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
-        <!-- BARRA DE NAVEGACIÓN (ORIGINAL CON ANIMACIÓN) -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
@@ -88,24 +91,25 @@
                 </div>
             </div>
             <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
-                <a href="#" class="nav-link">Inicio</a>
-                <a href="#" class="nav-link">Rutas</a>
-                <a href="#" class="nav-link active-link">Ticket</a>
-                <a href="#" class="nav-link">Registro</a>
-                <a href="#" class="nav-link">Noticias</a>
-                <a href="#" class="nav-link">Contacto</a>
+                <a href="index.html" class="nav-link">Inicio</a>
+                <a href="rutas.html" class="nav-link">Rutas</a>
+                <a href="ticket.html" class="nav-link active-link">Ticket</a>
+                <a href="registro.html" class="nav-link">Registro</a>
+                <a href="noticias.html" class="nav-link">Noticias</a>
+                <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
             <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs">MENU <i class="fa-solid fa-bars-staggered"></i></button>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
+            
             <div id="main-header-text" class="text-center mb-10 animate-fade-up">
                 <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">SISTEMA DE GESTIÓN</span>
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Tickets <span class="text-yellow-500">Oficiales</span></h1>
                 <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
             </div>
 
-            <!-- PASO 1 -->
+            <!-- PASO 1: VERIFICACIÓN -->
             <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
                 <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su documento para comenzar</p>
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
@@ -114,16 +118,20 @@
 
             <!-- PASO 2: SELECCIÓN -->
             <div id="step-selection" class="w-full max-w-5xl mx-auto hidden animate-fade-up">
+                
+                <!-- FICHA DE PASAJERO ORIGINAL -->
                 <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
+                    <div class="flex items-center gap-4 mb-4 md:mb-0">
+                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
                         <div>
                             <h2 id="welcomeName" class="text-xl font-black uppercase italic leading-none text-white"></h2>
                             <p id="displayDni" class="text-[10px] text-gray-500 font-bold mt-1 tracking-widest"></p>
                         </div>
                     </div>
-                    <div class="text-center md:text-right mt-4 md:mt-0">
-                        <span class="px-4 py-1 bg-green-500 text-white rounded-full text-[10px] font-black">HABILITADO</span>
+                    <div class="text-center md:text-right">
+                        <span class="status-badge badge-open">Habilitado</span>
                         <p class="text-[9px] text-gray-500 uppercase mt-2 font-bold italic">Base de datos UNAC actualizada</p>
                     </div>
                 </div>
@@ -145,15 +153,15 @@
 
                 <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500 mb-10">
                     <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">QR Solicitados hoy:</p>
-                    <div id="conteo-total" class="text-4xl font-black text-white">0</div>
+                    <div id="conteo-real" class="text-4xl font-black text-white">0</div>
                 </div>
             </div>
 
-            <!-- PASO 3: TICKET QR DINÁMICO -->
+            <!-- PASO 3: TICKET DINÁMICO -->
             <div id="step-ticket" class="w-full max-w-2xl mx-auto text-center hidden animate-fade-up">
-                <p id="saludo-dni" class="text-left text-[11px] mb-4 opacity-80 text-white ml-2"></p>
+                <p id="txt-saludo" class="text-left text-[11px] mb-4 opacity-80 text-white ml-2"></p>
                 
-                <div id="premium-ticket" class="ticket-white hidden">
+                <div id="premium-ticket" class="ticket-white hidden animate-fade-up">
                     <h4>Válido únicamente para el día:</h4>
                     <div class="fecha-ticket" id="p-fecha"></div>
                     <div class="border-t border-gray-100 my-4"></div>
@@ -186,7 +194,7 @@
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
                 <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white">ESCANEO VÁLIDO</h2>
                 <p class="text-green-500 text-[10px] font-black uppercase">PUEDE SUBIR A BORDO</p>
-                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-8 py-3 rounded-full text-xs uppercase">Cerrar</button>
+                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-8 py-3 rounded-full text-xs uppercase shadow-xl">Finalizar</button>
             </div>
 
             <!-- ERROR -->
@@ -198,7 +206,8 @@
             </div>
 
             <div id="globe-container" class="animate-float"></div>
-            <a href="#" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
+            <!-- ENLACE CORREGIDO A ACCESO DELEGADOS -->
+            <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </main>
 
         <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
@@ -224,7 +233,9 @@
             const dni = document.getElementById('dniInput').value.trim();
             if(dni.length < 8) return alert("DNI Inválido");
             this.innerText = "VERIFICANDO...";
-            fetch(`${API_BD}?dni=${dni}&t=${Date.now()}`).then(r => r.json()).then(data => {
+            
+            fetch(`${API_BD}?dni=${dni}&t=${Date.now()}`)
+            .then(r => r.json()).then(data => {
                 this.innerText = "Verificar Alumno";
                 if(data.found) {
                     alumno = data; alumno.dni = dni;
@@ -232,7 +243,7 @@
                     document.getElementById('displayDni').innerText = "DNI: " + dni;
                     document.getElementById('step-verify').classList.add('hidden');
                     document.getElementById('step-selection').classList.remove('hidden');
-                    syncGlobal(); setInterval(syncGlobal, 5000);
+                    syncGlobalCounter(); setInterval(syncGlobalCounter, 5000);
                 } else {
                     document.getElementById('step-verify').classList.add('hidden');
                     document.getElementById('error-box').classList.remove('hidden');
@@ -240,10 +251,11 @@
             });
         });
 
-        function syncGlobal() {
-            fetch(`${API_SYNC}?accion=consultar_total&t=${Date.now()}`).then(r => r.json()).then(d => {
+        function syncGlobalCounter() {
+            fetch(`${API_SYNC}?accion=consultar_total&t=${Date.now()}`)
+            .then(r => r.json()).then(d => {
                 const total = d.total || 0;
-                document.getElementById('conteo-total').innerText = total;
+                document.getElementById('conteo-real').innerText = total;
                 alumno.orden = total + 1;
             });
         }
@@ -257,13 +269,11 @@
             const badgeM = document.getElementById('badge-m');
             const badgeT = document.getElementById('badge-t');
 
-            // Mañana: 9PM día anterior a 7AM actual
             if (h >= 21 || h < 7) {
                 cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto";
                 document.getElementById('avail-m').innerText = "Disponible para generar";
             } else { cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado"; document.getElementById('avail-m').innerText = "Disponible 9:00 PM"; }
 
-            // Tarde: 5PM a 6:30PM
             if (h === 17 || (h === 18 && m <= 30)) {
                 cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto";
                 document.getElementById('avail-t').innerText = "Disponible para generar";
@@ -275,6 +285,7 @@
             document.getElementById('step-ticket').classList.remove('hidden');
             const f = new Date().toLocaleDateString();
             const qrStr = btoa(`UNAC-OFFICIAL|${alumno.dni}|${turno}|${f}`);
+            
             document.getElementById('txt-saludo').innerHTML = `Hola <b>${alumno.Estudiante}</b>, se te hace entrega de tu ticket digital:`;
 
             if(turno === '06:00 PM' && alumno.orden <= 40) {
