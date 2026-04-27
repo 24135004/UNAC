@@ -38,9 +38,8 @@
         
         #qrcode img { margin: 0 auto; border: 8px solid white; border-radius: 10px; }
 
-        /* Estilos de Guía Informativa mejorados */
-        .step-info { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; text-align: left; }
-        .step-circle { background: var(--accent); color: black; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; flex-shrink: 0; }
+        .step-info { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; text-align: left; }
+        .step-circle { background: var(--accent); color: black; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -77,18 +76,18 @@
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
             
-            <div class="text-center mb-6 animate-fade-up">
+            <div id="main-title" class="text-center mb-6 animate-fade-up">
                 <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">SOLICITUD DE PASE</span>
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Tickets <span class="text-yellow-500">Oficiales</span></h1>
                 <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
             </div>
 
-            <!-- BLOQUE DE INFORMACIÓN PARA EL ESTUDIANTE (REFORZADO) -->
-            <div class="glass p-6 w-full max-w-xl mb-8 border-l-4 border-yellow-500 animate-fade-up">
-                <p class="text-yellow-500 font-black text-[10px] uppercase mb-4 tracking-[3px]"><i class="fa-solid fa-circle-info mr-2"></i>Guía Importante:</p>
-                <div class="step-info"><div class="step-circle">1</div><p class="text-[11px] text-gray-300 uppercase">Verifica tu DNI. Si ya abordaste hoy, no podrás solicitar otro ticket.</p></div>
-                <div class="step-info"><div class="step-circle">2</div><p class="text-[11px] text-gray-300 uppercase">Horario Mañana: Disponible solo hasta las 7:00 AM.</p></div>
-                <div class="step-info"><div class="step-circle">3</div><p class="text-[11px] text-gray-300 uppercase font-bold">El sistema se sincroniza cuando el delegado finaliza el abordaje en el bus.</p></div>
+            <!-- BLOQUE INFORMATIVO -->
+            <div id="info-block" class="glass p-6 w-full max-w-xl mb-8 border-l-4 border-yellow-500 animate-fade-up">
+                <p class="text-yellow-500 font-black text-[10px] uppercase mb-3 tracking-[3px]">Instrucciones de Abordaje:</p>
+                <div class="step-info"><div class="step-circle">1</div><p class="text-[11px] text-gray-300 uppercase">Ingresa tu DNI para verificar tu habilitación.</p></div>
+                <div class="step-info"><div class="step-circle">2</div><p class="text-[11px] text-gray-300 uppercase">Genera tu QR. El turno mañana cierra a las 7:00 AM.</p></div>
+                <div class="step-info"><div class="step-circle">3</div><p class="text-[11px] text-gray-300 uppercase font-bold">Muestra el QR al delegado y espera la confirmación en pantalla.</p></div>
             </div>
 
             <!-- BUSCADOR -->
@@ -100,20 +99,17 @@
             <!-- SELECCIÓN DE TURNOS -->
             <div id="step-selection" class="w-full max-w-4xl mx-auto hidden animate-fade-up">
                 <h2 id="welcomeName" class="text-2xl font-black uppercase italic text-center text-white mb-8"></h2>
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- MAÑANA -->
                     <div id="card-mañana" class="card-turno">
                         <span class="timer-badge">TURNO MAÑANA</span>
                         <h3 class="text-3xl font-black italic">05:15 AM</h3>
-                        <p class="text-[8px] text-gray-400 mt-1 uppercase italic">Cierre estricto: 7:00 AM</p>
+                        <p class="text-[8px] text-gray-400 mt-1 uppercase italic">Cierre plataforma: 7:00 AM</p>
                         <div id="mañana-status" class="mt-6"></div>
                     </div>
-                    <!-- TARDE -->
                     <div id="card-tarde" class="card-turno">
                         <span class="timer-badge">TURNO TARDE</span>
                         <h3 class="text-3xl font-black italic">06:00 PM</h3>
-                        <p class="text-[8px] text-gray-400 mt-1 uppercase italic">Disponible desde las 5:00 PM</p>
+                        <p class="text-[8px] text-gray-400 mt-1 uppercase italic">Cierre plataforma: 6:30 PM</p>
                         <div id="tarde-status" class="mt-6"></div>
                     </div>
                 </div>
@@ -125,16 +121,28 @@
                 <div class="text-left border-t border-white/10 pt-4">
                     <p id="ticketName" class="font-black uppercase italic text-lg text-white"></p>
                     <p id="ticketInfo" class="text-yellow-500 font-bold text-xs uppercase"></p>
-                    <p class="text-red-500 text-[9px] mt-2 font-black uppercase tracking-widest italic">Este QR es válido una sola vez. Al sincronizarse el Excel, este pase se bloquea.</p>
+                    <div id="scanning-loader" class="flex items-center gap-2 mt-3">
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                        <p class="text-[9px] text-gray-400 uppercase font-bold">Esperando escaneo del delegado...</p>
+                    </div>
                 </div>
-                <button onclick="location.reload()" class="mt-6 text-[10px] text-gray-500 font-black uppercase underline">Cancelar y Salir</button>
+                <button onclick="stopSyncAndBack()" class="mt-6 text-[10px] text-gray-500 font-black uppercase underline">Cancelar Pase</button>
             </div>
 
+            <!-- ÉXITO ABORDAJE -->
+            <div id="step-success" class="glass p-10 w-full max-w-xl mx-auto text-center border-t-2 border-green-500 hidden animate-fade-up">
+                <i class="fa-solid fa-circle-check text-green-500 text-6xl mb-4"></i>
+                <h3 class="text-green-500 font-black uppercase text-2xl mb-2">¡Abordaje Exitoso!</h3>
+                <p class="text-white text-xs uppercase font-bold tracking-widest mb-6">Tu ticket ha sido validado correctamente.</p>
+                <button onclick="location.reload()" class="btn-search bg-green-500 text-white">Finalizar</button>
+            </div>
+
+            <!-- ERROR -->
             <div id="error-box" class="glass p-10 w-full max-w-xl mx-auto text-center border-t-2 border-red-600 hidden animate-fade-up">
                 <i class="fa-solid fa-circle-xmark text-red-500 text-5xl mb-4"></i>
                 <h3 id="errTitle" class="text-red-500 font-black uppercase text-xl mb-3">Error</h3>
                 <p id="errDetail" class="text-gray-400 text-[10px] font-bold uppercase mb-4"></p>
-                <a href="registro.html" class="text-yellow-500 text-[10px] font-black uppercase underline">Ir al Registro</a>
+                <button onclick="location.reload()" class="text-yellow-500 text-[10px] font-black uppercase underline tracking-widest">Reintentar</button>
             </div>
 
             <div id="globe-container" class="animate-float"></div>
@@ -151,11 +159,12 @@
         const API_URL = 'https://script.google.com/macros/s/AKfycbz6US3Io8FglgIqVyA70KpjLSTSIydz1zh5TPNgR2ihOko1zlE560PluIsgAwhqOjYiAA/exec';
         let currentDni = "";
         let currentName = "";
+        let syncInterval = null;
 
         function updateClock() {
             const now = new Date();
             document.getElementById('live-clock').innerText = now.toLocaleTimeString();
-            if (currentDni) updateShiftLogics(now);
+            if (currentDni && !syncInterval) updateShiftLogics(now);
         }
         setInterval(updateClock, 1000);
 
@@ -167,24 +176,20 @@
             const cardMañana = document.getElementById('card-mañana');
             const cardTarde = document.getElementById('card-tarde');
 
-            // --- TURNO MAÑANA: Hasta las 7:00 AM ---
             if (h >= 21 || h < 7) {
-                cardMañana.classList.remove('locked');
-                cardMañana.classList.add('active');
+                cardMañana.classList.remove('locked'); cardMañana.classList.add('active');
                 mañanaStatus.innerHTML = `<button onclick="generarTicket('05:15 AM')" class="w-full bg-yellow-500 text-black font-black py-3 rounded-lg uppercase text-xs">Generar Pase 5:15 AM</button>`;
             } else {
                 cardMañana.classList.add('locked');
-                mañanaStatus.innerHTML = `<p class="text-[9px] text-gray-500 font-bold uppercase italic">Cerrado - Vuelve a las 9:00 PM</p>`;
+                mañanaStatus.innerHTML = `<p class="text-[9px] text-gray-500 font-bold uppercase">Plataforma cerrada 07:00 AM</p>`;
             }
 
-            // --- TURNO TARDE: Hasta las 6:30 PM ---
             if ((h === 17 && m >= 3) || (h === 18 && m <= 30)) {
-                cardTarde.classList.remove('locked');
-                cardTarde.classList.add('active');
+                cardTarde.classList.remove('locked'); cardTarde.classList.add('active');
                 tardeStatus.innerHTML = `<button onclick="generarTicket('06:00 PM')" class="w-full bg-white text-black font-black py-3 rounded-lg uppercase text-xs">Generar Pase 6:00 PM</button>`;
             } else {
                 cardTarde.classList.add('locked');
-                tardeStatus.innerHTML = `<p class="text-[9px] text-gray-500 font-bold uppercase italic">Disponible 5:00 PM - 6:30 PM</p>`;
+                tardeStatus.innerHTML = `<p class="text-[9px] text-gray-500 font-bold uppercase">Disponible 5:00 PM - 6:30 PM</p>`;
             }
         }
 
@@ -200,50 +205,75 @@
             document.getElementById('ticketName').innerText = currentName;
             document.getElementById('ticketInfo').innerText = `TURNO: ${turno} | FECHA: ${dateStr}`;
 
-            // Firma única con Timestamp para que no sea reutilizable por capturas viejas
             const secret = btoa(`UNAC-OFFICIAL|${currentDni}|${turno}|${dateStr}|${Date.now()}`);
-
             document.getElementById('qrcode').innerHTML = "";
             new QRCode(document.getElementById("qrcode"), {
                 text: secret, width: 200, height: 200, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H
             });
+
+            // INICIAR MONITOREO EN VIVO
+            startSyncCheck();
+        }
+
+        function startSyncCheck() {
+            if(syncInterval) clearInterval(syncInterval);
+            // Pregunta cada 3 segundos si el DNI ya fue escaneado
+            syncInterval = setInterval(() => {
+                fetch(`${API_URL}?dni=${currentDni}&t=${Date.now()}`)
+                    .then(res => res.json()).then(data => {
+                        if(data.asistio) {
+                            clearInterval(syncInterval);
+                            showSuccessAbordaje();
+                        }
+                    }).catch(e => console.log("Error de red sincronizando..."));
+            }, 3000);
+        }
+
+        function showSuccessAbordaje() {
+            document.getElementById('step-ticket').classList.add('hidden');
+            document.getElementById('main-title').classList.add('hidden');
+            document.getElementById('info-block').classList.add('hidden');
+            document.getElementById('step-success').classList.remove('hidden');
+            // Sonido de éxito opcional
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+            audio.play();
+        }
+
+        function stopSyncAndBack() {
+            if(syncInterval) clearInterval(syncInterval);
+            syncInterval = null;
+            location.reload();
         }
 
         document.getElementById('verifyBtn').addEventListener('click', function() {
             const dni = document.getElementById('dniInput').value.trim();
             if(dni.length < 8) return alert("DNI inválido.");
-            
             this.innerText = "VERIFICANDO...";
             
-            // Consultamos al servidor si el DNI existe y si ya asistió (sincronizado por el delegado)
-            fetch(`${API_URL}?dni=${dni}&t=${new Date().getTime()}`)
+            fetch(`${API_URL}?dni=${dni}&t=${Date.now()}`)
                 .then(res => res.json()).then(data => {
                     this.innerText = "Verificar Alumno";
-                    
                     if(data.found) {
-                        // AQUÍ ESTÁ LA SINCRONIZACIÓN: 
-                        // El servidor debe devolver data.asistio = true si el delegado ya sincronizó el Excel.
                         if(data.asistio) {
-                            showError("Acceso Denegado", "Tu abordaje ya fue registrado y sincronizado hoy. No puedes generar más tickets.");
+                            showError("Acceso Denegado", "Tu ticket ya fue utilizado hoy. No puedes generar otro.");
                             return;
                         }
-                        
                         currentDni = dni; currentName = (data.Nombres || data.Estudiante || "Estudiante");
                         document.getElementById('step-verify').classList.add('hidden');
                         document.getElementById('step-selection').classList.remove('hidden');
                         document.getElementById('welcomeName').innerText = "HOLA, " + currentName.split(' ')[0];
                         updateClock();
                     } else {
-                        showError("No Encontrado", "El DNI no figura en el padrón de movilidad.");
+                        showError("DNI No Encontrado", "No figura en la base de datos.");
                     }
                 });
         });
 
-        function showError(title, detail) {
+        function showError(t, d) {
             document.getElementById('step-verify').classList.add('hidden');
             document.getElementById('error-box').classList.remove('hidden');
-            document.getElementById('errTitle').innerText = title;
-            document.getElementById('errDetail').innerText = detail;
+            document.getElementById('errTitle').innerText = t;
+            document.getElementById('errDetail').innerText = d;
         }
 
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
