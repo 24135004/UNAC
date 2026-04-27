@@ -26,7 +26,7 @@
             background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; width: 100%; 
         }
 
-        /* --- BARRA DE NAVEGACIÓN ORIGINAL --- */
+        /* BARRA DE NAVEGACIÓN ORIGINAL */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
@@ -49,13 +49,13 @@
         .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; background: #10b981; color: white; }
         .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
 
-        /* TICKET BLANCO (DISEÑO IMAGEN EXACTO) */
+        /* TICKET BLANCO (DISEÑO IMAGEN SOLICITADA) */
         .ticket-white { background: #ffffff; color: #333333; border: 2px dashed #ffc107; border-radius: 15px; padding: 25px; width: 100%; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .fecha-premium { color: #d4a017; font-size: 26px; font-weight: 900; margin: 5px 0; }
+        .fecha-ticket { color: #d4a017; font-size: 26px; font-weight: 900; margin: 5px 0; }
         .asiento-num { color: #e53e3e; font-size: 85px; font-weight: 900; line-height: 1; margin: 5px 0; }
         .table-data { width: 100%; font-size: 10px; text-align: left; border-top: 1px solid #eee; margin-top: 20px; padding-top: 10px; }
-        .table-data td { padding: 4px 0; font-weight: 900; text-transform: uppercase; color: #1a202c; }
-        .table-data .val { text-align: right; color: #4a5568; font-weight: 500; }
+        .table-data td { padding: 4px 0; font-weight: 900; text-transform: uppercase; }
+        .table-data .val { text-align: right; color: #666; font-weight: 500; }
         
         #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: -30px; }
         #qrcode img, #qrcode-p img { margin: 0 auto; border: 4px solid white; border-radius: 5px; }
@@ -74,9 +74,12 @@
                 </div>
             </div>
             <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
-                <a href="#" class="nav-link">Inicio</a><a href="#" class="nav-link">Rutas</a>
-                <a href="#" class="nav-link active-link">Ticket</a><a href="#" class="nav-link">Registro</a>
-                <a href="#" class="nav-link">Noticias</a><a href="#" class="nav-link">Contacto</a>
+                <a href="index.html" class="nav-link">Inicio</a>
+                <a href="rutas.html" class="nav-link">Rutas</a>
+                <a href="ticket.html" class="nav-link active-link">Ticket</a>
+                <a href="registro.html" class="nav-link">Registro</a>
+                <a href="noticias.html" class="nav-link">Noticias</a>
+                <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
         </header>
 
@@ -88,59 +91,51 @@
                 <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
             </div>
 
-            <!-- PASO 1: VERIFICACIÓN -->
             <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
                 <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su documento para comenzar</p>
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
                 <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
             </div>
 
-            <!-- PASO 2: SELECCIÓN -->
             <div id="step-selection" class="w-full max-w-5xl mx-auto hidden animate-fade-up">
-                
                 <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
                     <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10">
-                            <i class="fa-solid fa-user-graduate"></i>
-                        </div>
+                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
                         <div>
                             <h2 id="welcomeName" class="text-xl font-black uppercase italic text-white leading-none"></h2>
                             <p id="displayDni" class="text-[10px] text-gray-500 font-bold mt-1 tracking-widest"></p>
                         </div>
                     </div>
-                    <div class="text-center md:text-right mt-4 md:mt-0">
-                        <span class="px-4 py-1 bg-green-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest">Habilitado</span>
+                    <div class="text-center md:text-right">
+                        <span class="status-badge badge-open">Habilitado</span>
                         <p class="text-[9px] text-gray-500 uppercase mt-2 font-bold italic">Base de datos UNAC actualizada</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
-                    <div id="card-mañana" class="card-panorama card-m-img" onclick="prepararTicket('05:15 AM')">
-                        <span class="badge-img">Habilitado</span>
+                    <div id="card-mañana" class="card-panorama card-m-img" onclick="generarTicket('05:15 AM')">
+                        <span class="badge-img">Abierto</span>
                         <div class="shift-title text-white">Mañana</div>
                         <div class="salida-text text-yellow-500">SALIDA: 05:15 AM</div>
                     </div>
-                    <div id="card-tarde" class="card-panorama card-t-img" onclick="prepararTicket('06:00 PM')">
-                        <span class="badge-img">Habilitado</span>
+                    <div id="card-tarde" class="card-panorama card-t-img" onclick="generarTicket('06:00 PM')">
+                        <span class="badge-img">Abierto</span>
                         <div class="shift-title text-white">Tarde</div>
                         <div class="salida-text text-white">SALIDA: 06:00 PM</div>
                     </div>
                 </div>
 
                 <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500 mb-10">
-                    <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">QR Generados en el turno:</p>
+                    <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">QR Solicitados hoy:</p>
                     <div id="conteo-total" class="text-4xl font-black text-white">0</div>
                 </div>
             </div>
 
-            <!-- PASO 3: TICKET QR DINÁMICO -->
             <div id="step-ticket" class="w-full max-w-2xl mx-auto text-center hidden animate-fade-up">
                 <p id="txt-saludo" class="text-left text-[11px] mb-4 opacity-80 text-white ml-2"></p>
-                
-                <!-- TICKET BLANCO (PARA 1-40) -->
-                <div id="premium-ticket" class="ticket-white hidden animate-fade-up">
+                <div id="premium-ticket" class="ticket-white hidden">
                     <h4>Válido únicamente para el día:</h4>
-                    <div class="fecha-premium" id="p-fecha"></div>
+                    <div class="fecha-ticket" id="p-fecha"></div>
                     <div class="border-t border-gray-100 my-4"></div>
                     <p style="font-size: 13px; font-weight: bold; color: #444;">Tu número de asiento es:</p>
                     <div class="asiento-num" id="p-asiento">0</div>
@@ -155,8 +150,6 @@
                     </table>
                     <div class="mt-6 text-[8px] font-black text-gray-400 uppercase leading-tight text-center">Atentamente,<br>DELEGADO DE LA RUTA VENTANILLA<br><span class="text-yellow-600">#SIGAMOS_MEJORANDO</span> | <span class="text-blue-800">#UNAC_UNIDO</span></div>
                 </div>
-
-                <!-- TICKET ESTÁNDAR (MAÑANA O 41+) -->
                 <div id="std-ticket" class="glass p-8 w-full max-w-sm mx-auto hidden">
                     <div id="qrcode" class="flex justify-center mb-6 p-2 bg-white rounded-lg shadow-2xl"></div>
                     <div class="text-left border-t border-white/10 pt-4">
@@ -167,17 +160,16 @@
                 </div>
             </div>
 
-            <!-- PASO 4: ÉXITO -->
             <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden animate-fade-up">
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
                 <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white">ESCANEO VÁLIDO</h2>
-                <p class="text-green-500 text-[10px] font-black uppercase">TICKET PROCESADO - PUEDE SUBIR</p>
-                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-10 py-3 rounded-full text-xs uppercase shadow-xl">Cerrar</button>
+                <p class="text-green-500 text-[10px] font-black uppercase">PUEDE SUBIR A BORDO</p>
+                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-8 py-3 rounded-full text-xs uppercase shadow-xl">Finalizar</button>
             </div>
 
             <div id="error-box" class="glass p-10 w-full max-w-xl mx-auto text-center border-t-2 border-red-600 hidden animate-fade-up">
                 <i class="fa-solid fa-circle-xmark text-red-500 text-5xl mb-4"></i>
-                <h3 id="errTitle" class="text-red-500 font-black uppercase text-xl">DNI NO ENCONTRADO</h3>
+                <h3 id="errTitle" class="text-red-500 font-black uppercase text-xl">Acceso Denegado</h3>
                 <p id="errDetail" class="text-gray-400 text-[10px] font-bold uppercase mt-4 mb-6"></p>
                 <button onclick="location.reload()" class="text-yellow-500 text-[10px] font-black uppercase underline tracking-[3px]">Volver</button>
             </div>
@@ -194,10 +186,10 @@
 
     <script>
         const API_BD = 'https://script.google.com/macros/s/AKfycbzrYnHfvmKcXS0_cdLPl8ivpcTrvWNzh6x_2ehBRXejtpHfu-FtSOJ09ePrmSb4sFl-eQ/exec';
-        const API_SYNC = 'https://script.google.com/macros/s/AKfycbwikhlAlKoQQPLzsll-9lEI7U2Rujz0NToqNQtQe6e5LdvrjTkbVa0IEJEfjEkrG1Hw/exec';
+        const API_SYNC = 'https://script.google.com/macros/s/AKfycbzgJhuGwe2YeliZTVVZAorslIp3VSEjBQdR0dwKzGLLyspRHfyZmFfOWTFEZ8zRiQt/exec';
         
         let alumno = null;
-        let pollInterval = null;
+        let poll = null;
 
         function updateClock() {
             document.getElementById('live-clock').innerText = new Date().toLocaleTimeString();
@@ -209,9 +201,11 @@
             if(dni.length < 8) return alert("DNI Inválido");
             this.innerText = "VERIFICANDO...";
             
-            fetch(`${API_BD}?dni=${dni}&t=${Date.now()}`).then(res => res.json()).then(data => {
+            fetch(`${API_BD}?dni=${dni}&t=${Date.now()}`)
+            .then(res => res.json()).then(data => {
                 if(data.found) {
-                    fetch(`${API_SYNC}?dni=${dni}&accion=consultar&t=${Date.now()}`).then(r => r.json()).then(syncData => {
+                    fetch(`${API_SYNC}?dni=${dni}&accion=consultar&t=${Date.now()}`)
+                    .then(r => r.json()).then(syncData => {
                         this.innerText = "Verificar Alumno";
                         if(syncData.asistio) {
                             showError("Ya Abordaste", "Este DNI ya fue escaneado hoy. Un solo ticket por alumno.");
@@ -221,7 +215,7 @@
                             document.getElementById('displayDni').innerText = "DNI: " + dni;
                             document.getElementById('step-verify').classList.add('hidden');
                             document.getElementById('step-selection').classList.remove('hidden');
-                            syncCounter(); setInterval(syncCounter, 3000);
+                            syncTotal(); setInterval(syncTotal, 5000);
                         }
                     });
                 } else {
@@ -231,50 +225,56 @@
             });
         });
 
-        function syncCounter() {
+        function syncTotal() {
             fetch(`${API_SYNC}?accion=consultar_total&t=${Date.now()}`).then(r => r.json()).then(d => {
                 const total = d.total || 0;
                 document.getElementById('conteo-total').innerText = total;
-                alumno.orden = total + 1; // Asiento siguiente
+                alumno.orden_actual = total + 1;
             });
         }
 
-        function prepararTicket(turno) {
+        async function generarTicket(turno) {
             document.getElementById('step-selection').classList.add('hidden');
             document.getElementById('step-ticket').classList.remove('hidden');
-            const f = new Date().toLocaleDateString();
-            const payload = btoa(`UNAC-OFFICIAL|${alumno.dni}|${turno}|${f}`);
             
+            // ASIGNACIÓN DE COLA REAL (RESISTENTE A 100+ ALUMNOS)
+            if(turno === '06:00 PM') {
+               const rCola = await fetch(`${API_SYNC}?dni=${alumno.dni}&accion=solicitar_cola&t=${Date.now()}`);
+               const dCola = await rCola.json();
+               alumno.orden = dCola.orden;
+            }
+
+            const f = new Date().toLocaleDateString();
+            const qrStr = btoa(`UNAC-OFFICIAL|${alumno.dni}|${turno}|${f}`);
             document.getElementById('txt-saludo').innerHTML = `Hola <b>${alumno.Estudiante}</b>, se te hace entrega de tu ticket digital:`;
 
-            // LÓGICA 1 AL 40 TURNO TARDE
             if(turno === '06:00 PM' && alumno.orden <= 40) {
                 document.getElementById('premium-ticket').classList.remove('hidden');
                 document.getElementById('p-fecha').innerText = f;
-                document.getElementById('p-asiento').innerText = alumno.orden; // NUMERO DEL 1 AL 40
+                document.getElementById('p-asiento').innerText = alumno.orden;
                 document.getElementById('p-hora-v').innerText = `Validado a las ${new Date().getHours()}:${new Date().getMinutes()} hs.`;
                 document.getElementById('td-nom').innerText = alumno.Estudiante;
                 document.getElementById('td-fac').innerText = alumno.Facultad || "UNAC";
                 document.getElementById('td-cod').innerText = alumno.Codigo;
                 document.getElementById('td-dni').innerText = alumno.dni;
                 document.getElementById('qrcode-p').innerHTML = "";
-                new QRCode(document.getElementById("qrcode-p"), { text: payload, width: 140, height: 140 });
+                new QRCode(document.getElementById("qrcode-p"), { text: qrStr, width: 140, height: 140 });
             } else {
                 document.getElementById('std-ticket').classList.remove('hidden');
                 document.getElementById('ticketName').innerText = alumno.Estudiante;
                 document.getElementById('ticketInfo').innerText = `${turno} | ${f}`;
                 document.getElementById('qrcode').innerHTML = "";
-                new QRCode(document.getElementById("qrcode"), { text: payload, width: 200, height: 200 });
+                new QRCode(document.getElementById("qrcode"), { text: qrStr, width: 200, height: 200 });
             }
             startPolling();
         }
 
         function startPolling() {
-            if(pollInterval) clearInterval(pollInterval);
-            pollInterval = setInterval(() => {
+            if(poll) clearInterval(poll);
+            poll = setInterval(() => {
                 fetch(`${API_SYNC}?dni=${alumno.dni}&accion=consultar&t=${Date.now()}`).then(r => r.json()).then(data => {
                     if(data.asistio === true || data.asistio === "true") {
-                        clearInterval(pollInterval);
+                        clearInterval(poll);
                         document.getElementById('step-ticket').classList.add('hidden');
                         document.getElementById('step-success').classList.remove('hidden');
                         new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(()=>{});
