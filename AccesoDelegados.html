@@ -47,6 +47,9 @@
         .hidden { display: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        
+        /* Estilos Guía Delegado */
+        .delegate-guide { font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 15px; border-left: 2px solid var(--accent); padding-left: 10px; }
     </style>
 </head>
 <body>
@@ -87,7 +90,7 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 2: ESCÁNER Y ESTADÍSTICAS (DISEÑO ORIGINAL) -->
+    <!-- SECCIÓN 2: ESCÁNER Y ESTADÍSTICAS -->
     <div id="scanner-container" class="w-full max-w-lg px-4 py-4 hidden animate-fade-in">
         
         <div class="flex justify-between items-center mb-6 px-2">
@@ -100,6 +103,13 @@
             </button>
         </div>
 
+        <!-- GUÍA INFORMATIVA DELEGADO -->
+        <div class="delegate-guide">
+            <p>1. Escanee el QR del estudiante para validar el abordaje.</p>
+            <p>2. El sistema detectará automáticamente si un QR ya fue usado.</p>
+            <p>3. Al "Finalizar", se liberará el sistema para el próximo turno.</p>
+        </div>
+
         <!-- ESCÁNER -->
         <div class="glass p-4 mb-6">
             <div class="flex items-center gap-2 mb-4 text-yellow-500">
@@ -109,7 +119,7 @@
             <div id="reader"></div>
         </div>
 
-        <!-- ESTADÍSTICAS EN GRID -->
+        <!-- ESTADÍSTICAS -->
         <div class="grid grid-cols-2 gap-4 mb-6 text-center">
             <div class="glass p-5 border-b-2 border-yellow-500">
                 <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Pasajeros Hoy</span>
@@ -139,7 +149,6 @@
     </div>
 
     <script>
-        // LISTA DE DNI DELEGADOS ACTUALIZADA
         const DELEGADOS = ["71886034", "77570731", "63229248"];
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJmiJyrmSmpP1yOmkKsB4vJBTDde18OPoVDOStyyN-rIBC2vtXI-wZ1OGzxmTgxpM/exec";
         
@@ -170,37 +179,50 @@
         function iniciarSistema() {
             checkAutoReset();
             renderList();
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 250 });
             html5QrcodeScanner.render(onScanSuccess);
         }
 
         function checkAutoReset() {
             const h = new Date().getHours();
+            // Mañana es antes de las 12pm, Tarde después.
             const currentShift = (h < 12) ? 'MAÑANA' : 'TARDE';
             const lastShift = localStorage.getItem('last_shift_name');
             
             document.getElementById('label-turno').innerText = "TURNO: " + currentShift;
 
             if (lastShift && lastShift !== currentShift) {
-                if (scannedData.length > 0) alert("Cambiando turno. Se recomienda sincronizar datos.");
+                // Si cambió el turno de forma natural y hay datos viejos, avisar
+                if (scannedData.length > 0) {
+                    console.log("Cambio de turno detectado. Se recomienda limpiar.");
+                }
             }
             localStorage.setItem('last_shift_name', currentShift);
         }
 
         function onScanSuccess(decodedText) {
             try {
+                // El QR viene en Base64
                 const decrypted = atob(decodedText);
                 if (!decrypted.startsWith("UNAC-OFFICIAL")) {
-                    notificar("QR NO VÁLIDO", false);
+                    notificar("QR INVÁLIDO", false);
                     return;
                 }
 
-                const [firma, dniAlumno, turno, fecha] = decrypted.split('|');
+                const [firma, dniAlumno, turno, fecha, timestamp] = decrypted.split('|');
 
-                // VALIDACIÓN DE UN SOLO USO
+                // 1. BLOQUEO: Validar si el DNI ya fue escaneado en esta sesión local
                 if (scannedData.some(item => item.dni === dniAlumno)) {
-                    notificar("YA ESCANEADO", false);
-                    alert("⚠️ ALERTA: Este ticket ya fue utilizado por el DNI " + dniAlumno);
+                    notificar("YA USADO", false);
+                    alert("⚠️ EL TICKET PARA EL DNI " + dniAlumno + " YA FUE ESCANEADO.");
+                    return;
+                }
+
+                // 2. VALIDACIÓN DE HORA (MAÑANA CIERRA A LAS 7 AM)
+                const now = new Date();
+                if (turno.includes("AM") && now.getHours() >= 7 && now.getHours() < 12) {
+                    notificar("HORA EXPIRADA", false);
+                    alert("Este ticket de la mañana ya no es válido (Pasó las 7:00 AM)");
                     return;
                 }
 
@@ -234,7 +256,7 @@
             lista.innerHTML = scannedData.map(item => `
                 <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-4 border-yellow-500 animate-fade-in">
                     <div class="flex flex-col">
-                        <span class="text-[11px] font-black uppercase text-white">ALUMNO: ${item.dni}</span>
+                        <span class="text-[11px] font-black uppercase text-white">DNI: ${item.dni}</span>
                         <span class="text-[8px] text-gray-500 uppercase font-bold">${item.turno} | ${item.fecha_ticket}</span>
                     </div>
                     <span class="text-[10px] font-bold text-yellow-500">${item.hora_scan}</span>
@@ -247,33 +269,43 @@
             el.innerText = msg;
             el.className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
             const audio = new Audio(exito ? 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3' : 'https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3');
-            audio.play();
+            audio.play().catch(() => {});
         }
 
         async function enviarYReiniciar() {
             if (scannedData.length === 0) return alert("No hay datos para enviar.");
-            if (!confirm("¿Deseas enviar " + scannedData.length + " registros al Excel y limpiar el panel?")) return;
+            
+            if (!confirm("¿Deseas enviar " + scannedData.length + " registros al Excel? Al confirmar, la lista se borrará y los alumnos podrán solicitar tickets para el próximo turno.")) return;
 
             const btn = document.querySelector('button[onclick="enviarYReiniciar()"]');
-            btn.innerText = "SINCRONIZANDO...";
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-sync fa-spin mr-2"></i> SINCRONIZANDO...';
             btn.disabled = true;
 
             try {
+                // Enviamos los datos
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify(scannedData)
+                    body: JSON.stringify({
+                        accion: "sincronizar_y_limpiar",
+                        datos: scannedData
+                    })
                 });
                 
-                alert("✅ Datos enviados correctamente.");
+                alert("✅ Sincronización exitosa. El panel se ha reiniciado para un nuevo ciclo.");
+                
+                // BORRADO AUTOMÁTICO PARA QUE LOS ALUMNOS PUEDAN VOLVER A PEDIR (EN EL SIGUIENTE TURNO)
                 scannedData = [];
-                localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
+                localStorage.removeItem('scanned_unac');
                 renderList();
+                
             } catch (e) {
-                alert("Error al conectar con el servidor.");
+                alert("Error crítico al conectar con el Excel.");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
-            btn.innerText = "Finalizar y Sincronizar Excel";
-            btn.disabled = false;
         }
     </script>
 </body>
