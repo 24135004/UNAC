@@ -71,34 +71,40 @@
 </head>
 <body>
 
+    <!-- MENÚ MÓVIL (COPIADO DE TU CÓDIGO) -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="#" class="text-xl font-black uppercase text-white">Inicio</a>
-        <a href="#" class="text-xl font-black uppercase text-white">Rutas</a>
-        <a href="#" class="text-xl font-black uppercase text-yellow-500 underline">Ticket</a>
-        <a href="#" class="text-xl font-black uppercase text-white">Registro</a>
-        <a href="#" class="text-xl font-black uppercase text-white">Noticias</a>
-        <a href="#" class="text-xl font-black uppercase text-white">Contacto</a>
+        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
+        <!-- HEADER (COPIADO DE TU CÓDIGO) -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
                 <div class="flex flex-col text-left leading-none uppercase">
-                    <span class="text-[10px] font-black tracking-widest leading-none text-white">UNAC</span>
+                    <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
+
             <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
-                <a href="#" class="nav-link">Inicio</a>
-                <a href="#" class="nav-link">Rutas</a>
-                <a href="#" class="nav-link active-link">Ticket</a>
-                <a href="#" class="nav-link">Registro</a>
-                <a href="#" class="nav-link">Noticias</a>
-                <a href="#" class="nav-link">Contacto</a>
+                <a href="index.html" class="nav-link">Inicio</a>
+                <a href="rutas.html" class="nav-link">Rutas</a>
+                <a href="ticket.html" class="nav-link active-link">Ticket</a>
+                <a href="registro.html" class="nav-link">Registro</a>
+                <a href="noticias.html" class="nav-link">Noticias</a>
+                <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500 text-black px-4 py-2 rounded-lg font-black text-xs">MENU</button>
+            
+            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
+                MENU <i class="fa-solid fa-bars-staggered"></i>
+            </button>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
@@ -203,14 +209,14 @@
     </div>
 
     <script>
-        // --- CONFIGURACIÓN DE LINKS ---
+        // CONFIGURACIÓN DE LINKS
         const LINK_1_BD = 'https://script.google.com/macros/s/AKfycbwsrBKWFy0QQujSkHJ6Ybr_dlmm9S_LdWGyE0aagcJC_-e9bqRbSZrQuNlENM65fJiYSQ/exec';
         const LINK_2_SINCRO = 'https://script.google.com/macros/s/AKfycbxcimdYmvKhLPNSZ8JvA9qUz8B777fdJQ0LQ1B-iInLi_vnlHvKamg1HcTG06K5Mzaz/exec';
 
         // --- CAMBIAR HORARIOS AQUÍ ---
-        const HORARIOS = {
-            manana: { abre: 21, cierra: 7 }, // De 9:00 PM a 7:00 AM
-            tarde: { h_abre: 17, m_abre: 10, h_cierra: 18, m_cierra: 0 } // De 5:10 PM a 6:00 PM
+        const CONFIG_HORARIOS = {
+            manana: { abre: 21, cierra: 7 }, // Abre 9 PM, Cierra 7 AM
+            tarde: { h_abre: 17, m_abre: 10, h_cierra: 18, m_cierra: 0 } // 5:10 PM a 6:00 PM
         };
 
         let alumno = null;
@@ -226,12 +232,12 @@
             const cardM = document.getElementById('card-mañana');
             const badgeM = document.getElementById('badge-m');
             const infoM = document.getElementById('info-m');
-            if (h >= HORARIOS.manana.abre || h < HORARIOS.manana.cierra) {
+            if (h >= CONFIG_HORARIOS.manana.abre || h < CONFIG_HORARIOS.manana.cierra) {
                 cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto";
                 infoM.innerText = "Disponible";
             } else {
                 cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado";
-                infoM.innerText = `Abre a las ${HORARIOS.manana.abre}:00 PM`;
+                infoM.innerText = `Abre a las ${CONFIG_HORARIOS.manana.abre}:00 PM`;
             }
 
             // Lógica Tarde
@@ -239,8 +245,8 @@
             const badgeT = document.getElementById('badge-t');
             const infoT = document.getElementById('info-t');
             const actualMin = h * 60 + m;
-            const abreMin = HORARIOS.tarde.h_abre * 60 + HORARIOS.tarde.m_abre;
-            const cierraMin = HORARIOS.tarde.h_cierra * 60 + HORARIOS.tarde.m_cierra;
+            const abreMin = CONFIG_HORARIOS.tarde.h_abre * 60 + CONFIG_HORARIOS.tarde.m_abre;
+            const cierraMin = CONFIG_HORARIOS.tarde.h_cierra * 60 + CONFIG_HORARIOS.tarde.m_cierra;
 
             if (actualMin >= abreMin && actualMin < cierraMin) {
                 cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto";
@@ -276,20 +282,19 @@
             document.getElementById('step-selection').classList.add('hidden');
             document.getElementById('step-loading').classList.remove('hidden');
 
-            // SOLICITUD AL LINK 2 (Excel) PARA OBTENER EL ORDEN REAL
+            // PEDIR EL ORDEN AL EXCEL (SINCRONIZACIÓN REAL)
             fetch(`${LINK_2_SINCRO}?dni=${alumno.dni}&accion=solicitar_cola`).then(r => r.json()).then(res => {
                 document.getElementById('step-loading').classList.add('hidden');
                 document.getElementById('step-ticket').classList.remove('hidden');
 
-                const ordenExcel = res.orden; // EL ORDEN VIENE DIRECTO DEL SERVIDOR
+                const ordenExcel = res.orden; 
                 const fecha = new Date().toLocaleDateString();
                 const dataQR = btoa(`UNAC-OFFICIAL|${alumno.dni}|${turno}|${fecha}`);
 
-                // TIMEOUT DE SEGURIDAD PARA ASEGURAR QUE EL CUADRO QR APAREZCA SIEMPRE
+                // TIMEOUT PARA ASEGURAR QUE EL CUADRO QR NO SALGA VACÍO
                 setTimeout(() => {
                     if(ordenExcel <= 40) {
                         document.getElementById('premium-ticket').classList.remove('hidden');
-                        document.getElementById('std-ticket').classList.add('hidden');
                         document.getElementById('p-fecha').innerText = fecha;
                         document.getElementById('p-asiento').innerText = ordenExcel;
                         document.getElementById('td-nom').innerText = alumno.Estudiante;
@@ -300,13 +305,12 @@
                         new QRCode(document.getElementById("qrcode-p"), { text: dataQR, width: 160, height: 160 });
                     } else {
                         document.getElementById('std-ticket').classList.remove('hidden');
-                        document.getElementById('premium-ticket').classList.add('hidden');
                         document.getElementById('ticketName').innerText = alumno.Estudiante;
                         document.getElementById('ticketInfo').innerText = `${turno} | ${fecha}`;
                         document.getElementById('qrcode').innerHTML = "";
                         new QRCode(document.getElementById("qrcode"), { text: dataQR, width: 200, height: 200 });
                     }
-                }, 200);
+                }, 250);
 
                 esperarSincronizacion();
             });
