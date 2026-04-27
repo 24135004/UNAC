@@ -52,7 +52,6 @@
         .badge-abierto { background: #10b981; color: white; }
         .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
 
-        /* TICKET BLANCO TARDE 1-40 */
         .ticket-white { background: #ffffff; color: #333333; border: 2px dashed #ffc107; border-radius: 15px; padding: 25px; width: 100%; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .fecha-ticket { color: #d4a017; font-size: 26px; font-weight: 900; margin: 5px 0; }
         .asiento-num { color: #e53e3e; font-size: 80px; font-weight: 900; line-height: 1; margin: 5px 0; }
@@ -88,7 +87,7 @@
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
-            <nav class="hidden md:flex gap-8">
+            <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
                 <a href="#" class="nav-link">Inicio</a>
                 <a href="#" class="nav-link">Rutas</a>
                 <a href="#" class="nav-link active-link">Ticket</a>
@@ -107,14 +106,14 @@
                 <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
             </div>
 
-            <!-- PASO 1: DNI (SCRIPT 1) -->
+            <!-- PASO 1: VERIFICAR DNI (LINK 1) -->
             <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
                 <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su DNI para verificar</p>
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
                 <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
             </div>
 
-            <!-- PASO 2: SELECCIÓN -->
+            <!-- PASO 2: SELECCIONAR TURNO -->
             <div id="step-selection" class="w-full max-w-5xl mx-auto hidden animate-fade-up">
                 <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
                     <div class="flex items-center gap-4">
@@ -139,53 +138,61 @@
                         <span class="badge-img badge-abierto">Abierto</span>
                         <div class="shift-title text-white">Tarde</div>
                         <div class="salida-text text-white">SALIDA: 06:00 PM</div>
-                        <p class="text-[9px] text-white/40 mt-3 uppercase font-bold tracking-widest">Habilitado para pruebas</p>
+                        <p class="text-[9px] text-white/40 mt-3 uppercase font-bold tracking-widest">Generar Ticket con Asiento</p>
                     </div>
+                </div>
+
+                <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500 mb-10">
+                    <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">QR Solicitados hoy:</p>
+                    <div id="conteo-real" class="text-4xl font-black text-white">0</div>
                 </div>
             </div>
 
             <!-- CARGANDO -->
-            <div id="step-loading" class="hidden flex flex-col items-center animate-fade-up">
+            <div id="step-loading" class="hidden flex flex-col items-center py-10 animate-fade-up">
                 <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-                <p class="text-yellow-500 font-black text-xs uppercase mt-4 tracking-widest">Generando Ticket Oficial...</p>
+                <p class="text-yellow-500 font-black text-xs uppercase mt-4 tracking-widest">Asignando Número y Generando Ticket...</p>
             </div>
 
             <!-- PASO 3: TICKET -->
             <div id="step-ticket" class="w-full max-w-2xl mx-auto text-center hidden animate-fade-up">
                 
-                <!-- DISEÑO BLANCO (TARDE 1-40) -->
+                <!-- TICKET BLANCO (TARDE 1-40) -->
                 <div id="premium-ticket" class="ticket-white hidden animate-fade-up">
                     <div class="fecha-ticket" id="p-fecha"></div>
                     <div class="border-t border-gray-100 my-4"></div>
                     
-                    <!-- 1. NUMERO DE ORDEN (SCRIPT 2) -->
+                    <!-- 1. ORDEN (SCRIPT 2) -->
                     <p style="font-size: 13px; font-weight: bold; color: #444;">NÚMERO DE ASIENTO:</p>
                     <div class="asiento-num" id="p-asiento"></div>
                     
+                    <div class="border-t border-gray-100 my-4"></div>
+
                     <!-- 2. DATOS (SCRIPT 1) -->
                     <table class="table-data">
                         <tr><td>Estudiante:</td><td class="val" id="td-nom"></td></tr>
                         <tr><td>Facultad:</td><td class="val" id="td-fac"></td></tr>
+                        <tr><td>Código:</td><td class="val" id="td-cod"></td></tr>
                         <tr><td>DNI:</td><td class="val" id="td-dni"></td></tr>
                     </table>
 
-                    <!-- 3. QR -->
+                    <!-- 3. QR AL FINAL -->
                     <div id="qrcode-p" class="my-6 flex justify-center"></div>
-                    <p class="text-[9px] text-yellow-600 font-bold uppercase">Escaneo de Delegado Obligatorio</p>
+                    <p class="text-[9px] text-yellow-600 font-bold uppercase">Escaneo Requerido</p>
                 </div>
 
-                <!-- DISEÑO ESTÁNDAR (>40) -->
+                <!-- TICKET GLASS (>40) -->
                 <div id="std-ticket" class="glass p-8 w-full max-w-sm mx-auto hidden">
                     <div id="qrcode" class="flex justify-center mb-6 p-2 bg-white rounded-lg shadow-2xl"></div>
                     <div class="text-left border-t border-white/10 pt-4">
                         <p id="ticketName" class="font-black uppercase text-lg text-white"></p>
                         <p id="ticketInfo" class="text-yellow-500 font-bold text-xs uppercase"></p>
-                        <p class="text-[10px] text-gray-500 mt-2 italic">Esperando escaneo de delegado...</p>
+                        <p class="text-[10px] text-gray-500 mt-2"><i class="fa-solid fa-spinner fa-spin"></i> Esperando escaneo...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- ÉXITO (SCRIPT 3) -->
+            <!-- ÉXITO (SINCRONIZADO) -->
             <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden animate-fade-up">
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
                 <h2 class="text-3xl font-black uppercase text-white">ESCANEO EXITOSO</h2>
@@ -205,18 +212,16 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE TUS 3 LINKS
-        const SCRIPT_1_BD = 'https://script.google.com/macros/s/AKfycbwsrBKWFy0QQujSkHJ6Ybr_dlmm9S_LdWGyE0aagcJC_-e9bqRbSZrQuNlENM65fJiYSQ/exec';
-        const SCRIPT_2_ORDEN = 'https://script.google.com/macros/s/AKfycbzg6JhuGwe2YeliZTVVZAorslIp3VSEjBQdR0dwKzGLLyspRHfyZmFfOWTFEZ8zRiQt/exec';
-        const SCRIPT_3_DELEGADO = 'https://script.google.com/macros/s/AKfycbyVi6bG2yUPEpKAbR7VfC_4WyBASQf-GdXGDGzjCR6qX5lXylF7wQwLpxLubxi6Mx2N/exec';
+        // CONFIGURACIÓN DE LINKS
+        const LINK_1_BD = 'https://script.google.com/macros/s/AKfycbwsrBKWFy0QQujSkHJ6Ybr_dlmm9S_LdWGyE0aagcJC_-e9bqRbSZrQuNlENM65fJiYSQ/exec';
+        const LINK_2_SINCRO = 'https://script.google.com/macros/s/AKfycbxcimdYmvKhLPNSZ8JvA9qUz8B777fdJQ0LQ1B-iInLi_vnlHvKamg1HcTG06K5Mzaz/exec';
 
         let alumno = null;
-        let pollEscaneo = null;
+        let pollInterval = null;
 
         function updateClock() {
             const now = new Date();
             document.getElementById('live-clock').innerText = now.toLocaleTimeString();
-            // Lógica Mañana: 9pm a 7am
             const h = now.getHours();
             const cardM = document.getElementById('card-mañana');
             const badgeM = document.getElementById('badge-m');
@@ -233,10 +238,10 @@
         // 1. VERIFICAR DNI (SCRIPT 1)
         document.getElementById('verifyBtn').addEventListener('click', function() {
             const dni = document.getElementById('dniInput').value.trim();
-            if(dni.length < 8) return alert("DNI Incorrecto");
+            if(dni.length < 8) return alert("DNI Inválido");
             this.innerText = "BUSCANDO...";
             
-            fetch(`${SCRIPT_1_BD}?dni=${dni}`)
+            fetch(`${LINK_1_BD}?dni=${dni}`)
             .then(r => r.json()).then(data => {
                 if(data.found) {
                     alumno = data; alumno.dni = dni;
@@ -244,37 +249,39 @@
                     document.getElementById('displayDni').innerText = "DNI: " + dni;
                     document.getElementById('step-verify').classList.add('hidden');
                     document.getElementById('step-selection').classList.remove('hidden');
+                    // Cargar contador total desde el Script 2
+                    fetch(`${LINK_2_SINCRO}?accion=consultar_total`).then(r=>r.json()).then(d=>document.getElementById('conteo-real').innerText = d.total || 0);
                 } else {
                     alert("No encontrado en la Base de Datos");
                     this.innerText = "Verificar Alumno";
                 }
-            }).catch(e => alert("Error de conexión con Script 1"));
+            });
         });
 
-        // 2. GENERAR TICKET (SCRIPT 2)
+        // 2. GENERAR TICKET (SCRIPT 2 -> solicitar_cola)
         function generarTicket(turno) {
             document.getElementById('step-selection').classList.add('hidden');
             document.getElementById('step-loading').classList.remove('hidden');
 
-            fetch(`${SCRIPT_2_ORDEN}?dni=${alumno.dni}&nombre=${encodeURIComponent(alumno.Estudiante)}&turno=${turno}`)
+            fetch(`${LINK_2_SINCRO}?dni=${alumno.dni}&accion=solicitar_cola`)
             .then(r => r.json()).then(res => {
                 document.getElementById('step-loading').classList.add('hidden');
                 document.getElementById('step-ticket').classList.remove('hidden');
 
                 const orden = res.orden;
                 const fecha = new Date().toLocaleDateString();
-                const dataQR = btoa(`UNAC|${alumno.dni}|${turno}|${fecha}`);
+                const dataQR = btoa(`UNAC-TICKET|${alumno.dni}|${turno}|${fecha}`);
 
-                // REGLA: Tarde y 1-40 -> Ticket Blanco. Otros -> Solo QR.
                 if(turno === 'TARDE' && orden <= 40) {
                     document.getElementById('premium-ticket').classList.remove('hidden');
                     document.getElementById('p-fecha').innerText = fecha;
                     document.getElementById('p-asiento').innerText = orden;
                     document.getElementById('td-nom').innerText = alumno.Estudiante;
                     document.getElementById('td-fac').innerText = alumno.Facultad || "UNAC";
+                    document.getElementById('td-cod').innerText = alumno.Codigo || "------";
                     document.getElementById('td-dni').innerText = alumno.dni;
                     document.getElementById('qrcode-p').innerHTML = "";
-                    new QRCode(document.getElementById("qrcode-p"), { text: dataQR, width: 150, height: 150 });
+                    new QRCode(document.getElementById("qrcode-p"), { text: dataQR, width: 140, height: 140 });
                 } else {
                     document.getElementById('std-ticket').classList.remove('hidden');
                     document.getElementById('ticketName').innerText = alumno.Estudiante;
@@ -282,17 +289,21 @@
                     document.getElementById('qrcode').innerHTML = "";
                     new QRCode(document.getElementById("qrcode"), { text: dataQR, width: 200, height: 200 });
                 }
-                iniciarSincronizacion();
-            }).catch(e => alert("Error al conectar con Script 2"));
+                // Iniciar Sincronización (SCRIPT 2 -> consultar)
+                esperarEscaneo();
+            }).catch(e => {
+                alert("Error de conexión con el servidor de cola.");
+                location.reload();
+            });
         }
 
-        // 3. SINCRONIZAR CON DELEGADO (SCRIPT 3)
-        function iniciarSincronizacion() {
-            pollEscaneo = setInterval(() => {
-                fetch(`${SCRIPT_3_DELEGADO}?dni=${alumno.dni}&accion=check`)
+        // 3. SINCRONIZACIÓN (SCRIPT 2 -> consultar)
+        function esperarEscaneo() {
+            pollInterval = setInterval(() => {
+                fetch(`${LINK_2_SINCRO}?dni=${alumno.dni}&accion=consultar`)
                 .then(r => r.json()).then(data => {
-                    if(data.escaneado === true || data.status === "success") {
-                        clearInterval(pollEscaneo);
+                    if(data.asistio === true) {
+                        clearInterval(pollInterval);
                         document.getElementById('step-ticket').classList.add('hidden');
                         document.getElementById('step-success').classList.remove('hidden');
                         new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(()=>{});
@@ -302,8 +313,6 @@
         }
 
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
-
-        // Animación Three.js
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
