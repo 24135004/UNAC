@@ -206,6 +206,18 @@
         const LINK_1_BD = 'https://script.google.com/macros/s/AKfycbwsrBKWFy0QQujSkHJ6Ybr_dlmm9S_LdWGyE0aagcJC_-e9bqRbSZrQuNlENM65fJiYSQ/exec';
         const LINK_2_SINCRO = 'https://script.google.com/macros/s/AKfycbxcimdYmvKhLPNSZ8JvA9qUz8B777fdJQ0LQ1B-iInLi_vnlHvKamg1HcTG06K5Mzaz/exec';
 
+        // LISTA DE PRIORIDAD EN ORDEN SUMINISTRADA
+        const LISTA_PRIORIDAD = [
+            "70694926", "61313420", "70533533", "72995814", "75441962", 
+            "71726830", "60882501", "74826659", "61268955", "74233547", 
+            "60992185", "61508922", "77087281", "60496379", "75181015", 
+            "61038909", "61331640", "70718321", "74647344", "72424198", 
+            "71686600", "62744970", "74092525", "70850238", "74640542", 
+            "77572173", "72869380", "60795944", "70632476", "70993479", 
+            "71351971", "60166378", "73292433", "72607184", "70743121", 
+            "70629809", "74539012", "61167232", "61057836", "70700848"
+        ];
+
         let alumno = null;
         let pollInterval = null;
 
@@ -232,7 +244,6 @@
             const badgeT = document.getElementById('badge-t');
             const infoT = document.getElementById('info-t');
 
-            // Abrir si son las 5:10 PM en adelante hasta las 5:59 PM
             const isOpenT = (h === 17 && m >= 10);
 
             if (isOpenT) {
@@ -282,7 +293,13 @@
                 document.getElementById('step-loading').classList.add('hidden');
                 document.getElementById('step-ticket').classList.remove('hidden');
 
-                const orden = res.orden;
+                // LÓGICA DE PRIORIDAD PARA LA TARDE
+                let orden = res.orden;
+                const posPrioridad = LISTA_PRIORIDAD.indexOf(alumno.dni);
+                if (turno === 'TARDE' && posPrioridad !== -1) {
+                    orden = posPrioridad + 1; // Asigna el número según tu lista
+                }
+
                 const fecha = new Date().toLocaleDateString();
                 const dataQR = btoa(`UNAC-OFFICIAL|${alumno.dni}|${turno}|${fecha}`);
 
