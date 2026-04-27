@@ -137,11 +137,10 @@
 
             <!-- PASO 3: TICKET QR -->
             <div id="step-ticket" class="glass p-8 w-full max-w-sm mx-auto text-center border-b-4 border-yellow-500 hidden animate-fade-up">
-                <!-- Información para los 40 primeros -->
                 <div id="extra-info-40" class="hidden mb-4 border-b border-white/10 pb-4">
                    <h3 id="orderName" class="text-lg font-black uppercase italic text-white"></h3>
                    <p class="text-yellow-500 font-black text-xs uppercase">N° de Orden</p>
-                   <div id="orderNumber" class="text-4xl font-black text-white"></div>
+                   <div id="orderNumber" class="text-4xl font-black text-white" style="line-height: 1; margin: 10px 0; font-size: 50px; color: #ffc107;"></div>
                 </div>
 
                 <div id="qrcode" class="flex justify-center mb-6 p-2 bg-white rounded-lg shadow-2xl"></div>
@@ -170,7 +169,7 @@
                 <button onclick="location.reload()" class="text-yellow-500 text-[10px] font-black uppercase underline tracking-[3px]">Volver</button>
             </div>
 
-            <!-- CUADRADO DE CONTEO SOLICITADO -->
+            <!-- CUADRADO DE CONTEO -->
             <div id="counter-box" class="glass p-6 w-full max-w-xs mt-10 text-center animate-fade-up border-b-2 border-yellow-500">
                 <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">QR Generados hoy:</p>
                 <div id="global-count" class="text-3xl font-black text-white">0</div>
@@ -187,7 +186,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwikhlAlKoQQPLzsll-9lEI7U2Rujz0NToqNQtQe6e5LdvrjTkbVa0IEJEfjEkrG1Hw/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycby1wq6iMP5LhaG4m3sNxxOeEHb5i-cJ2hSdBLgBs2qY3qelJ3qDZgmyODbfgExqQvBBHQ/exec';
         let currentDni = "";
         let currentName = "";
         let pollInterval = null;
@@ -218,7 +217,6 @@
                 lM.innerText = "Cerrado"; lM.className = "status-badge badge-closed";
             }
 
-            // CAMBIO: Turno Tarde habilita exactamente a las 5:00 PM (Hora 17)
             if (h >= 17 && h < 19) {
                 cT.classList.add('active'); cT.classList.remove('locked');
                 lT.innerText = "Abierto"; lT.className = "status-badge badge-open";
@@ -237,7 +235,6 @@
             document.getElementById('ticketName').innerText = currentName;
             document.getElementById('ticketInfo').innerText = `TURNO: ${turno} | FECHA: ${dateStr}`;
 
-            // Lógica para mostrar datos si es de los 40 primeros (Simulado con contador)
             if (turno === '06:00 PM' && alumnoOrden <= 40) {
                 document.getElementById('extra-info-40').classList.remove('hidden');
                 document.getElementById('orderName').innerText = currentName;
@@ -276,21 +273,30 @@
             fetch(`${API_URL}?dni=${dni}&accion=consultar&t=${Date.now()}`)
                 .then(res => res.json()).then(data => {
                     this.innerText = "Verificar Alumno";
-                    if(data.asistio) {
-                        showError("Ya Abordaste", "Tu ticket de hoy ya fue procesado.");
+                    
+                    if(data.found) {
+                        if(data.asistio) {
+                            showError("Ya Abordaste", "Tu ticket de hoy ya fue procesado correctamente.");
+                        } else {
+                            currentDni = dni;
+                            currentName = data.nombre || data.Estudiante || "ESTUDIANTE";
+                            alumnoOrden = data.orden || 0; 
+                            
+                            document.getElementById('global-count').innerText = data.total_generados || alumnoOrden;
+                            document.getElementById('step-verify').classList.add('hidden');
+                            document.getElementById('step-selection').classList.remove('hidden');
+                            document.getElementById('welcomeName').innerText = "HOLA, " + currentName.split(' ')[0];
+                            document.getElementById('displayDni').innerText = "DNI: " + dni;
+                            updateClock();
+                        }
                     } else {
-                        currentDni = dni;
-                        currentName = "Estudiante UNAC";
-                        // Obtenemos el "orden" basado en cuántos van
-                        alumnoOrden = Math.floor(Math.random() * 50) + 1; // Aquí se vincularía con el conteo real
-                        document.getElementById('global-count').innerText = alumnoOrden;
-
-                        document.getElementById('step-verify').classList.add('hidden');
-                        document.getElementById('step-selection').classList.remove('hidden');
-                        document.getElementById('welcomeName').innerText = "HOLA, ESTUDIANTE";
-                        document.getElementById('displayDni').innerText = "DNI: " + dni;
-                        updateClock();
+                        // RESTRICCIÓN SOLICITADA: SOLO DNI EN BASE DE DATOS
+                        showError("DNI NO ENCONTRADO", "No se encuentra en nuestra base de datos. Primero tiene que llenar el formulario de registro oficial.");
                     }
+                })
+                .catch(err => {
+                    this.innerText = "Verificar Alumno";
+                    alert("Error de conexión con la base de datos.");
                 });
         });
 
