@@ -18,13 +18,11 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
 
-        /* GIRO DEL BORDE DE FUEGO */
         @keyframes rotateFire {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* BRILLO EN CARTILLAS */
         @keyframes cardGlow {
             0% { border-color: rgba(255, 193, 7, 0.1); box-shadow: 0 0 5px rgba(255, 193, 7, 0.05); }
             100% { border-color: rgba(255, 193, 7, 0.5); box-shadow: 0 0 25px rgba(255, 193, 7, 0.2); }
@@ -153,9 +151,13 @@
 
             <!-- GRID DE DELEGADOS -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mb-20 animate-fade-up">
-                <!-- Antonella -->
+                <!-- Antonella CORREGIDO -->
                 <div class="card-delegate glass">
-                    <div class="circle-fire-wrapper"><div class="inner-circle text-3xl">👩‍💼</div></div>
+                    <div class="circle-fire-wrapper">
+                        <div class="inner-circle">
+                            <img src="WhatsApp_Image_2026-04-26_at_8.21.18_PM-removebg-preview.png" class="no-download" oncontextmenu="return false;" ondragstart="return false;">
+                        </div>
+                    </div>
                     <h3 class="text-lg font-black uppercase italic leading-tight mb-1">Antonella Flores</h3>
                     <p class="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-2">C. CONTABLES</p>
                     <p class="text-white/60 text-[9px] font-bold uppercase mb-3">DELEGADA DE TURNO NOCHE</p>
@@ -177,7 +179,7 @@
                     <a href="https://wa.me/51917002183" target="_blank" class="btn-whatsapp">Contactar</a>
                 </div>
 
-                <!-- Jefry CORREGIDO -->
+                <!-- Jefry -->
                 <div class="card-delegate glass">
                     <div class="circle-fire-wrapper">
                         <div class="inner-circle">
@@ -192,7 +194,7 @@
                 </div>
             </div>
 
-            <!-- TRANSPARENCIA ORIGINAL -->
+            <!-- TRANSPARENCIA -->
             <div class="w-full max-w-3xl glass p-10 animate-fade-up">
                 <div class="text-center mb-8"><h2 class="text-xl font-black uppercase italic text-yellow-500 tracking-widest">📘 Propósito y Transparencia 🚀</h2></div>
                 <div class="space-y-4">
