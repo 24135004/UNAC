@@ -30,12 +30,13 @@
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
         #globe-container { width: 100%; height: 300px; pointer-events: none; margin-top: -20px; }
         .btn-acceso { border: 1px solid rgba(255, 193, 7, 0.3); color: var(--accent); padding: 10px 25px; font-size: 10px; font-weight: 900; text-transform: uppercase; border-radius: 50px; transition: 0.3s; margin-top: -40px; position: relative; z-index: 30; }
+        
         .card-turno { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; transition: 0.4s; }
         .card-turno.active { border-color: var(--accent); background: rgba(255, 193, 7, 0.05); }
-        .card-turno.locked { opacity: 0.4; filter: grayscale(1); }
+        .card-turno.locked { opacity: 0.3; filter: grayscale(1); }
         .timer-badge { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 900; background: var(--accent); color: black; padding: 4px 10px; border-radius: 50px; display: inline-block; margin-bottom: 10px; }
+        
         #qrcode img { margin: 0 auto; border: 8px solid white; border-radius: 10px; }
-        .info-msg { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -71,50 +72,56 @@
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
+            
             <div class="text-center mb-10 animate-fade-up">
-                <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">GENERADOR DE PASES</span>
-                <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Ticket de <span class="text-yellow-500">Abordaje</span></h1>
-                <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70 mb-2"></p>
+                <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">SOLICITUD DE PASE</span>
+                <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Tickets <span class="text-yellow-500">Oficiales</span></h1>
+                <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
             </div>
 
+            <!-- BUSCADOR -->
             <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
-                <p class="text-xs text-gray-400 mb-6 uppercase tracking-widest">Paso 1: Consulta tu estado en tiempo real</p>
-                <input type="text" id="dniInput" placeholder="INGRESA TU DNI" maxlength="8">
+                <input type="text" id="dniInput" placeholder="N° DE DNI" maxlength="8">
                 <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
             </div>
 
+            <!-- SELECCIÓN DE TURNOS -->
             <div id="step-selection" class="w-full max-w-4xl mx-auto hidden animate-fade-up">
-                <div class="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl mb-8 text-center">
-                    <h2 id="welcomeName" class="text-2xl font-black uppercase italic text-yellow-500"></h2>
-                    <p class="text-[10px] text-gray-400 uppercase font-bold mt-1">Paso 2: Selección de Horario</p>
-                </div>
+                <h2 id="welcomeName" class="text-2xl font-black uppercase italic text-center text-white mb-8"></h2>
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- MAÑANA -->
                     <div id="card-mañana" class="card-turno">
-                        <span class="timer-badge">SALIDA 05:15 AM</span>
-                        <h3 class="text-3xl font-black italic">MAÑANA</h3>
-                        <div id="mañana-status" class="mt-6 text-[11px] font-bold"></div>
+                        <span class="timer-badge">TURNO MAÑANA</span>
+                        <h3 class="text-3xl font-black italic">05:15 AM</h3>
+                        <div id="mañana-status" class="mt-6"></div>
                     </div>
+
+                    <!-- TARDE -->
                     <div id="card-tarde" class="card-turno">
-                        <span class="timer-badge">SALIDA 06:00 PM</span>
-                        <h3 class="text-3xl font-black italic">TARDE</h3>
-                        <div id="tarde-status" class="mt-6 text-[11px] font-bold"></div>
+                        <span class="timer-badge">TURNO TARDE</span>
+                        <h3 class="text-3xl font-black italic">06:00 PM</h3>
+                        <div id="tarde-status" class="mt-6"></div>
                     </div>
+
                 </div>
             </div>
 
+            <!-- TICKET QR -->
             <div id="step-ticket" class="glass p-8 w-full max-w-sm mx-auto text-center border-b-4 border-yellow-500 hidden animate-fade-up">
                 <div id="qrcode" class="flex justify-center mb-6 p-2 bg-white rounded-lg shadow-2xl"></div>
                 <div class="text-left border-t border-white/10 pt-4">
-                    <p id="ticketName" class="font-black uppercase italic text-lg text-white mb-1"></p>
-                    <p id="ticketInfo" class="text-yellow-500 font-bold text-[10px] uppercase"></p>
-                    <p class="text-white text-[10px] font-bold uppercase mt-4">⚠️ Muestra este código al delegado. Si es borrado del sistema, podrás generar uno nuevo.</p>
+                    <p id="ticketName" class="font-black uppercase italic text-lg text-white"></p>
+                    <p id="ticketInfo" class="text-yellow-500 font-bold text-xs uppercase"></p>
+                    <p class="text-white/50 text-[9px] mt-2 font-bold uppercase tracking-widest">Este ticket se anula automáticamente después del horario de abordaje.</p>
                 </div>
-                <button onclick="location.reload()" class="mt-8 text-[10px] text-gray-500 font-black uppercase underline">Regresar</button>
+                <button onclick="location.reload()" class="mt-6 text-[10px] text-gray-500 font-black uppercase underline">Volver al inicio</button>
             </div>
 
             <div id="error-box" class="glass p-10 w-full max-w-xl mx-auto text-center border-t-2 border-red-600 hidden animate-fade-up">
-                <i class="fa-solid fa-triangle-exclamation text-red-500 text-5xl mb-4"></i>
-                <h3 class="text-red-500 font-black uppercase text-xl mb-3">DNI no registrado</h3>
+                <i class="fa-solid fa-circle-xmark text-red-500 text-5xl mb-4"></i>
+                <h3 class="text-red-500 font-black uppercase text-xl mb-3">DNI No Encontrado</h3>
                 <a href="registro.html" class="text-yellow-500 text-[10px] font-black uppercase underline">Ir al Registro</a>
             </div>
 
@@ -129,8 +136,9 @@
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyJmiJyrmSmpP1yOmkKsB4vJBTDde18OPoVDOStyyN-rIBC2vtXI-wZ1OGzxmTgxpM/exec';
-        let currentDni = ""; let currentName = ""; let alreadyScanned = false;
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz6US3Io8FglgIqVyA70KpjLSTSIydz1zh5TPNgR2ihOko1zlE560PluIsgAwhqOjYiAA/exec';
+        let currentDni = "";
+        let currentName = "";
 
         function updateClock() {
             const now = new Date();
@@ -139,26 +147,73 @@
         }
         setInterval(updateClock, 1000);
 
-        async function checkExcelStatus(dni) {
-            try {
-                // Consulta al Apps Script si el DNI está en la lista de escaneados actual
-                const res = await fetch(`${API_URL}?dni=${dni}&action=check&t=${new Date().getTime()}`);
-                const data = await res.json();
-                return data.scanned; // El Apps Script debe devolver {scanned: true/false}
-            } catch (e) { return false; }
+        function updateShiftLogics(now) {
+            const h = now.getHours();
+            const m = now.getMinutes();
+            const mañanaStatus = document.getElementById('mañana-status');
+            const tardeStatus = document.getElementById('tarde-status');
+            const cardMañana = document.getElementById('card-mañana');
+            const cardTarde = document.getElementById('card-tarde');
+
+            // --- TURNO MAÑANA: Desde las 9:00 PM (21h) hasta las 7:00 AM ---
+            if (h >= 21 || h < 7) {
+                cardMañana.className = "card-turno active";
+                mañanaStatus.innerHTML = `<button onclick="generarTicket('05:15 AM')" class="w-full bg-yellow-500 text-black font-black py-3 rounded-lg uppercase text-xs">Generar Pase 5:15 AM</button>`;
+            } else {
+                cardMañana.className = "card-turno locked";
+                mañanaStatus.innerHTML = `<p class="text-[9px] text-gray-500 font-bold uppercase">Habilitado desde las 9:00 PM</p>`;
+            }
+
+            // --- TURNO TARDE: Formulario a las 5:00 PM, Generar a las 5:03 PM hasta las 6:30 PM ---
+            if (h === 17) {
+                if (m < 3) {
+                    cardTarde.className = "card-turno active";
+                    tardeStatus.innerHTML = `<a href="https://forms.gle/vxQJRNv8prCnV41bA" target="_blank" class="block w-full bg-blue-600 text-white font-black py-2 rounded-lg text-center text-[10px] uppercase">Llenar Formulario (5:00 PM)</a>
+                                            <p class="text-[8px] text-gray-400 mt-2 uppercase">Opción de ticket disponible en 3 min...</p>`;
+                } else {
+                    cardTarde.className = "card-turno active";
+                    tardeStatus.innerHTML = `<button onclick="generarTicket('06:00 PM')" class="w-full bg-white text-black font-black py-3 rounded-lg uppercase text-xs">Generar Pase 6:00 PM</button>`;
+                }
+            } else if (h === 18 && m <= 30) {
+                cardTarde.className = "card-turno active";
+                tardeStatus.innerHTML = `<button onclick="generarTicket('06:00 PM')" class="w-full bg-white text-black font-black py-3 rounded-lg uppercase text-xs">Generar Pase 6:00 PM</button>`;
+            } else {
+                cardTarde.className = "card-turno locked";
+                tardeStatus.innerHTML = `<p class="text-[9px] text-gray-500 font-bold uppercase">Disponible 5:00 PM - 6:30 PM</p>`;
+            }
         }
 
-        document.getElementById('verifyBtn').addEventListener('click', async function() {
+        function generarTicket(turno) {
+            document.getElementById('step-selection').classList.add('hidden');
+            document.getElementById('step-ticket').classList.remove('hidden');
+            
+            const now = new Date();
+            // Si son después de las 9 PM, el ticket es para la fecha de mañana
+            let fechaValida = new Date();
+            if(turno === '05:15 AM' && now.getHours() >= 21) {
+                fechaValida.setDate(now.getDate() + 1);
+            }
+            
+            const dateStr = fechaValida.toLocaleDateString();
+            document.getElementById('ticketName').innerText = currentName;
+            document.getElementById('ticketInfo').innerText = `TURNO: ${turno} | FECHA: ${dateStr}`;
+
+            // PRIVACIDAD: UNAC|DNI|TURNO|FECHA
+            const secret = btoa(`UNAC-OFFICIAL|${currentDni}|${turno}|${dateStr}`);
+
+            document.getElementById('qrcode').innerHTML = "";
+            new QRCode(document.getElementById("qrcode"), {
+                text: secret, width: 200, height: 200, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        document.getElementById('verifyBtn').addEventListener('click', function() {
             const dni = document.getElementById('dniInput').value.trim();
             if(dni.length < 8) return alert("DNI inválido.");
-            this.innerText = "SINCRO CON EXCEL..."; this.disabled = true;
-
-            // Sincronización: Verifica si el delegado ya lo escaneó o lo borró
-            alreadyScanned = await checkExcelStatus(dni);
-
+            this.innerText = "VERIFICANDO...";
             fetch(`${API_URL}?dni=${dni}&t=${new Date().getTime()}`)
                 .then(res => res.json()).then(data => {
-                    this.innerText = "Verificar Alumno"; this.disabled = false;
+                    this.innerText = "Verificar Alumno";
                     if(data.found) {
                         currentDni = dni; currentName = (data.Nombres || data.Estudiante || "Estudiante");
                         document.getElementById('step-verify').classList.add('hidden');
@@ -172,54 +227,18 @@
                 });
         });
 
-        function updateShiftLogics(now) {
-            const h = now.getHours(); const m = now.getMinutes();
-            const mS = document.getElementById('mañana-status'); const tS = document.getElementById('tarde-status');
-            const cM = document.getElementById('card-mañana'); const cT = document.getElementById('card-tarde');
-
-            // MAÑANA (9 PM a 7 AM)
-            if (h >= 7 && h < 17) {
-                cM.className = "card-turno locked"; mS.innerHTML = `<span class="text-gray-500">CERRADO HASTA LAS 9 PM</span>`;
-            } else if (alreadyScanned && (h >= 21 || h < 7)) {
-                cM.className = "card-turno locked"; mS.innerHTML = `<span class="text-red-500">TICKET YA ESCANEADO</span>`;
-            } else if (h >= 21 || h < 7) {
-                cM.className = "card-turno active"; mS.innerHTML = `<button onclick="generarTicket('05:15 AM')" class="w-full bg-yellow-500 text-black font-black py-3 rounded-lg uppercase text-xs">Generar QR</button>`;
-            } else {
-                cM.className = "card-turno locked"; mS.innerHTML = `<span class="text-gray-500">HABILITA 9 PM</span>`;
-            }
-
-            // TARDE (5 PM a 6:30 PM)
-            if (alreadyScanned && (h === 17 || (h === 18 && m <= 30))) {
-                cT.className = "card-turno locked"; tS.innerHTML = `<span class="text-red-500">TICKET YA ESCANEADO</span>`;
-            } else if (h === 17) {
-                cT.className = "card-turno active";
-                if (m < 3) tS.innerHTML = `<a href="https://forms.gle/vxQJRNv8prCnV41bA" target="_blank" class="block w-full bg-blue-600 text-white font-black py-2 rounded-lg text-center text-[10px] uppercase">Llenar Formulario</a>`;
-                else tS.innerHTML = `<button onclick="generarTicket('06:00 PM')" class="w-full bg-white text-black font-black py-3 rounded-lg uppercase text-xs">Generar QR</button>`;
-            } else if (h === 18 && m <= 30) {
-                cT.className = "card-turno active"; tS.innerHTML = `<button onclick="generarTicket('06:00 PM')" class="w-full bg-white text-black font-black py-3 rounded-lg uppercase text-xs">Generar QR</button>`;
-            } else {
-                cT.className = "card-turno locked"; tS.innerHTML = `<span class="text-gray-500">DISPONIBLE 5 PM - 6:30 PM</span>`;
-            }
-        }
-
-        function generarTicket(turno) {
-            document.getElementById('step-selection').classList.add('hidden');
-            document.getElementById('step-ticket').classList.remove('hidden');
-            const dateStr = new Date().toLocaleDateString();
-            document.getElementById('ticketName').innerText = currentName;
-            document.getElementById('ticketInfo').innerText = `TURNO: ${turno} | FECHA: ${dateStr}`;
-            const secret = btoa(`UNAC-OFFICIAL|${currentDni}|${turno}|${dateStr}`);
-            document.getElementById('qrcode').innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), { text: secret, width: 200, height: 200, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
-        }
-
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
+        
         let scene, camera, renderer, globe;
         function initThree() {
-            const container = document.getElementById('globe-container'); if(!container) return;
-            scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.z = 100; renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight); container.appendChild(renderer.domElement);
+            const container = document.getElementById('globe-container');
+            if(!container) return;
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 100;
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
             globe = new THREE.Mesh(new THREE.IcosahedronGeometry(30, 4), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.1 }));
             scene.add(globe); animate();
         }
