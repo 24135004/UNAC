@@ -2,122 +2,185 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNAC | Acceso Delegados</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UNAC | Panel de Control Delegados</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Librería de Escaneo QR -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
         :root { --accent: #ffc107; --dark: #050505; }
         body { 
-            background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+            background-color: var(--dark);
             font-family: 'Inter', sans-serif;
             color: white;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
+            margin: 0; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
         }
-        .glass-login {
+        .glass {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
         }
         input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.4) !important;
-            border: 1px solid rgba(255, 193, 7, 0.2) !important;
-            color: white !important;
-            padding: 14px 18px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            outline: none;
-            transition: 0.3s;
+            width: 100%; background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,193,7,0.3);
+            color: white; padding: 15px; border-radius: 10px;
+            margin-bottom: 15px; outline: none;
         }
-        input:focus {
-            border-color: var(--accent) !important;
-            box-shadow: 0 0 15px rgba(255, 193, 7, 0.1);
+        input:focus { border-color: var(--accent); }
+        .btn-gold {
+            background: var(--accent); color: black;
+            width: 100%; padding: 15px; border-radius: 10px;
+            font-weight: 900; text-transform: uppercase; transition: 0.3s;
         }
-        .btn-login {
-            background: var(--accent);
-            color: black;
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
-            cursor: pointer;
+        /* Estilos específicos para que el escáner se vea bien */
+        #reader {
+            width: 100% !important;
+            border: none !important;
+            border-radius: 15px;
+            overflow: hidden;
         }
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255, 193, 7, 0.2);
-            background: #fff;
+        #reader__dashboard_section_csr button {
+            background: var(--accent) !important;
+            color: black !important;
+            padding: 8px 15px !important;
+            border-radius: 5px !important;
+            font-weight: bold !important;
+            text-transform: uppercase !important;
+            font-size: 11px !important;
+            border: none !important;
         }
-        .label-custom {
-            font-size: 10px;
-            font-weight: 800;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-            display: block;
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="glass-login text-center">
-        <!-- Logo -->
-        <div class="flex justify-center mb-6">
-            <div class="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center shadow-lg">
-                <i class="fa-solid fa-user-shield text-black text-2xl"></i>
+    <!-- SECCIÓN 1: LOGIN -->
+    <div id="login-container" class="w-full max-w-sm px-6 mt-20 text-center">
+        <div class="mb-8">
+            <i class="fa-solid fa-user-shield text-yellow-500 text-5xl mb-4"></i>
+            <h1 class="text-2xl font-black uppercase italic tracking-tighter">Acceso <span class="text-yellow-500">Delegados</span></h1>
+            <p class="text-gray-500 text-[10px] tracking-widest uppercase">Sistema de Verificación UNAC</p>
+        </div>
+
+        <div class="glass p-8">
+            <div class="text-left mb-4">
+                <label class="text-[9px] font-black text-yellow-500 uppercase tracking-widest ml-1">DNI del Delegado</label>
+                <input type="text" id="userDni" placeholder="Ingrese DNI" maxlength="8">
+                
+                <label class="text-[9px] font-black text-yellow-500 uppercase tracking-widest ml-1">Contraseña</label>
+                <input type="password" id="userPass" placeholder="••••••••">
+            </div>
+            <button onclick="intentarLogin()" class="btn-gold">Entrar al Sistema</button>
+            <p id="errorLogin" class="text-red-500 text-[10px] font-bold mt-4 hidden uppercase">Credenciales incorrectas o sin permiso.</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: ESCÁNER Y ESTADÍSTICAS -->
+    <div id="scanner-container" class="w-full max-w-lg px-4 py-8 hidden">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-xl font-black italic uppercase">Panel de <span class="text-yellow-500">Control</span></h2>
+                <p id="delegadoNombre" class="text-gray-400 text-[10px] uppercase font-bold tracking-widest"></p>
+            </div>
+            <button onclick="window.location.reload()" class="bg-red-500/10 text-red-500 text-[10px] px-3 py-1 rounded font-black">CERRAR</button>
+        </div>
+
+        <!-- ESCÁNER -->
+        <div class="glass p-4 mb-6">
+            <div class="flex items-center gap-2 mb-4 text-yellow-500">
+                <i class="fa-solid fa-camera text-xs"></i>
+                <span class="text-[10px] font-black uppercase tracking-widest">Escáner de Tickets QR</span>
+            </div>
+            <div id="reader"></div>
+        </div>
+
+        <!-- ESTADÍSTICAS -->
+        <div class="grid grid-cols-2 gap-4 mb-6 text-center">
+            <div class="glass p-4">
+                <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Escaneados hoy</span>
+                <span id="contador" class="text-3xl font-black text-yellow-500">0</span>
+            </div>
+            <div class="glass p-4 text-left">
+                <span class="text-[9px] text-gray-500 uppercase font-black block mb-1 text-center">Último DNI</span>
+                <span id="ultimoDni" class="text-lg font-black text-white block text-center">---</span>
             </div>
         </div>
 
-        <h2 class="text-2xl font-black italic uppercase mb-2">Panel Delegados</h2>
-        <p class="text-gray-400 text-xs mb-8 uppercase tracking-widest">Ingrese sus credenciales</p>
-
-        <form id="loginForm">
-            <div class="text-left">
-                <label class="label-custom">Documento de Identidad</label>
-                <input type="text" id="dni" placeholder="N° de DNI" maxlength="8" required>
-                
-                <label class="label-custom">Contraseña de Sistema</label>
-                <input type="password" id="password" placeholder="••••••••" required>
+        <!-- HISTORIAL -->
+        <div class="glass p-6">
+            <h3 class="text-[10px] font-black uppercase text-gray-400 mb-4 border-b border-white/10 pb-2">Registro de Abordaje</h3>
+            <div id="listaEscaneo" class="space-y-3 max-h-60 overflow-y-auto pr-2">
+                <!-- Los nombres o DNIs escaneados aparecerán aquí -->
+                <p class="text-[10px] text-gray-600 italic text-center py-4">Esperando primer escaneo...</p>
             </div>
-
-            <button type="submit" class="btn-login mt-4">
-                Ingresar al Sistema
-            </button>
-        </form>
-
-        <div class="mt-8">
-            <a href="javascript:window.close();" class="text-[10px] text-gray-500 hover:text-white uppercase tracking-widest transition">
-                <i class="fa-solid fa-arrow-left mr-1"></i> Volver o Cerrar
-            </a>
         </div>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const dni = document.getElementById('dni').value;
-            const pass = document.getElementById('password').value;
+        const DELEGADOS = ["71886034", "77570731"];
+        let count = 0;
+        let html5QrcodeScanner;
 
-            // Aquí puedes agregar la lógica de validación
-            alert("Iniciando sesión para el DNI: " + dni + "\n(Conectando con base de datos de delegados...)");
+        function intentarLogin() {
+            const dni = document.getElementById('userDni').value;
+            const pass = document.getElementById('userPass').value;
+
+            // Validación: El DNI debe estar en la lista y la contraseña debe ser igual al DNI
+            if (DELEGADOS.includes(dni) && dni === pass) {
+                iniciarSistema(dni);
+            } else {
+                document.getElementById('errorLogin').classList.remove('hidden');
+            }
+        }
+
+        function iniciarSistema(dni) {
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('scanner-container').classList.remove('hidden');
+            document.getElementById('delegadoNombre').innerText = "Delegado: " + dni;
             
-            // Ejemplo: if(dni === '123' && pass === '123') { window.location.href = 'panel_control.html'; }
-        });
+            // Iniciar Escáner QR
+            html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", { fps: 10, qrbox: 250 }
+            );
+            html5QrcodeScanner.render(onScanSuccess);
+        }
+
+        function onScanSuccess(decodedText) {
+            // "decodedText" es el valor del QR (ej. el DNI del alumno)
+            count++;
+            
+            // Sonido de éxito
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+            audio.play();
+
+            // Actualizar Interfaz
+            document.getElementById('contador').innerText = count;
+            document.getElementById('ultimoDni').innerText = decodedText;
+
+            const lista = document.getElementById('listaEscaneo');
+            if(count === 1) lista.innerHTML = ''; // Limpiar mensaje inicial
+
+            const item = document.createElement('div');
+            item.className = "flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-4 border-yellow-500 animate-fade-in";
+            item.innerHTML = `
+                <div class="flex flex-col">
+                    <span class="text-[11px] font-black uppercase text-white">ALUMNO: ${decodedText}</span>
+                    <span class="text-[9px] text-gray-500">Ticket Verificado ✅</span>
+                </div>
+                <span class="text-[10px] font-bold text-yellow-500">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            `;
+            lista.prepend(item);
+        }
     </script>
+
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
 </body>
 </html>
