@@ -23,33 +23,52 @@
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
+        #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; }
+        #mobile-menu.active { display: flex; }
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
         input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; }
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; }
         #globe-container { width: 100%; height: 300px; pointer-events: none; margin-top: -20px; }
         .btn-acceso { border: 1px solid rgba(255, 193, 7, 0.3); color: var(--accent); padding: 10px 25px; font-size: 10px; font-weight: 900; text-transform: uppercase; border-radius: 50px; transition: 0.3s; margin-top: -40px; position: relative; z-index: 30; }
-        
-        .card-turno { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 25px; border-radius: 24px; transition: 0.4s; position: relative; overflow: hidden; }
-        .card-turno.active { border-color: var(--accent); background: rgba(255, 193, 7, 0.04); }
-        .card-turno.locked { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
-        .status-badge { font-size: 9px; font-weight: 900; padding: 4px 12px; border-radius: 50px; text-transform: uppercase; }
-        .badge-open { background: #10b981; color: white; }
-        .badge-closed { background: #ef4444; color: white; }
-        
-        /* DISEÑO TICKET BLANCO IMAGEN (TARDE 1-40) */
-        .ticket-white { background: #ffffff; color: #333333; border: 2px dashed #ffc107; border-radius: 15px; padding: 25px; width: 100%; max-width: 420px; margin: 0 auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        .ticket-white h4 { color: #888; font-size: 10px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
-        .fecha-destacada { color: #d4a017; font-size: 28px; font-weight: 900; margin: 5px 0; }
-        .asiento-num { color: #e53e3e; font-size: 85px; font-weight: 900; line-height: 1; margin: 5px 0; }
-        .table-data { width: 100%; margin-top: 20px; font-size: 10px; text-align: left; border-top: 1px solid #eee; padding-top: 10px; }
+
+        /* CARTILLAS PANORÁMICAS */
+        .card-panorama {
+            position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
+            height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background-size: cover; background-position: center; transition: 0.4s; cursor: pointer;
+        }
+        .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
+        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
+        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
+        .badge-cerrado { background: #ef4444; color: white; }
+        .badge-abierto { background: #10b981; color: white; }
+        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
+
+        /* TICKET BLANCO (DISEÑO IMAGEN) */
+        .ticket-white { background: #ffffff; color: #333333; border: 2px dashed #ffc107; border-radius: 15px; padding: 25px; width: 100%; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .fecha-ticket { color: #d4a017; font-size: 26px; font-weight: 900; margin: 5px 0; }
+        .asiento-num { color: #e53e3e; font-size: 80px; font-weight: 900; line-height: 1; margin: 5px 0; }
+        .table-data { width: 100%; font-size: 10px; text-align: left; border-top: 1px solid #eee; margin-top: 20px; padding-top: 10px; }
         .table-data td { padding: 4px 0; font-weight: 900; text-transform: uppercase; }
-        .table-data .val { text-align: right; color: #666; font-weight: 600; }
+        .table-data .val { text-align: right; color: #666; font-weight: 500; }
         #qrcode img, #qrcode-p img { margin: 0 auto; border: 4px solid white; border-radius: 5px; }
     </style>
 </head>
 <body>
 
+    <div id="mobile-menu">
+        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
+        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500 underline">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
+    </div>
+
     <div class="main-wrapper">
+        <!-- BARRA DE NAVEGACIÓN RESTAURADA (ORIGINAL) -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
@@ -59,10 +78,14 @@
                 </div>
             </div>
             <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
-                <a href="#" class="nav-link">Inicio</a><a href="#" class="nav-link">Rutas</a>
-                <a href="#" class="nav-link active-link">Ticket</a><a href="#" class="nav-link">Registro</a>
-                <a href="#" class="nav-link">Noticias</a><a href="#" class="nav-link">Contacto</a>
+                <a href="index.html" class="nav-link">Inicio</a>
+                <a href="rutas.html" class="nav-link">Rutas</a>
+                <a href="ticket.html" class="nav-link active-link">Ticket</a>
+                <a href="registro.html" class="nav-link">Registro</a>
+                <a href="noticias.html" class="nav-link">Noticias</a>
+                <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
+            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs">MENU <i class="fa-solid fa-bars-staggered"></i></button>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
@@ -88,82 +111,71 @@
                 <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
             </div>
 
-            <!-- PASO 2: SELECCIÓN DETALLADA -->
-            <div id="step-selection" class="w-full max-w-4xl mx-auto hidden animate-fade-up">
-                <!-- FICHA DE PASAJERO ORIGINAL -->
+            <!-- PASO 2: SELECCIÓN -->
+            <div id="step-selection" class="w-full max-w-5xl mx-auto hidden animate-fade-up">
                 <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
-                    <div class="flex items-center gap-4 mb-4 md:mb-0">
+                    <div class="flex items-center gap-4">
                         <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10">
                             <i class="fa-solid fa-user-graduate"></i>
                         </div>
                         <div>
-                            <h2 id="welcomeName" class="text-xl font-black uppercase italic leading-none"></h2>
+                            <h2 id="welcomeName" class="text-xl font-black uppercase italic leading-none text-white"></h2>
                             <p id="displayDni" class="text-[10px] text-gray-500 font-bold mt-1 tracking-widest"></p>
                         </div>
-                    </div>
-                    <div class="text-center md:text-right">
-                        <span class="status-badge badge-open">Habilitado</span>
-                        <p class="text-[9px] text-gray-500 uppercase mt-2 font-bold italic">Base de datos UNAC actualizada</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
-                    <div id="card-mañana" class="card-turno">
-                        <span id="label-mañana" class="status-badge"></span>
-                        <h3 class="text-3xl font-black italic mb-1 uppercase tracking-tighter">Mañana</h3>
-                        <p class="text-[11px] text-yellow-500 font-black mb-4 uppercase">Salida: 05:15 AM</p>
-                        <div id="m-status"></div>
+                    <div id="card-mañana" class="card-panorama card-m-img" onclick="generarTicket('05:15 AM')">
+                        <span id="badge-m" class="badge-img">Cerrado</span>
+                        <div class="shift-title text-white">Mañana</div>
+                        <div class="salida-text text-yellow-500">SALIDA: 05:15 AM</div>
+                        <p id="avail-m" class="text-[9px] text-white/40 mt-3 uppercase font-bold tracking-widest"></p>
                     </div>
-                    <div id="card-tarde" class="card-turno">
-                        <span id="label-tarde" class="status-badge"></span>
-                        <h3 class="text-3xl font-black italic mb-1 uppercase tracking-tighter text-white">Tarde</h3>
-                        <p class="text-[11px] text-white font-black mb-4 uppercase">Salida: 06:00 PM</p>
-                        <div id="t-status"></div>
+                    <div id="card-tarde" class="card-panorama card-t-img" onclick="generarTicket('06:00 PM')">
+                        <span id="badge-t" class="badge-img">Cerrado</span>
+                        <div class="shift-title text-white">Tarde</div>
+                        <div class="salida-text text-white">SALIDA: 06:00 PM</div>
+                        <p id="avail-t" class="text-[9px] text-white/40 mt-3 uppercase font-bold tracking-widest"></p>
                     </div>
                 </div>
 
-                <!-- CUADRADO DE CONTEO SINCRONIZADO -->
                 <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500 mb-10">
-                    <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">QR Solicitados en este turno:</p>
+                    <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">QR Solicitados hoy:</p>
                     <div id="conteo-total" class="text-4xl font-black text-white">0</div>
                 </div>
             </div>
 
             <!-- PASO 3: TICKET QR DINÁMICO -->
             <div id="step-ticket" class="w-full max-w-2xl mx-auto text-center hidden animate-fade-up">
-                
                 <p id="txt-saludo" class="text-left text-[11px] mb-4 opacity-80 text-white ml-2"></p>
-
-                <!-- TICKET BLANCO (DISEÑO IMAGEN - SOLO TARDE 1-40) -->
                 <div id="premium-ticket" class="ticket-white hidden animate-fade-up">
                     <h4>Válido únicamente para el día:</h4>
-                    <div class="fecha-destacada" id="p-fecha"></div>
+                    <div class="fecha-ticket" id="p-fecha"></div>
                     <div class="border-t border-gray-100 my-4"></div>
-                    <p style="font-size: 14px; font-weight: bold; color: #444;">Tu número de asiento es:</p>
+                    <p style="font-size: 13px; font-weight: bold; color: #444;">Tu número de asiento es:</p>
                     <div class="asiento-num" id="p-asiento"></div>
                     <div id="qrcode-p" class="my-6 flex justify-center"></div>
                     <p class="text-[9px] text-yellow-600 font-bold uppercase">Escaneado requerido para el ingreso</p>
-                    <p class="text-[8px] text-gray-400 mt-1" id="p-hora-val"></p>
+                    <p class="text-[8px] text-gray-400 mt-1" id="p-hora-v"></p>
                     <table class="table-data">
-                        <tr><td>Estudiante:</td><td class="val" id="row-nom"></td></tr>
-                        <tr><td>Facultad:</td><td class="val" id="row-fac"></td></tr>
-                        <tr><td>Código:</td><td class="val" id="row-cod"></td></tr>
-                        <tr><td>DNI/CE:</td><td class="val" id="row-dni"></td></tr>
+                        <tr><td>Estudiante:</td><td class="val" id="td-nom"></td></tr>
+                        <tr><td>Facultad:</td><td class="val" id="td-fac"></td></tr>
+                        <tr><td>Código:</td><td class="val" id="td-cod"></td></tr>
+                        <tr><td>DNI/CE:</td><td class="val" id="td-dni"></td></tr>
                     </table>
-                    <div class="mt-6 text-[8px] font-black text-gray-400 uppercase leading-tight">
+                    <div class="mt-6 text-[8px] font-black text-gray-400 uppercase leading-tight text-center">
                         Atentamente,<br>DELEGADO DE LA RUTA VENTANILLA<br>
                         <span class="text-yellow-600">#SIGAMOS_MEJORANDO</span> | <span class="text-blue-800">#UNAC_UNIDO</span>
                     </div>
                 </div>
-
-                <!-- TICKET ESTÁNDAR (MAÑANA O TARDE > 40) -->
                 <div id="std-ticket" class="glass p-8 w-full max-w-sm mx-auto hidden">
                     <div id="qrcode" class="flex justify-center mb-6 p-2 bg-white rounded-lg shadow-2xl"></div>
                     <div class="text-left border-t border-white/10 pt-4">
                         <p id="ticketName" class="font-black uppercase italic text-lg text-white"></p>
                         <p id="ticketInfo" class="text-yellow-500 font-bold text-xs uppercase"></p>
                         <div class="flex items-center gap-2 mt-4 text-[9px] uppercase font-bold text-gray-400">
-                            <i class="fa-solid fa-spinner fa-spin text-yellow-500"></i> Esperando escaneo del delegado...
+                            <i class="fa-solid fa-spinner fa-spin text-yellow-500"></i> Esperando escaneo...
                         </div>
                     </div>
                 </div>
@@ -173,8 +185,8 @@
             <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden animate-fade-up">
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
                 <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white">ESCANEO VÁLIDO</h2>
-                <p class="text-green-500 text-[10px] font-black uppercase">TICKET PROCESADO - PUEDE SUBIR</p>
-                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-10 py-3 rounded-full text-xs uppercase shadow-xl">Cerrar</button>
+                <p class="text-green-500 text-[10px] font-black uppercase">PUEDE SUBIR A BORDO</p>
+                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-8 py-3 rounded-full text-xs uppercase">Cerrar</button>
             </div>
 
             <!-- ERROR -->
@@ -185,9 +197,8 @@
                 <button onclick="location.reload()" class="text-yellow-500 text-[10px] font-black uppercase underline tracking-[3px]">Volver</button>
             </div>
 
-            <!-- GLOBO Y BOTÓN ACCESO -->
             <div id="globe-container" class="animate-float"></div>
-            <a href="#" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
+            <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </main>
 
         <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
@@ -198,14 +209,14 @@
 
     <script>
         const API_BD = 'https://script.google.com/macros/s/AKfycbzrYnHfvmKcXS0_cdLPl8ivpcTrvWNzh6x_2ehBRXejtpHfu-FtSOJ09ePrmSb4sFl-eQ/exec';
-        const API_DELEGADO = 'https://script.google.com/macros/s/AKfycbwikhlAlKoQQPLzsll-9lEI7U2Rujz0NToqNQtQe6e5LdvrjTkbVa0IEJEfjEkrG1Hw/exec';
+        const API_SYNC = 'https://script.google.com/macros/s/AKfycbwikhlAlKoQQPLzsll-9lEI7U2Rujz0NToqNQtQe6e5LdvrjTkbVa0IEJEfjEkrG1Hw/exec';
         
-        let alumno = null;
-        let pollInterval = null;
+        let user = null;
+        let poll = null;
 
         function updateClock() {
             document.getElementById('live-clock').innerText = new Date().toLocaleTimeString();
-            if(alumno) checkShifts();
+            if(user) checkShiftStatus();
         }
         setInterval(updateClock, 1000);
 
@@ -213,19 +224,15 @@
             const dni = document.getElementById('dniInput').value.trim();
             if(dni.length < 8) return alert("DNI Inválido");
             this.innerText = "VERIFICANDO...";
-            
-            fetch(`${API_BD}?dni=${dni}&t=${Date.now()}`)
-            .then(res => res.json()).then(data => {
+            fetch(`${API_BD}?dni=${dni}&t=${Date.now()}`).then(r => r.json()).then(data => {
                 this.innerText = "Verificar Alumno";
                 if(data.found) {
-                    alumno = data;
-                    alumno.dni = dni;
+                    user = data; user.dni = dni;
                     document.getElementById('welcomeName').innerText = "HOLA, " + data.Estudiante.split(' ')[0];
                     document.getElementById('displayDni').innerText = "DNI: " + dni;
                     document.getElementById('step-verify').classList.add('hidden');
                     document.getElementById('step-selection').classList.remove('hidden');
-                    syncCounter();
-                    setInterval(syncCounter, 5000);
+                    syncTotal(); setInterval(syncTotal, 5000);
                 } else {
                     document.getElementById('step-verify').classList.add('hidden');
                     document.getElementById('error-box').classList.remove('hidden');
@@ -233,69 +240,67 @@
             });
         });
 
-        function syncCounter() {
-            fetch(`${API_DELEGADO}?accion=consultar_total&t=${Date.now()}`)
-            .then(r => r.json()).then(d => {
+        function syncTotal() {
+            fetch(`${API_SYNC}?accion=consultar_total&t=${Date.now()}`).then(r => r.json()).then(d => {
                 const total = d.total || 0;
                 document.getElementById('conteo-total').innerText = total;
-                alumno.orden = total + 1;
+                user.orden = total + 1;
             });
         }
 
-        function checkShifts() {
+        function checkShiftStatus() {
             const h = new Date().getHours();
-            const lm = document.getElementById('label-mañana');
-            const lt = document.getElementById('label-tarde');
-            const ms = document.getElementById('m-status');
-            const ts = document.getElementById('t-status');
+            const m = new Date().getMinutes();
+            const cardM = document.getElementById('card-mañana');
+            const badgeM = document.getElementById('badge-m');
+            const cardT = document.getElementById('card-tarde');
+            const badgeT = document.getElementById('badge-t');
 
             if (h >= 21 || h < 7) {
-                lm.innerText = "Abierto"; lm.className = "status-badge badge-open";
-                ms.innerHTML = `<button onclick="generar('05:15 AM')" class="w-full bg-yellow-500 text-black font-black py-3 rounded-xl uppercase text-[10px]">Generar Pase</button>`;
-            } else { lm.innerText = "Cerrado"; lm.className = "status-badge badge-closed"; ms.innerHTML = "<p class='text-[9px] text-gray-500'>Disponible 9:00 PM</p>"; }
+                cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto";
+                document.getElementById('avail-m').innerText = "Disponible para generar";
+            } else { cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado"; document.getElementById('avail-m').innerText = "Disponible 9:00 PM"; }
 
-            if (h >= 17 && h < 19) {
-                lt.innerText = "Abierto"; lt.className = "status-badge badge-open";
-                ts.innerHTML = `<button onclick="generar('06:00 PM')" class="w-full bg-white text-black font-black py-3 rounded-xl uppercase text-[10px]">Generar Pase</button>`;
-            } else { lt.innerText = "Cerrado"; lt.className = "status-badge badge-closed"; ts.innerHTML = "<p class='text-[9px] text-gray-500'>Disponible 5:00 PM</p>"; }
+            if (h === 17 || (h === 18 && m <= 30)) {
+                cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto";
+                document.getElementById('avail-t').innerText = "Disponible para generar";
+            } else { cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado"; document.getElementById('avail-t').innerText = "Disponible 5:00 PM"; }
         }
 
-        function generar(turno) {
+        function generarTicket(turno) {
             document.getElementById('step-selection').classList.add('hidden');
             document.getElementById('step-ticket').classList.remove('hidden');
             const f = new Date().toLocaleDateString();
-            const payload = btoa(`UNAC-OFFICIAL|${alumno.dni}|${turno}|${f}`);
-            
-            document.getElementById('txt-saludo').innerHTML = `Hola <b>${alumno.Estudiante}</b>, se te hace entrega de tu ticket digital:`;
+            const qr = btoa(`UNAC-OFFICIAL|${user.dni}|${turno}|${f}`);
+            document.getElementById('txt-saludo').innerHTML = `Hola <b>${user.Estudiante}</b>, se te hace entrega de tu ticket digital:`;
 
-            if(turno === '06:00 PM' && alumno.orden <= 40) {
+            if(turno === '06:00 PM' && user.orden <= 40) {
                 document.getElementById('premium-ticket').classList.remove('hidden');
                 document.getElementById('p-fecha').innerText = f;
-                document.getElementById('p-asiento').innerText = alumno.orden;
-                document.getElementById('p-hora-val').innerText = `Validado a las ${new Date().getHours()}:${new Date().getMinutes()} hs.`;
-                document.getElementById('td-nom').innerText = alumno.Estudiante;
-                document.getElementById('td-fac').innerText = alumno.Facultad;
-                document.getElementById('td-cod').innerText = alumno.Codigo;
-                document.getElementById('td-dni').innerText = alumno.dni;
+                document.getElementById('p-asiento').innerText = user.orden;
+                document.getElementById('p-hora-v').innerText = `Validado a las ${new Date().getHours()}:${new Date().getMinutes()} hs.`;
+                document.getElementById('td-nom').innerText = user.Estudiante;
+                document.getElementById('td-fac').innerText = user.Facultad;
+                document.getElementById('td-cod').innerText = user.Codigo;
+                document.getElementById('td-dni').innerText = user.dni;
                 document.getElementById('qrcode-p').innerHTML = "";
-                new QRCode(document.getElementById("qrcode-p"), { text: payload, width: 150, height: 150 });
+                new QRCode(document.getElementById("qrcode-p"), { text: qr, width: 140, height: 140 });
             } else {
                 document.getElementById('std-ticket').classList.remove('hidden');
-                document.getElementById('ticketName').innerText = alumno.Estudiante;
+                document.getElementById('ticketName').innerText = user.Estudiante;
                 document.getElementById('ticketInfo').innerText = `${turno} | ${f}`;
                 document.getElementById('qrcode').innerHTML = "";
-                new QRCode(document.getElementById("qrcode"), { text: payload, width: 200, height: 200 });
+                new QRCode(document.getElementById("qrcode"), { text: qr, width: 200, height: 200 });
             }
             startPolling();
         }
 
         function startPolling() {
-            if(pollInterval) clearInterval(pollInterval);
-            pollInterval = setInterval(() => {
-                fetch(`${API_DELEGADO}?dni=${alumno.dni}&accion=consultar&t=${Date.now()}`)
-                .then(r => r.json()).then(data => {
+            if(poll) clearInterval(poll);
+            poll = setInterval(() => {
+                fetch(`${API_SYNC}?dni=${user.dni}&accion=consultar&t=${Date.now()}`).then(r => r.json()).then(data => {
                     if(data.asistio === true || data.asistio === "true") {
-                        clearInterval(pollInterval);
+                        clearInterval(poll);
                         document.getElementById('step-ticket').classList.add('hidden');
                         document.getElementById('step-success').classList.remove('hidden');
                         new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(()=>{});
@@ -305,8 +310,6 @@
         }
 
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
-        
-        // --- THREE.JS GLOBO ORIGINAL ---
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
