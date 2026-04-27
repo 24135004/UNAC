@@ -43,19 +43,23 @@
         #reader {
             width: 100% !important; border: none !important;
             border-radius: 15px; overflow: hidden;
-            background: #000;
+            background: black;
         }
+        /* Ocultar interfaz automática de la librería */
+        #reader__dashboard, #reader img { display: none !important; }
+
         .hidden { display: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 
-        /* Estilo de la Notificación Rápida de Escaneo */
-        #scan-notification {
+        /* Notificación Rápida de Escaneo */
+        #fast-notif {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 1000; background: #10b981; color: white; padding: 20px 30px;
+            z-index: 100; background: #10b981; color: white; padding: 20px 30px;
             border-radius: 15px; text-align: center; font-weight: 900;
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
             display: none; pointer-events: none; border: 2px solid white;
+            width: 80%;
         }
     </style>
 </head>
@@ -110,24 +114,24 @@
             </button>
         </div>
 
-        <!-- ESCÁNER CON BOTONES DE CONTROL -->
+        <!-- ESCÁNER CON BOTONES PERSONALIZADOS -->
         <div class="glass p-4 mb-6 relative">
             <div class="flex gap-2 mb-4">
-                <button onclick="toggleCamara(true)" class="flex-1 bg-yellow-500 text-black font-black py-2 rounded-lg text-[10px] uppercase tracking-tighter shadow-lg">
+                <button onclick="controlCamara(true)" class="flex-1 bg-yellow-500 text-black font-black py-2 rounded-lg text-[10px] uppercase">
                     <i class="fa-solid fa-camera mr-1"></i> Activar Cámara
                 </button>
-                <button onclick="toggleCamara(false)" class="flex-1 bg-red-600 text-white font-black py-2 rounded-lg text-[10px] uppercase tracking-tighter shadow-lg">
+                <button onclick="controlCamara(false)" class="flex-1 bg-red-600 text-white font-black py-2 rounded-lg text-[10px] uppercase">
                     <i class="fa-solid fa-video-slash mr-1"></i> Apagar
                 </button>
             </div>
-            
+
             <div id="reader"></div>
 
-            <!-- NOTIFICACIÓN RÁPIDA -->
-            <div id="scan-notification">
+            <!-- NOTIFICACIÓN RELÁMPAGO -->
+            <div id="fast-notif">
                 <i class="fa-solid fa-check-circle text-4xl mb-2"></i><br>
-                <span class="text-lg uppercase italic tracking-tighter">ESCANEADO VALIDADO</span><br>
-                <span id="scan-time" class="text-[9px] opacity-80"></span>
+                <span class="text-lg uppercase font-black italic tracking-tighter">Escaneo Verificado</span><br>
+                <span id="notif-time" class="text-[9px] opacity-80"></span>
             </div>
         </div>
 
@@ -139,7 +143,7 @@
             </div>
             <div class="glass p-5 border-b-2 border-green-500">
                 <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Estado Lector</span>
-                <span id="scan-status" class="text-[10px] font-black text-green-500 uppercase">Esperando...</span>
+                <span id="scan-status" class="text-[10px] font-black text-green-500 uppercase">En Espera</span>
             </div>
         </div>
 
@@ -182,23 +186,24 @@
             }
         }
 
-        function toggleCamara(activar) {
-            if (activar) {
+        function controlCamara(encender) {
+            if (encender) {
                 if(!html5Qr) html5Qr = new Html5Qrcode("reader");
                 html5Qr.start(
-                    { facingMode: "environment" }, 
+                    { facingMode: "environment" }, // FORZAR CÁMARA POSTERIOR
                     { fps: 20, qrbox: { width: 250, height: 250 } },
                     onScanSuccess
-                ).catch(err => alert("Error cámara: " + err));
-                document.getElementById('scan-status').innerText = "CÁMARA ACTIVA";
+                ).catch(err => console.error("Error cámara: ", err));
+                document.getElementById('scan-status').innerText = "ESCANEANDO...";
             } else {
-                if(html5Qr) html5Qr.stop();
-                document.getElementById('scan-status').innerText = "CÁMARA APAGADA";
+                if(html5Qr) html5Qr.stop().then(() => {
+                    document.getElementById('scan-status').innerText = "APAGADO";
+                });
             }
         }
 
         function regresarLogin() {
-            toggleCamara(false);
+            controlCamara(false);
             document.getElementById('login-container').classList.remove('hidden');
             document.getElementById('scanner-container').classList.add('hidden');
         }
@@ -206,16 +211,16 @@
         async function onScanSuccess(decodedText) {
             try {
                 const decrypted = atob(decodedText);
-                if (!decrypted.startsWith("UNAC-OFFICIAL")) return notificar("QR NO VÁLIDO", false);
+                if (!decrypted.startsWith("UNAC-OFFICIAL")) return;
 
                 const [firma, dniAlumno, turno, fecha] = decrypted.split('|');
 
                 if (scannedData.some(item => item.dni === dniAlumno)) {
                     notificar("YA USADO", false);
-                    return alert("⚠️ ALERTA: ESTE DNI YA FUE ESCANEADO.");
+                    return alert("⚠️ ESTE DNI YA FUE REGISTRADO.");
                 }
 
-                // REGISTRO EXITOSO LOCAL
+                // REGISTRO LOCAL
                 const registro = {
                     dni: dniAlumno,
                     turno: turno,
@@ -226,23 +231,24 @@
                 scannedData.push(registro);
                 localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
                 
-                // NOTIFICACIÓN RÁPIDA VISUAL
-                const notif = document.getElementById('scan-notification');
-                document.getElementById('scan-time').innerText = registro.hora_scan;
-                notif.style.display = "block";
-                setTimeout(() => notif.style.display = "none", 1500);
+                // NOTIFICACIÓN RELÁMPAGO VISUAL
+                const fastNotif = document.getElementById('fast-notif');
+                document.getElementById('notif-time').innerText = registro.hora_scan;
+                fastNotif.style.display = "block";
+                setTimeout(() => fastNotif.style.display = "none", 1500);
 
                 renderList();
                 notificar("VÁLIDO ✅", true);
 
-                // --- SINCRONIZACIÓN INSTANTÁNEA CON LA VENTANA DE TICKETS ---
+                // --- SINCRONIZACIÓN INSTANTÁNEA CON TICKETS ---
+                // Envía señal inmediata al servidor para liberar la ventana del alumno
                 fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=marcar_asistencia`, {
                     method: 'POST',
                     mode: 'no-cors'
                 });
 
             } catch (e) {
-                notificar("ERROR LECTURA", false);
+                console.log("Error de lectura");
             }
         }
 
@@ -285,11 +291,13 @@
                     mode: 'no-cors',
                     body: JSON.stringify({ accion: "finalizar_turno", datos: scannedData })
                 });
-                alert("✅ Sincronización exitosa.");
+                alert("✅ Datos sincronizados correctamente.");
                 scannedData = [];
                 localStorage.removeItem('scanned_unac');
                 renderList();
-            } catch (e) { alert("Error de conexión."); }
+            } catch (e) {
+                alert("Error de conexión al Excel.");
+            }
             btn.innerText = "Finalizar y Sincronizar Excel";
             btn.disabled = false;
         }
