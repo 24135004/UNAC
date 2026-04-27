@@ -43,21 +43,21 @@
         #reader {
             width: 100% !important; border: none !important;
             border-radius: 15px; overflow: hidden;
-            background: black;
+            background: #000;
         }
-        /* Ocultar interfaz automática de la librería para usar botones propios */
+        /* Ocultar elementos automáticos de la librería */
         #reader__dashboard, #reader img { display: none !important; }
 
         .hidden { display: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 
-        /* Estilo de la notificación de escaneo rápido */
-        #scan-popup {
+        /* Notificación relámpago de validación */
+        #scan-notif {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 100; background: #10b981; color: white; padding: 20px 40px;
-            border-radius: 15px; text-align: center; font-weight: 900;
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+            z-index: 100; background: #10b981; color: white; padding: 25px;
+            border-radius: 20px; text-align: center; font-weight: 900;
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
             display: none; pointer-events: none; border: 2px solid white;
             width: 80%;
         }
@@ -114,25 +114,24 @@
             </button>
         </div>
 
-        <!-- ESCÁNER -->
+        <!-- ESCÁNER CON BOTONES DE DISEÑO ORIGINAL -->
         <div class="glass p-4 mb-6 relative">
-            <!-- BOTONES DE CÁMARA AÑADIDOS -->
             <div class="flex gap-2 mb-4">
-                <button onclick="iniciarEscaneo()" class="flex-1 bg-yellow-500 text-black font-black py-2 rounded-lg text-[10px] uppercase">
+                <button onclick="activarCamaraPost()" class="flex-1 bg-yellow-500 text-black font-black py-2 rounded-lg text-[10px] uppercase shadow-lg shadow-yellow-500/10">
                     <i class="fa-solid fa-camera mr-1"></i> Activar Cámara
                 </button>
-                <button onclick="detenerEscaneo()" class="flex-1 bg-red-600 text-white font-black py-2 rounded-lg text-[10px] uppercase">
+                <button onclick="apagarCamaraPost()" class="flex-1 bg-red-600 text-white font-black py-2 rounded-lg text-[10px] uppercase">
                     <i class="fa-solid fa-video-slash mr-1"></i> Apagar
                 </button>
             </div>
 
             <div id="reader"></div>
 
-            <!-- POPUP DE ESCANEO VERIFICADO -->
-            <div id="scan-popup">
-                <i class="fa-solid fa-check-circle text-4xl mb-2"></i><br>
-                <span class="text-lg uppercase italic font-black">Escaneo Verificado</span><br>
-                <span id="scan-popup-time" class="text-[9px] opacity-80"></span>
+            <!-- NOTIFICACIÓN RÁPIDA -->
+            <div id="scan-notif">
+                <i class="fa-solid fa-circle-check text-4xl mb-2"></i><br>
+                <span class="text-xl font-black uppercase italic tracking-tighter">Escaneo Verificado</span><br>
+                <span id="scan-time" class="text-[9px] opacity-80"></span>
             </div>
         </div>
 
@@ -144,7 +143,7 @@
             </div>
             <div class="glass p-5 border-b-2 border-green-500">
                 <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Estado Lector</span>
-                <span id="scan-status" class="text-[10px] font-black text-green-500 uppercase tracking-tighter">Esperando...</span>
+                <span id="scan-status" class="text-[10px] font-black text-green-500 uppercase">En Espera</span>
             </div>
         </div>
 
@@ -169,7 +168,7 @@
         
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
         let delegadoActivo = "";
-        let html5Qr;
+        let html5Qr = null;
 
         function intentarLogin() {
             const dni = document.getElementById('userDni').value;
@@ -187,26 +186,36 @@
             }
         }
 
-        function iniciarEscaneo() {
-            if(!html5Qr) html5Qr = new Html5Qrcode("reader");
-            html5Qr.start(
-                { facingMode: "environment" }, // FORZAR CÁMARA TRASERA
-                { fps: 20, qrbox: { width: 250, height: 250 } },
-                onScanSuccess
-            ).catch(err => console.error("Error al iniciar cámara."));
-            document.getElementById('scan-status').innerText = "ESCÁNER ACTIVO";
+        async function activarCamaraPost() {
+            if (!html5Qr) html5Qr = new Html5Qrcode("reader");
+            
+            // Solicitar cámaras y forzar la trasera
+            Html5Qrcode.getCameras().then(devices => {
+                if (devices && devices.length) {
+                    // Buscar cámara trasera por nombre o usar la última de la lista
+                    let backCam = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('trasera')) || devices[devices.length - 1];
+                    
+                    html5Qr.start(
+                        backCam.id, 
+                        { fps: 25, qrbox: { width: 250, height: 250 } },
+                        onScanSuccess
+                    ).then(() => {
+                        document.getElementById('scan-status').innerText = "CÁMARA ACTIVA";
+                    }).catch(err => alert("Error al encender cámara: " + err));
+                }
+            }).catch(err => alert("Error de permisos: " + err));
         }
 
-        function detenerEscaneo() {
-            if(html5Qr) {
+        function apagarCamaraPost() {
+            if (html5Qr && html5Qr.isScanning) {
                 html5Qr.stop().then(() => {
-                    document.getElementById('scan-status').innerText = "ESCÁNER APAGADO";
+                    document.getElementById('scan-status').innerText = "APAGADA";
                 });
             }
         }
 
         function regresarLogin() {
-            detenerEscaneo();
+            apagarCamaraPost();
             document.getElementById('login-container').classList.remove('hidden');
             document.getElementById('scanner-container').classList.add('hidden');
         }
@@ -220,7 +229,7 @@
 
                 if (scannedData.some(item => item.dni === dniAlumno)) {
                     notificar("YA USADO", false);
-                    return alert("⚠️ DNI YA ESCANEADO.");
+                    return alert("⚠️ ESTE DNI YA FUE ESCANEADO.");
                 }
 
                 const registro = {
@@ -233,20 +242,20 @@
                 scannedData.push(registro);
                 localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
                 
-                // NOTIFICACIÓN RELÁMPAGO (VALIDADO)
-                const popup = document.getElementById('scan-popup');
-                document.getElementById('scan-popup-time').innerText = registro.hora_scan;
-                popup.style.display = "block";
-                setTimeout(() => popup.style.display = "none", 1200);
+                // NOTIFICACIÓN RELÁMPAGO
+                const notif = document.getElementById('scan-notif');
+                document.getElementById('scan-time').innerText = registro.hora_scan;
+                notif.style.display = "block";
+                setTimeout(() => notif.style.display = "none", 1500);
 
                 renderList();
                 notificar("VÁLIDO ✅", true);
 
-                // --- SINCRONIZACIÓN INSTANTÁNEA ---
+                // SINCRONIZACIÓN INSTANTÁNEA CON EL ALUMNO
                 fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=abordar`, { method: 'POST', mode: 'no-cors' });
 
             } catch (e) {
-                console.log("Error de lectura.");
+                console.log("Lectura fallida");
             }
         }
 
@@ -260,8 +269,8 @@
             lista.innerHTML = scannedData.map(item => `
                 <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-4 border-yellow-500 animate-fade-in mb-2">
                     <div class="flex flex-col">
-                        <span class="text-[11px] font-black uppercase text-white">DNI: ${item.dni}</span>
-                        <span class="text-[8px] text-gray-500 uppercase">${item.turno}</span>
+                        <span class="text-[11px] font-black uppercase text-white">ALUMNO: ${item.dni}</span>
+                        <span class="text-[8px] text-gray-500 uppercase font-bold">${item.turno}</span>
                     </div>
                     <span class="text-[10px] font-bold text-yellow-500">${item.hora_scan}</span>
                 </div>
@@ -276,18 +285,26 @@
         }
 
         async function enviarYReiniciar() {
-            if (scannedData.length === 0) return alert("Sin datos.");
-            if (!confirm("¿Deseas enviar al Excel y limpiar el panel?")) return;
+            if (scannedData.length === 0) return alert("No hay datos.");
+            if (!confirm("¿Deseas enviar todo al Excel y vaciar el panel?")) return;
+
             const btn = document.querySelector('button[onclick="enviarYReiniciar()"]');
             btn.innerText = "SINCRONIZANDO...";
             btn.disabled = true;
+
             try {
-                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: "finalizar", datos: scannedData }) });
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ accion: "finalizar", datos: scannedData })
+                });
                 alert("✅ Sincronizado.");
                 scannedData = [];
                 localStorage.removeItem('scanned_unac');
                 renderList();
-            } catch (e) { alert("Error de red."); }
+            } catch (e) {
+                alert("Error de red.");
+            }
             btn.innerText = "Finalizar y Sincronizar Excel";
             btn.disabled = false;
         }
