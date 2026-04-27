@@ -109,24 +109,18 @@
                 <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
             </div>
 
-            <!-- PASO 1: DNI -->
             <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
                 <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su DNI para verificar</p>
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
                 <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
             </div>
 
-            <!-- PASO 2: SELECCIÓN -->
             <div id="step-selection" class="w-full max-w-5xl mx-auto hidden animate-fade-up">
-                <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10">
-                            <i class="fa-solid fa-user-graduate"></i>
-                        </div>
-                        <div>
-                            <h2 id="welcomeName" class="text-xl font-black uppercase italic leading-none text-white"></h2>
-                            <p id="displayDni" class="text-[10px] text-gray-500 font-bold mt-1 tracking-widest"></p>
-                        </div>
+                <div class="glass p-6 mb-8 flex items-center gap-4 border-l-4 border-yellow-500">
+                    <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl"><i class="fa-solid fa-user-graduate"></i></div>
+                    <div>
+                        <h2 id="welcomeName" class="text-xl font-black uppercase italic leading-none text-white"></h2>
+                        <p id="displayDni" class="text-[10px] text-gray-500 font-bold mt-1 tracking-widest"></p>
                     </div>
                 </div>
 
@@ -134,13 +128,11 @@
                     <div id="card-mañana" class="card-panorama card-m-img" onclick="generarTicket('MAÑANA')">
                         <span id="badge-m" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Mañana</div>
-                        <div class="salida-text text-yellow-500">SALIDA: 05:15 AM</div>
                         <p id="info-m" class="text-[9px] text-white/40 mt-3 uppercase font-bold tracking-widest"></p>
                     </div>
                     <div id="card-tarde" class="card-panorama card-t-img" onclick="generarTicket('TARDE')">
                         <span id="badge-t" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Tarde</div>
-                        <div class="salida-text text-white">SALIDA: 06:00 PM</div>
                         <p id="info-t" class="text-[9px] text-white/40 mt-3 uppercase font-bold tracking-widest"></p>
                     </div>
                 </div>
@@ -151,7 +143,6 @@
                 </div>
             </div>
 
-            <!-- PASO 3: CARGA -->
             <div id="step-loading" class="hidden flex flex-col items-center py-10 animate-fade-up">
                 <div class="loading-spin"></div>
                 <p class="text-yellow-500 font-black text-xs uppercase mt-4 tracking-widest">Sincronizando con la cola del Excel...</p>
@@ -184,22 +175,15 @@
                 </div>
             </div>
 
-            <!-- PASO 4: ÉXITO -->
             <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden animate-fade-up">
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
                 <h2 class="text-3xl font-black uppercase text-white">ESCANEO EXITOSO</h2>
-                <p class="text-green-500 text-[10px] font-black uppercase">¡BIENVENIDO A BORDO!</p>
                 <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-8 py-3 rounded-full text-xs uppercase shadow-xl">Finalizar</button>
             </div>
 
             <div id="globe-container" class="animate-float"></div>
             <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </main>
-
-        <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
-            <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
-            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
-        </footer>
     </div>
 
     <script>
@@ -211,29 +195,37 @@
 
         function updateClock() {
             const now = new Date();
-            document.getElementById('live-clock').innerText = now.toLocaleTimeString();
             const h = now.getHours();
+            const m = now.getMinutes();
+            document.getElementById('live-clock').innerText = now.toLocaleTimeString();
 
-            // Lógica Mañana: 9pm a 7am
+            // Mañana: 9pm a 7am
             const cardM = document.getElementById('card-mañana');
             const badgeM = document.getElementById('badge-m');
+            const infoM = document.getElementById('info-m');
             if (h >= 21 || h < 7) {
                 cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto";
+                infoM.innerText = "Disponible";
             } else {
                 cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado";
-                document.getElementById('info-m').innerText = "Abre a las 9:00 PM";
+                infoM.innerText = "Abre 9:00 PM";
             }
 
-            // Lógica Tarde: Abre 5:00 PM (17:00) y Cierra 6:00 PM (18:00)
+            // TARDE: Abre 5:10 PM (17:10) y Cierra 6:00 PM (18:00)
             const cardT = document.getElementById('card-tarde');
             const badgeT = document.getElementById('badge-t');
-            if (h === 17) {
+            const infoT = document.getElementById('info-t');
+
+            const isOpenT = (h === 17 && m >= 10);
+
+            if (isOpenT) {
                 cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto";
-                document.getElementById('info-t').innerText = "Disponible para generar";
+                infoT.innerText = "Disponible para generar";
             } else {
                 cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado";
-                if(h < 17) document.getElementById('info-t').innerText = "Abre a las 5:00 PM";
-                else document.getElementById('info-t').innerText = "Finalizado (6:00 PM)";
+                if (h === 17 && m < 10) infoT.innerText = "Abre a las 5:10 PM";
+                else if (h < 17) infoT.innerText = "Abre hoy 5:10 PM";
+                else infoT.innerText = "Finalizado (6:00 PM)";
             }
         }
         setInterval(updateClock, 1000);
@@ -242,8 +234,6 @@
         document.getElementById('verifyBtn').addEventListener('click', function() {
             const dni = document.getElementById('dniInput').value.trim();
             if(dni.length < 8) return alert("DNI Inválido");
-            this.innerText = "VERIFICANDO...";
-            
             fetch(`${LINK_1_BD}?dni=${dni}`).then(r => r.json()).then(data => {
                 if(data.found) {
                     alumno = data; alumno.dni = dni;
@@ -252,31 +242,26 @@
                     document.getElementById('step-verify').classList.add('hidden');
                     document.getElementById('step-selection').classList.remove('hidden');
                     fetch(`${LINK_2_SINCRO}?accion=consultar_total`).then(r=>r.json()).then(d=>document.getElementById('conteo-real').innerText = d.total || 0);
-                } else {
-                    alert("DNI no registrado."); this.innerText = "Verificar Alumno";
-                }
+                } else { alert("No registrado."); }
             });
         });
 
         function generarTicket(turno) {
             document.getElementById('step-selection').classList.add('hidden');
             document.getElementById('step-loading').classList.remove('hidden');
-
             fetch(`${LINK_2_SINCRO}?dni=${alumno.dni}&accion=solicitar_cola`).then(r => r.json()).then(res => {
                 document.getElementById('step-loading').classList.add('hidden');
                 document.getElementById('step-ticket').classList.remove('hidden');
-
                 const orden = res.orden;
                 const fecha = new Date().toLocaleDateString();
                 const dataQR = btoa(`UNAC-OFFICIAL|${alumno.dni}|${turno}|${fecha}`);
-
                 if(turno === 'TARDE' && orden <= 40) {
                     document.getElementById('premium-ticket').classList.remove('hidden');
                     document.getElementById('p-fecha').innerText = fecha;
                     document.getElementById('p-asiento').innerText = orden;
                     document.getElementById('td-nom').innerText = alumno.Estudiante;
                     document.getElementById('td-fac').innerText = alumno.Facultad || "UNAC";
-                    document.getElementById('td-cod').innerText = alumno.Codigo || "------";
+                    document.getElementById('td-cod').innerText = alumno.Codigo || "---";
                     document.getElementById('td-dni').innerText = alumno.dni;
                     document.getElementById('qrcode-p').innerHTML = "";
                     new QRCode(document.getElementById("qrcode-p"), { text: dataQR, width: 150, height: 150 });
@@ -298,7 +283,6 @@
                         clearInterval(pollInterval);
                         document.getElementById('step-ticket').classList.add('hidden');
                         document.getElementById('step-success').classList.remove('hidden');
-                        new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(()=>{});
                     }
                 });
             }, 3000);
