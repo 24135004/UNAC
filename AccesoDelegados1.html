@@ -232,7 +232,7 @@
                 document.getElementById('info-t').innerText = "Disponible para generar";
             } else {
                 cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado";
-                if(h < 17) document.getElementById('info-t').innerText = "Abre a las 4:40 PM";
+                if(h === 16 && m >= 45) document.getElementById('info-t').innerText = "Abre a las 4:45 PM";
                 else document.getElementById('info-t').innerText = "Finalizado (6:00 PM)";
             }
         }
