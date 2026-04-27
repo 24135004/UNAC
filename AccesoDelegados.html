@@ -43,26 +43,10 @@
         #reader {
             width: 100% !important; border: none !important;
             border-radius: 15px; overflow: hidden;
-            background: #000;
         }
-        /* Ocultar dashboard automático de la librería */
-        #reader__dashboard, #reader img { display: none !important; }
-
         .hidden { display: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        
-        .delegate-guide { font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 15px; border-left: 2px solid var(--accent); padding-left: 10px; }
-
-        /* Notificación relámpago rápida */
-        #scan-popup {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 1000; background: #10b981; color: white; padding: 20px 30px;
-            border-radius: 15px; text-align: center; font-weight: 900;
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
-            display: none; pointer-events: none; border: 2px solid white;
-            width: 80%;
-        }
     </style>
 </head>
 <body>
@@ -103,7 +87,7 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 2: ESCÁNER Y ESTADÍSTICAS -->
+    <!-- SECCIÓN 2: ESCÁNER Y ESTADÍSTICAS (DISEÑO ORIGINAL) -->
     <div id="scanner-container" class="w-full max-w-lg px-4 py-4 hidden animate-fade-in">
         
         <div class="flex justify-between items-center mb-6 px-2">
@@ -116,28 +100,16 @@
             </button>
         </div>
 
-        <!-- ESCÁNER CON BOTONES INTEGRADOS -->
-        <div class="glass p-4 mb-6 relative">
-            <div class="flex gap-2 mb-4">
-                <button id="btnON" onclick="encenderCamara()" class="flex-1 bg-yellow-500 text-black font-black py-2 rounded-lg text-[10px] uppercase shadow-lg">
-                    <i class="fa-solid fa-video mr-1"></i> Iniciar Cámara
-                </button>
-                <button id="btnOFF" onclick="apagarCamara()" class="flex-1 bg-red-600 text-white font-black py-2 rounded-lg text-[10px] uppercase">
-                    <i class="fa-solid fa-video-slash mr-1"></i> Apagar
-                </button>
+        <!-- ESCÁNER -->
+        <div class="glass p-4 mb-6">
+            <div class="flex items-center gap-2 mb-4 text-yellow-500">
+                <i class="fa-solid fa-camera text-xs"></i>
+                <span class="text-[10px] font-black uppercase tracking-widest">Lector de Tickets en Vivo</span>
             </div>
-
             <div id="reader"></div>
-
-            <!-- NOTIFICACIÓN RELÁMPAGO -->
-            <div id="scan-popup">
-                <i class="fa-solid fa-check-circle text-4xl mb-2"></i><br>
-                <span class="text-lg uppercase italic font-black">ESCANEADO VALIDADO</span><br>
-                <span id="scan-popup-time" class="text-[9px] opacity-80"></span>
-            </div>
         </div>
 
-        <!-- ESTADÍSTICAS -->
+        <!-- ESTADÍSTICAS EN GRID -->
         <div class="grid grid-cols-2 gap-4 mb-6 text-center">
             <div class="glass p-5 border-b-2 border-yellow-500">
                 <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Pasajeros Hoy</span>
@@ -155,21 +127,24 @@
                 <span>Registro de Abordaje</span>
                 <span id="label-turno" class="text-yellow-500">TURNO: --</span>
             </h3>
-            <div id="listaEscaneo" class="space-y-3 max-h-52 overflow-y-auto pr-2"></div>
+            <div id="listaEscaneo" class="space-y-3 max-h-52 overflow-y-auto pr-2">
+                <p class="text-[10px] text-gray-600 italic text-center py-6">No hay registros en este turno.</p>
+            </div>
         </div>
 
+        <!-- BOTÓN SINCRONIZAR -->
         <button onclick="enviarYReiniciar()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl uppercase text-xs transition shadow-xl mb-10">
             <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Finalizar y Sincronizar Excel
         </button>
     </div>
 
     <script>
-        const DELEGADOS = ["71886034", "77570731", "63229248"];
+        const DELEGADOS = ["71886034", "77570731"];
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJmiJyrmSmpP1yOmkKsB4vJBTDde18OPoVDOStyyN-rIBC2vtXI-wZ1OGzxmTgxpM/exec";
         
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
         let delegadoActivo = "";
-        let html5Qr;
+        let html5QrcodeScanner;
 
         function intentarLogin() {
             const dni = document.getElementById('userDni').value;
@@ -179,79 +154,72 @@
                 document.getElementById('login-container').classList.add('hidden');
                 document.getElementById('scanner-container').classList.remove('hidden');
                 document.getElementById('delegadoNombre').innerText = "Delegado ID: " + dni;
-                renderList();
-                const h = new Date().getHours();
-                document.getElementById('label-turno').innerText = "TURNO: " + (h < 12 ? 'MAÑANA' : 'TARDE');
+                iniciarSistema();
             } else {
                 document.getElementById('errorLogin').classList.remove('hidden');
             }
         }
 
-        async function encenderCamara() {
-            if (!html5Qr) html5Qr = new Html5Qrcode("reader");
-            
-            const config = { fps: 20, qrbox: { width: 250, height: 250 } };
-
-            try {
-                // Forzar cámara trasera (environment)
-                await html5Qr.start({ facingMode: "environment" }, config, onScanSuccess);
-                document.getElementById('scan-status').innerText = "CÁMARA ACTIVA";
-            } catch (err) {
-                alert("Error: Asegúrese de dar permisos a la cámara.");
-            }
-        }
-
-        async function apagarCamara() {
-            if (html5Qr && html5Qr.isScanning) {
-                await html5Qr.stop();
-                document.getElementById('scan-status').innerText = "APAGADA";
-            }
-        }
-
         function regresarLogin() {
-            apagarCamara();
+            if(html5QrcodeScanner) html5QrcodeScanner.clear();
             document.getElementById('login-container').classList.remove('hidden');
             document.getElementById('scanner-container').classList.add('hidden');
         }
 
-        async function onScanSuccess(decodedText) {
+        function iniciarSistema() {
+            checkAutoReset();
+            renderList();
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
+            html5QrcodeScanner.render(onScanSuccess);
+        }
+
+        function checkAutoReset() {
+            const h = new Date().getHours();
+            const currentShift = (h < 12) ? 'MAÑANA' : 'TARDE';
+            const lastShift = localStorage.getItem('last_shift_name');
+            
+            document.getElementById('label-turno').innerText = "TURNO: " + currentShift;
+
+            if (lastShift && lastShift !== currentShift) {
+                if (scannedData.length > 0) alert("Cambiando turno. Se recomienda sincronizar datos.");
+            }
+            localStorage.setItem('last_shift_name', currentShift);
+        }
+
+        function onScanSuccess(decodedText) {
             try {
                 const decrypted = atob(decodedText);
-                if (!decrypted.startsWith("UNAC-OFFICIAL")) return;
+                if (!decrypted.startsWith("UNAC-OFFICIAL")) {
+                    notificar("QR NO VÁLIDO", false);
+                    return;
+                }
 
                 const [firma, dniAlumno, turno, fecha] = decrypted.split('|');
 
+                // VALIDACIÓN DE UN SOLO USO
                 if (scannedData.some(item => item.dni === dniAlumno)) {
                     notificar("YA ESCANEADO", false);
-                    return alert("⚠️ ESTE DNI YA FUE ESCANEADO.");
+                    alert("⚠️ ALERTA: Este ticket ya fue utilizado por el DNI " + dniAlumno);
+                    return;
                 }
 
+                // REGISTRO EXITOSO
                 const registro = {
                     dni: dniAlumno,
                     turno: turno,
+                    fecha_ticket: fecha,
                     hora_scan: new Date().toLocaleTimeString(),
+                    fecha_scan: new Date().toLocaleDateString(),
+                    delegado: delegadoActivo
                 };
 
                 scannedData.push(registro);
                 localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
-                
-                // NOTIFICACIÓN RELÁMPAGO VISUAL
-                const popup = document.getElementById('scan-popup');
-                document.getElementById('scan-popup-time').innerText = registro.hora_scan;
-                popup.style.display = "block";
-                setTimeout(() => popup.style.display = "none", 1500);
-
                 renderList();
                 notificar("VÁLIDO ✅", true);
 
-                // --- SINCRONIZACIÓN INSTANTÁNEA CON EL ALUMNO ---
-                fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=marcar_asistencia`, {
-                    method: 'POST',
-                    mode: 'no-cors'
-                });
-
             } catch (e) {
-                console.log("Error lectura.");
+                notificar("ERROR LECTURA", false);
             }
         }
 
@@ -263,10 +231,10 @@
                 return;
             }
             lista.innerHTML = scannedData.map(item => `
-                <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-4 border-yellow-500 animate-fade-in mb-2">
+                <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-4 border-yellow-500 animate-fade-in">
                     <div class="flex flex-col">
-                        <span class="text-[11px] font-black uppercase text-white">DNI: ${item.dni}</span>
-                        <span class="text-[8px] text-gray-500 uppercase font-bold">${item.turno}</span>
+                        <span class="text-[11px] font-black uppercase text-white">ALUMNO: ${item.dni}</span>
+                        <span class="text-[8px] text-gray-500 uppercase font-bold">${item.turno} | ${item.fecha_ticket}</span>
                     </div>
                     <span class="text-[10px] font-bold text-yellow-500">${item.hora_scan}</span>
                 </div>
@@ -277,12 +245,13 @@
             const el = document.getElementById('scan-status');
             el.innerText = msg;
             el.className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
-            new Audio(exito ? 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3' : 'https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3').play().catch(()=>{});
+            const audio = new Audio(exito ? 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3' : 'https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3');
+            audio.play();
         }
 
         async function enviarYReiniciar() {
-            if (scannedData.length === 0) return alert("No hay datos.");
-            if (!confirm("¿Deseas enviar todo al Excel y vaciar el panel?")) return;
+            if (scannedData.length === 0) return alert("No hay datos para enviar.");
+            if (!confirm("¿Deseas enviar " + scannedData.length + " registros al Excel y limpiar el panel?")) return;
 
             const btn = document.querySelector('button[onclick="enviarYReiniciar()"]');
             btn.innerText = "SINCRONIZANDO...";
@@ -292,14 +261,15 @@
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify({ accion: "finalizar_turno", datos: scannedData })
+                    body: JSON.stringify(scannedData)
                 });
-                alert("✅ Sincronización exitosa.");
+                
+                alert("✅ Datos enviados correctamente.");
                 scannedData = [];
-                localStorage.removeItem('scanned_unac');
+                localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
                 renderList();
             } catch (e) {
-                alert("Error de conexión.");
+                alert("Error al conectar con el servidor.");
             }
             btn.innerText = "Finalizar y Sincronizar Excel";
             btn.disabled = false;
