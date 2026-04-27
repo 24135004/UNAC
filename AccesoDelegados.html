@@ -48,7 +48,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 
-        /* NOTIFICACIÓN RELÁMPAGO (SOLICITADA) */
+        /* NOTIFICACIÓN RELÁMPAGO */
         #flash-notif {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             z-index: 9999; background: #10b981; color: white; padding: 25px 50px;
@@ -60,7 +60,6 @@
 </head>
 <body>
 
-    <!-- MENSAJE DE ESCANEO EXITOSO RÁPIDO -->
     <div id="flash-notif">
         <i class="fa-solid fa-circle-check text-5xl mb-2"></i><br>
         <span class="text-2xl uppercase italic tracking-tighter">Escaneo Verificado</span>
@@ -115,16 +114,14 @@
             </button>
         </div>
 
-        <!-- ESCÁNER -->
         <div class="glass p-4 mb-6">
             <div class="flex items-center gap-2 mb-4 text-yellow-500">
                 <i class="fa-solid fa-camera text-xs"></i>
-                <span class="text-[10px] font-black uppercase tracking-widest">Lector de Tickets en Vivo</span>
+                <span class="text-[10px] font-black uppercase tracking-widest">Lector de Tickets</span>
             </div>
             <div id="reader"></div>
         </div>
 
-        <!-- ESTADÍSTICAS -->
         <div class="grid grid-cols-2 gap-4 mb-6 text-center">
             <div class="glass p-5 border-b-2 border-yellow-500">
                 <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Pasajeros Hoy</span>
@@ -136,20 +133,25 @@
             </div>
         </div>
 
-        <!-- HISTORIAL -->
+        <!-- HISTORIAL LOCAL DETALLADO -->
         <div class="glass p-6 mb-6">
-            <h3 class="text-[10px] font-black uppercase text-gray-400 mb-4 border-b border-white/10 pb-2">Registro Local</h3>
-            <div id="listaEscaneo" class="space-y-3 max-h-52 overflow-y-auto pr-2"></div>
+            <h3 class="text-[10px] font-black uppercase text-gray-400 mb-4 border-b border-white/10 pb-2 flex justify-between">
+                <span>Registro Detallado</span>
+                <span id="label-turno" class="text-yellow-500">TURNO: --</span>
+            </h3>
+            <div id="listaEscaneo" class="space-y-3 max-h-64 overflow-y-auto pr-2">
+                <p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros en este turno.</p>
+            </div>
         </div>
 
-        <!-- BOTÓN SINCRONIZAR -->
         <button onclick="enviarYReiniciar()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl uppercase text-xs transition shadow-xl mb-10">
             <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Finalizar y Sincronizar Excel
         </button>
     </div>
 
     <script>
-        const DELEGADOS = ["71886034", "77570731"];
+        // TRES DELEGADOS HABILITADOS
+        const DELEGADOS = ["71886034", "77570731", "63229248"];
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbKI_Y8K4wsSHrzyikJeGdS0HPXtulCI1SoKtPcWg_0tYjxxJS8AU3a6WHH-GrvcFE/exec";
         
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
@@ -177,26 +179,30 @@
         }
 
         function iniciarSistema() {
+            checkAutoReset();
             renderList();
             html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 250 });
             html5QrcodeScanner.render(onScanSuccess);
         }
 
+        function checkAutoReset() {
+            const h = new Date().getHours();
+            const currentShift = (h < 12) ? 'MAÑANA' : 'TARDE';
+            document.getElementById('label-turno').innerText = "TURNO: " + currentShift;
+        }
+
         async function onScanSuccess(decodedText) {
             try {
-                // Decodificar Base64 del ticket
                 const decrypted = atob(decodedText);
                 if (!decrypted.startsWith("UNAC-OFFICIAL")) return;
 
                 const [firma, dniAlumno, turno, fecha] = decrypted.split('|');
 
-                // Evitar duplicados locales
                 if (scannedData.some(item => item.dni === dniAlumno)) {
                     notificar("YA USADO", false);
-                    return alert("⚠️ DNI YA ESCANEADO.");
+                    return alert("⚠️ DNI YA REGISTRADO EN ESTA LISTA.");
                 }
 
-                // Guardar registro
                 const registro = {
                     dni: dniAlumno,
                     turno: turno,
@@ -208,16 +214,15 @@
                 scannedData.push(registro);
                 localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
                 
-                // NOTIFICACIÓN RELÁMPAGO (Muestra y oculta rápido)
+                // NOTIFICACIÓN RELÁMPAGO
                 const flash = document.getElementById('flash-notif');
                 flash.style.display = 'block';
-                setTimeout(() => { flash.style.display = 'none'; }, 1200);
+                setTimeout(() => { flash.style.display = 'none'; }, 1500);
 
                 renderList();
                 notificar("VÁLIDO ✅", true);
 
-                // --- SINCRONIZACIÓN AUTOMÁTICA (IMPORTANTE) ---
-                // Envía señal inmediata para que el alumno vea "¡ESCANEO EXITOSO!"
+                // --- SINCRONIZACIÓN INSTANTÁNEA ---
                 fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=marcar_asistencia`);
 
             } catch (e) {
@@ -232,10 +237,22 @@
                 lista.innerHTML = '<p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros.</p>';
                 return;
             }
+            // DISEÑO MÁS DETALLADO PARA EL REGISTRO LOCAL
             lista.innerHTML = scannedData.map(item => `
-                <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border-l-4 border-yellow-500 mb-2">
-                    <span class="text-[11px] font-black text-white uppercase">DNI: ${item.dni}</span>
-                    <span class="text-[10px] font-bold text-yellow-500">${item.hora_scan}</span>
+                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border-l-4 border-yellow-500 animate-fade-in mb-2">
+                    <div class="w-10 h-10 bg-yellow-500/10 rounded-full flex items-center justify-center text-yellow-500">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <span class="text-sm font-black text-white">ALUMNO: ${item.dni}</span>
+                            <span class="text-[9px] font-bold text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">${item.hora_scan}</span>
+                        </div>
+                        <div class="flex gap-3 mt-1">
+                            <span class="text-[9px] text-gray-400 uppercase font-bold"><i class="fa-solid fa-clock mr-1"></i> ${item.turno}</span>
+                            <span class="text-[9px] text-gray-400 uppercase font-bold"><i class="fa-solid fa-calendar mr-1"></i> ${item.fecha_scan}</span>
+                        </div>
+                    </div>
                 </div>
             `).reverse().join('');
         }
@@ -249,7 +266,7 @@
 
         async function enviarYReiniciar() {
             if (scannedData.length === 0) return alert("No hay datos.");
-            if (!confirm("¿Sincronizar todo al Excel y vaciar el panel?")) return;
+            if (!confirm("¿Deseas sincronizar todos los datos y limpiar el panel?")) return;
 
             const btn = document.querySelector('button[onclick="enviarYReiniciar()"]');
             btn.innerText = "SINCRONIZANDO...";
@@ -261,12 +278,12 @@
                     mode: 'no-cors',
                     body: JSON.stringify({ datos: scannedData })
                 });
-                alert("✅ Sincronización exitosa.");
+                alert("✅ Sincronización completa.");
                 scannedData = [];
                 localStorage.removeItem('scanned_unac');
                 renderList();
             } catch (e) {
-                alert("Error de red.");
+                alert("Error de conexión.");
             }
             btn.innerText = "Finalizar y Sincronizar Excel";
             btn.disabled = false;
