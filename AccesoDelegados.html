@@ -200,11 +200,12 @@
                 scannedData.push(registro);
                 localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
                 renderList();
-                notificar("VÁLIDO ✅", true);
+                
+                // CAMBIO SOLICITADO: Mensaje de éxito optimizado
+                notificar("ESCANEO VERIFICADO ✅", true);
 
-                // --- SINCRONIZACIÓN INSTANTÁNEA ---
-                // Avisa al servidor de inmediato para que el alumno vea "Abordaje Exitoso"
-                fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=marcar_asistencia`, {
+                // SINCRONIZACIÓN INSTANTÁNEA PARA EL ALUMNO
+                fetch(`${SCRIPT_URL}?dni=${dniAlumno}&accion=abordar`, {
                     method: 'POST',
                     mode: 'no-cors'
                 });
