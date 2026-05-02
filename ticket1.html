@@ -39,26 +39,25 @@
         input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; }
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; }
         
+        /* TARJETAS PANORAMA */
         .card-panorama {
             position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
-            height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center;
             background-size: cover; background-position: center; transition: 0.4s; cursor: pointer;
         }
-        .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
-        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
+        .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
+        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
         .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
         .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: #10b981; color: white; }
         .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
 
-        /* DISEÑO DE TICKET VIP */
+        /* TICKET VIP DISEÑO IMAGEN */
         .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; }
         .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 25px 10px; color: #111; }
         .vip-header h2 { font-weight: 900; font-size: 24px; letter-spacing: 1px; }
-        .vip-header p { font-size: 10px; font-weight: 800; opacity: 0.8; text-transform: uppercase; }
         .ticket-body { padding: 25px; }
-        .ticket-greeting { font-size: 11px; color: #666; margin-bottom: 20px; text-align: left; }
         .ticket-main-box { border: 1px dashed #d4a017; border-radius: 10px; padding: 20px; }
         .valid-date { font-size: 24px; font-weight: 900; color: #d4a017; }
         .asiento-num-big { font-size: 80px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 10px 0; }
@@ -66,20 +65,7 @@
         .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; }
         .data-table td { padding: 8px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; }
 
-        /* DISEÑO MODAL ÉXITO (IDÉNTICO A LA IMAGEN) */
-        #step-success { 
-            background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(15px); 
-            border: 2px solid #10b981; 
-            border-radius: 30px; 
-            padding: 60px 40px; 
-            width: 100%; 
-            max-width: 500px; 
-            margin: 0 auto; 
-            text-align: center;
-        }
-        .btn-finalizar { background: #ffffff; color: #000; padding: 12px 45px; border-radius: 50px; font-weight: 700; font-size: 14px; text-transform: uppercase; margin-top: 30px; transition: 0.3s; }
-
+        /* MODAL ERROR Y BADGE */
         #errorModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .error-box { background: #111; border: 2px solid #ef4444; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 100%; }
         .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
@@ -88,6 +74,7 @@
 </head>
 <body>
 
+    <!-- MODAL ERROR DNI -->
     <div id="errorModal">
         <div class="error-box">
             <i class="fa-solid fa-circle-xmark text-red-500 text-6xl mb-4"></i>
@@ -97,6 +84,7 @@
         </div>
     </div>
 
+    <!-- MENÚ MÓVIL ORIGINAL -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
@@ -111,7 +99,10 @@
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
-                <div class="flex flex-col text-left leading-none uppercase"><span class="text-[10px] font-black tracking-widest leading-none">UNAC</span><span class="text-[9px] text-yellow-500 font-bold">Movilidad</span></div>
+                <div class="flex flex-col text-left leading-none uppercase">
+                    <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
+                    <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
+                </div>
             </div>
             <nav class="hidden md:flex gap-8 nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
@@ -132,14 +123,14 @@
                 <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
             </div>
 
-            <!-- PASO 1 -->
+            <!-- PASO 1: DNI -->
             <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
                 <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su DNI para habilitar sistema</p>
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
                 <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
             </div>
 
-            <!-- PASO 2 -->
+            <!-- PASO 2: SELECCIÓN -->
             <div id="step-selection" class="w-full max-w-5xl mx-auto hidden animate-fade-up">
                 <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
                     <div class="flex items-center gap-4">
@@ -149,6 +140,7 @@
                             <div class="status-badge"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO - APTO</div>
                         </div>
                     </div>
+                    <!-- LLENAMOS EL VACÍO A LA DERECHA -->
                     <div class="mt-4 md:mt-0 text-right">
                         <p id="info-fac" class="text-[10px] text-yellow-500 font-black uppercase tracking-widest"></p>
                         <p id="info-dni" class="text-[9px] text-gray-500 font-bold uppercase"></p>
@@ -170,6 +162,7 @@
                     </div>
                 </div>
 
+                <!-- CONTADOR ACTUALIZADO EN TIEMPO REAL -->
                 <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500">
                     <p class="text-[9px] text-gray-500 font-black uppercase mb-1">Cupos registrados (Tarde):</p>
                     <div id="conteo-real" class="text-4xl font-black text-white">0</div>
@@ -177,15 +170,22 @@
                 </div>
             </div>
 
-            <!-- PASO 3 -->
+            <!-- PASO 3: TICKET VIP -->
             <div id="step-ticket" class="w-full max-w-2xl mx-auto hidden animate-fade-up">
                 <div class="vip-ticket-card">
-                    <div class="vip-header"><h2>¡PASE VIP VERIFICADO!</h2><p>MOVILIDAD UNIVERSITARIA - RUTA VENTANILLA</p></div>
+                    <div class="vip-header">
+                        <h2>¡PASE VIP VERIFICADO!</h2>
+                        <p>MOVILIDAD UNIVERSITARIA - RUTA VENTANILLA</p>
+                    </div>
                     <div class="ticket-body">
                         <p class="ticket-greeting text-left">Hola <strong id="t-saludo"></strong>, se te hace entrega de tu ticket digital:</p>
                         <div class="ticket-main-box">
+                            <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">VÁLIDO ÚNICAMENTE PARA EL DÍA:</p>
                             <p class="valid-date" id="t-fecha"></p>
-                            <div id="asiento-area"><p class="asiento-label">Tu número de asiento es:</p><div class="asiento-num-big" id="t-asiento"></div></div>
+                            <div id="asiento-area">
+                                <p class="text-[14px] font-bold text-gray-600 mt-4">Tu número de asiento es:</p>
+                                <div class="asiento-num-big" id="t-asiento"></div>
+                            </div>
                             <div class="qr-wrapper"><div id="qrcode-vip"></div></div>
                         </div>
                         <table class="data-table">
@@ -199,15 +199,10 @@
                 </div>
             </div>
 
-            <!-- PANTALLA ÉXITO (MODAL VERDE IDÉNTICO A IMAGEN) -->
-            <div id="step-success" class="hidden animate-fade-up">
-                <div class="flex justify-center mb-6">
-                    <div class="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white text-5xl">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                </div>
-                <h2 class="text-4xl md:text-5xl font-black uppercase text-white tracking-tighter">ESCANEO EXITOSO</h2>
-                <button onclick="location.reload()" class="btn-finalizar">FINALIZAR</button>
+            <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden animate-fade-up">
+                <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
+                <h2 class="text-3xl font-black uppercase text-white">ESCANEO EXITOSO</h2>
+                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-8 py-3 rounded-full text-xs uppercase shadow-xl">Finalizar</button>
             </div>
 
             <div id="globe-container" class="animate-float"></div>
@@ -225,12 +220,15 @@
         const L2_COLA = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
         const L3_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
 
-        const REGLAS = { manana: { abre: 20, cierra: 7 }, tarde: { hAbre: 21, mAbre: 21, hCierra: 22, mCierra: 0 } };
-        let alumno = null, cInt = null;
+        const REGLAS = { manana: { abre: 20, cierra: 7 }, tarde: { hAbre: 20, mAbre: 37, hCierra: 21, mCierra: 0 } };
+
+        let alumno = null;
+        let pollContador = null;
 
         function updateClock() {
-            const now = new Date(), h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
+            const now = new Date();
             document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+            const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
 
             const cardM = document.getElementById('card-mañana'), badgeM = document.getElementById('badge-m');
             if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) { cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto"; }
@@ -245,7 +243,11 @@
         document.getElementById('verifyBtn').addEventListener('click', function() {
             const dni = document.getElementById('dniInput').value.trim();
             if(dni.length < 8) return alert("DNI Inválido");
-            this.innerText = "CARGANDO..."; this.disabled = true;
+            
+            const btn = this;
+            btn.innerText = "CARGANDO...";
+            btn.disabled = true;
+
             fetch(`${L1_BD}?dni=${dni}`).then(r => r.json()).then(data => {
                 if(data.found) {
                     alumno = data; alumno.dni = dni;
@@ -254,40 +256,33 @@
                     document.getElementById('info-dni').innerText = "DNI: " + dni;
                     document.getElementById('step-verify').classList.add('hidden');
                     document.getElementById('step-selection').classList.remove('hidden');
-                    actualizarContador(); cInt = setInterval(actualizarContador, 5000);
-                } else { document.getElementById('errorModal').style.display = 'flex'; this.innerText = "Verificar Alumno"; this.disabled = false; }
+                    
+                    // ACTIVAR CONTADOR AUTOMÁTICO CADA 5 SEGUNDOS
+                    actualizarContador();
+                    pollContador = setInterval(actualizarContador, 5000);
+                } else { 
+                    document.getElementById('errorModal').style.display = 'flex'; 
+                    btn.innerText = "Verificar Alumno"; btn.disabled = false;
+                }
             });
         });
 
-        function actualizarContador() { fetch(`${L2_COLA}?accion=consultar_total`).then(r=>r.json()).then(d=>{ document.getElementById('conteo-real').innerText = d.total || 0; }); }
+        function actualizarContador() { 
+            fetch(`${L2_COLA}?accion=consultar_total`).then(r=>r.json()).then(d=>{ 
+                document.getElementById('conteo-real').innerText = d.total || 0; 
+            }); 
+        }
 
-        // --- VALIDACIÓN DE ESCANEO PREVIO AL GENERAR ---
         function validarHorarioYGenerar(turno) {
-            const now = new Date(), h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
-            
-            // Verificamos si ya fue escaneado hoy antes de hacer cualquier cosa
-            fetch(`${L3_SINCRO}?dni=${alumno.dni}&accion=consultar`).then(r => r.json()).then(data => {
-                if(data.asistio === true) {
-                    // Si ya asistió, mandarlo directo a la pantalla de éxito
-                    document.getElementById('step-selection').classList.add('hidden');
-                    document.getElementById('step-success').classList.remove('hidden');
-                    return;
-                }
-
-                // Si no ha asistido, validar horario
-                if (turno === 'MAÑANA') { 
-                    if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) generarTicket(turno); 
-                    else alert("Mañana cerrado"); 
-                }
-                else { 
-                    if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) generarTicket(turno); 
-                    else alert("Tarde cerrado"); 
-                }
-            });
+            const now = new Date();
+            const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
+            if (turno === 'MAÑANA') { if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) generarTicket(turno); else alert("Mañana cerrado"); }
+            else { if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) generarTicket(turno); else alert("Tarde cerrado"); }
         }
 
         function generarTicket(turno) {
-            clearInterval(cInt); document.getElementById('step-selection').classList.add('hidden');
+            clearInterval(pollContador); // Detenemos contador al generar el ticket
+            document.getElementById('step-selection').classList.add('hidden');
             const fecha = new Date().toLocaleDateString();
             const qrData = btoa(`${alumno.dni}|${turno}|${fecha}`);
             document.getElementById('t-saludo').innerText = alumno.Estudiante.split(' ')[0];
@@ -298,29 +293,20 @@
             document.getElementById('t-dni').innerText = alumno.dni;
 
             if (turno === 'MAÑANA') { document.getElementById('asiento-area').classList.add('hidden'); finalizarGeneracion(qrData); }
-            else { 
-                fetch(`${L2_COLA}?dni=${alumno.dni}&accion=solicitar_cola`).then(r => r.json()).then(res => {
-                    if (res.error) { alert("⚠️ " + res.detalle); location.reload(); return; }
-                    document.getElementById('asiento-area').classList.remove('hidden');
-                    document.getElementById('t-asiento').innerText = res.orden;
-                    finalizarGeneracion(qrData);
-                });
-            }
+            else { fetch(`${L2_COLA}?dni=${alumno.dni}&accion=solicitar_cola`).then(r => r.json()).then(res => { document.getElementById('asiento-area').classList.remove('hidden'); document.getElementById('t-asiento').innerText = res.orden; finalizarGeneracion(qrData); }); }
         }
 
         function finalizarGeneracion(qrData) {
             document.getElementById('step-ticket').classList.remove('hidden');
             document.getElementById('qrcode-vip').innerHTML = "";
             new QRCode(document.getElementById("qrcode-vip"), { text: qrData, width: 140, height: 140 });
-            
-            // Polling para detectar cuando el delegado escanea
-            const pollEscaneo = setInterval(() => {
+            esperarSincronizacion();
+        }
+
+        function esperarSincronizacion() {
+            setInterval(() => {
                 fetch(`${L3_SINCRO}?dni=${alumno.dni}&accion=consultar`).then(r => r.json()).then(data => {
-                    if(data.asistio === true) { 
-                        clearInterval(pollEscaneo);
-                        document.getElementById('step-ticket').classList.add('hidden'); 
-                        document.getElementById('step-success').classList.remove('hidden'); 
-                    }
+                    if(data.asistio === true) { document.getElementById('step-ticket').classList.add('hidden'); document.getElementById('step-success').classList.remove('hidden'); }
                 });
             }, 3000);
         }
