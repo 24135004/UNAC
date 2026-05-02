@@ -39,6 +39,9 @@
         input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; }
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; }
         
+        /* ESTILO BADGE HABILITADO */
+        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
+
         .card-panorama {
             position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
             height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -46,7 +49,6 @@
         }
         .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
         .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
-        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
         .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: #10b981; color: white; }
@@ -54,21 +56,27 @@
 
         .ticket-white { background: #ffffff; color: #333333; border: 2px dashed #ffc107; border-radius: 15px; padding: 25px; width: 100%; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .asiento-num { color: #e53e3e; font-size: 80px; font-weight: 900; line-height: 1; margin: 5px 0; }
-        .table-data { width: 100%; font-size: 10px; text-align: left; border-top: 1px solid #eee; margin-top: 20px; padding-top: 10px; }
-        .table-data td { padding: 4px 0; font-weight: 900; text-transform: uppercase; }
-        .table-data .val { text-align: right; color: #666; font-weight: 500; }
-
-        .btn-acceso { display: inline-block; margin-top: 30px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #aaa; padding: 12px 25px; border-radius: 50px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; cursor: pointer; }
-        .btn-acceso:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+        
+        /* MODAL DE ERROR */
+        #errorModal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: #111; border: 2px solid #ef4444; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px; }
 
         #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: -30px; }
-        #qrcode img, #qrcode-p img { margin: 0 auto; border: 4px solid white; border-radius: 5px; }
-
         .loading-spin { border: 4px solid rgba(255,193,7,0.1); border-top: 4px solid #ffc107; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <!-- MODAL DE ERROR (PERSONALIZADO) -->
+    <div id="errorModal">
+        <div class="modal-box">
+            <i class="fa-solid fa-circle-exclamation text-red-500 text-6xl mb-4"></i>
+            <h2 class="text-2xl font-black uppercase text-white mb-2">No Verificado</h2>
+            <p class="text-gray-400 text-sm mb-6">Su DNI no se encuentra en nuestra base de datos. Para acceder, debe registrarse primero.</p>
+            <a href="registro.html" class="bg-red-500 text-white px-6 py-3 rounded-lg font-bold uppercase text-xs">Ir al Registro</a>
+        </div>
+    </div>
 
     <!-- MENÚ MÓVIL ORIGINAL -->
     <div id="mobile-menu">
@@ -91,7 +99,6 @@
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
-
             <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link">Rutas</a>
@@ -100,10 +107,7 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
-                MENU <i class="fa-solid fa-bars-staggered"></i>
-            </button>
+            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">MENU <i class="fa-solid fa-bars-staggered"></i></button>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
@@ -123,15 +127,12 @@
 
             <!-- PASO 2: SELECCIÓN -->
             <div id="step-selection" class="w-full max-w-5xl mx-auto hidden animate-fade-up">
-                <!-- BIENVENIDA MEJORADA -->
                 <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
                     <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10">
-                            <i class="fa-solid fa-user-graduate"></i>
-                        </div>
+                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
                         <div>
                             <h2 id="welcomeName" class="text-xl font-black uppercase italic leading-none text-white"></h2>
-                            <p id="displayDni" class="text-[10px] text-green-500 font-bold mt-1 tracking-widest uppercase italic">ALUMNO HABILITADO - APTO PARA ABORDAJE</p>
+                            <div class="status-badge"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO - APTO</div>
                         </div>
                     </div>
                 </div>
@@ -141,13 +142,13 @@
                         <span id="badge-m" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Mañana</div>
                         <div class="salida-text text-yellow-500 font-black">SALIDA: 05:15 AM</div>
-                        <p class="text-[9px] text-white/60 mt-3 uppercase font-bold tracking-widest">Ticket de Acceso General Habilitado</p>
+                        <p class="text-[9px] text-white/60 mt-3 uppercase font-black tracking-widest">Ticket Acceso Libre</p>
                     </div>
                     <div id="card-tarde" class="card-panorama card-t-img" onclick="generarTicket('TARDE')">
                         <span id="badge-t" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Tarde</div>
                         <div class="salida-text text-white font-black">SALIDA: 06:00 PM</div>
-                        <p class="text-[9px] text-white/60 mt-3 uppercase font-bold tracking-widest">Reserva: 1-40 Premium / 41+ Cola Estándar</p>
+                        <p class="text-[9px] text-white/60 mt-3 uppercase font-black tracking-widest">Reserva 1-40 Premium / 41+ Cola</p>
                     </div>
                 </div>
 
@@ -155,18 +156,14 @@
                 <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500 mb-10">
                     <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Cupos registrados (Tarde):</p>
                     <div id="conteo-real" class="text-4xl font-black text-white">0</div>
-                    <p class="text-[7px] text-yellow-500/50 mt-1 uppercase">Actualización en tiempo real</p>
+                    <p class="text-[7px] text-yellow-500/50 mt-1 uppercase">Sincronizado en tiempo real</p>
                 </div>
             </div>
 
             <!-- PASO 3: TICKET -->
             <div id="step-ticket" class="w-full max-w-2xl mx-auto text-center hidden animate-fade-up">
                 <div id="premium-ticket" class="ticket-white hidden animate-fade-up">
-                    <div class="fecha-ticket font-black text-sm text-gray-400" id="p-fecha"></div>
-                    <div class="border-t border-gray-100 my-4"></div>
-                    <p style="font-size: 13px; font-weight: bold; color: #444;">NÚMERO DE ASIENTO:</p>
                     <div class="asiento-num" id="p-asiento"></div>
-                    <div class="border-t border-gray-100 my-4"></div>
                     <table class="table-data">
                         <tr><td>Estudiante:</td><td class="val" id="td-nom"></td></tr>
                         <tr><td>Facultad:</td><td class="val" id="td-fac"></td></tr>
@@ -177,10 +174,7 @@
 
                 <div id="std-ticket" class="glass p-8 w-full max-w-sm mx-auto hidden">
                     <div id="qrcode" class="flex justify-center mb-6 p-2 bg-white rounded-lg shadow-2xl"></div>
-                    <div class="text-left border-t border-white/10 pt-4">
-                        <p id="ticketName" class="font-black uppercase text-lg text-white"></p>
-                        <p id="ticketInfo" class="text-yellow-500 font-bold text-xs uppercase"></p>
-                    </div>
+                    <p id="ticketName" class="font-black uppercase text-lg text-white"></p>
                 </div>
             </div>
 
@@ -188,30 +182,26 @@
             <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden animate-fade-up">
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
                 <h2 class="text-3xl font-black uppercase text-white">ESCANEO EXITOSO</h2>
-                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-8 py-3 rounded-full text-xs uppercase shadow-xl">Finalizar</button>
+                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-8 py-3 rounded-full text-xs uppercase">Finalizar</button>
             </div>
 
-            <!-- GLOBO Y BOTÓN ORIGINALES -->
             <div id="globe-container" class="animate-float"></div>
             <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </main>
 
         <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20 text-white">
             <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
-            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
+            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">© 2026 UNAC - Movilidad Universitaria.</span>
         </footer>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE LINKS Y HORARIOS
+        // CONFIGURACIÓN DE LINKS (TUS LINKS OFICIALES)
         const L1_BD = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
         const L2_COLA = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
         const L3_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
 
-        const HORARIOS = {
-            manana: { abre: 21, cierra: 7 },
-            tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 0 }
-        };
+        const HORARIOS = { manana: { abre: 21, cierra: 7 }, tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 0 } };
 
         let alumno = null;
         let counterInterval = null;
@@ -249,13 +239,11 @@
                     document.getElementById('welcomeName').innerText = data.Estudiante;
                     document.getElementById('step-verify').classList.add('hidden');
                     document.getElementById('step-selection').classList.remove('hidden');
-                    
-                    // CONTADOR AUTOMÁTICO (Cada 5 seg)
                     actualizarContador();
                     counterInterval = setInterval(actualizarContador, 5000);
                 } else {
-                    alert("⚠️ ALUMNO NO REGISTRADO\nPara acceder, primero debe registrarse en el sistema.");
-                    window.location.href = "registro.html";
+                    document.getElementById('errorModal').style.display = 'flex';
+                    this.innerText = "Verificar Alumno";
                 }
             });
         });
@@ -269,21 +257,18 @@
         function generarTicket(turno) {
             clearInterval(counterInterval);
             document.getElementById('step-selection').classList.add('hidden');
-            const fecha = new Date().toLocaleDateString();
-            const qrData = btoa(`${alumno.dni}|${turno}|${fecha}`);
+            const qrData = btoa(`${alumno.dni}|${turno}|${new Date().toLocaleDateString()}`);
 
             if (turno === 'MAÑANA') {
                 document.getElementById('step-ticket').classList.remove('hidden');
                 document.getElementById('std-ticket').classList.remove('hidden');
                 document.getElementById('ticketName').innerText = alumno.Estudiante;
-                document.getElementById('ticketInfo').innerText = "TURNO MAÑANA | ACCESO LIBRE";
                 new QRCode(document.getElementById("qrcode"), { text: qrData, width: 200, height: 200 });
             } else {
                 fetch(`${L2_COLA}?dni=${alumno.dni}&accion=solicitar_cola`).then(r => r.json()).then(res => {
                     document.getElementById('step-ticket').classList.remove('hidden');
                     if(res.orden <= 40) {
                         document.getElementById('premium-ticket').classList.remove('hidden');
-                        document.getElementById('p-fecha').innerText = fecha;
                         document.getElementById('p-asiento').innerText = res.orden;
                         document.getElementById('td-nom').innerText = alumno.Estudiante;
                         document.getElementById('td-fac').innerText = alumno.Facultad;
@@ -292,7 +277,6 @@
                     } else {
                         document.getElementById('std-ticket').classList.remove('hidden');
                         document.getElementById('ticketName').innerText = alumno.Estudiante;
-                        document.getElementById('ticketInfo').innerText = `TARDE | ORDEN: ${res.orden}`;
                         new QRCode(document.getElementById("qrcode"), { text: qrData, width: 200, height: 200 });
                     }
                 });
