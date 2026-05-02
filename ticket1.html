@@ -39,37 +39,40 @@
         input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; }
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; }
         
-        .card-panorama {
-            position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
-            height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background-size: cover; background-position: center; transition: 0.4s; cursor: pointer;
-        }
-        .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
-        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
-        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-        .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
-        .badge-cerrado { background: #ef4444; color: white; }
-        .badge-abierto { background: #10b981; color: white; }
-        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
+        /* DISEÑO DE TICKET SEGÚN IMAGEN */
+        .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; }
+        .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 25px 10px; color: #111; }
+        .vip-header h2 { font-weight: 900; font-size: 24px; letter-spacing: 1px; }
+        .vip-header p { font-size: 10px; font-weight: 800; opacity: 0.8; }
+        
+        .ticket-body { padding: 25px; }
+        .ticket-greeting { font-size: 11px; color: #666; margin-bottom: 20px; }
+        .ticket-greeting strong { color: #111; }
+        
+        .ticket-main-box { border: 1px dashed #d4a017; border-radius: 10px; padding: 20px; position: relative; }
+        .valid-day { font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
+        .valid-date { font-size: 24px; font-weight: 900; color: #d4a017; }
+        .ticket-divider { height: 1px; background: #eee; margin: 15px 0; }
+        .asiento-label { font-size: 14px; font-weight: 700; color: #444; }
+        .asiento-num-big { font-size: 80px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 10px 0; }
+        .qr-wrapper { border: 2px solid #d4a017; display: inline-block; padding: 10px; background: #fff; margin: 15px 0; }
+        .qr-footer-text { font-size: 9px; font-weight: 800; color: #d4a017; text-transform: uppercase; }
+        .timestamp-text { font-size: 8px; color: #ccc; margin-top: 5px; }
 
-        /* TICKET PREMIUM Y BOARDING PASS */
-        .ticket-white { background: #ffffff; color: #333333; border: 2px dashed #ffc107; border-radius: 15px; padding: 25px; width: 100%; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .asiento-num { color: #e53e3e; font-size: 80px; font-weight: 900; line-height: 1; margin: 5px 0; }
-        .ticket-std { background: rgba(255,255,255,0.05); border: 2px solid var(--accent); border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; margin: 0 auto; backdrop-filter: blur(20px); }
+        .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; }
+        .data-table td { padding: 8px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; }
+        .data-table .label { color: #444; }
+        .data-table .value { text-align: right; color: #666; font-weight: 500; }
+
+        .vip-footer { padding: 20px; font-size: 10px; color: #2c3e50; font-weight: 800; }
+        .hashtags { color: #d4a017; font-size: 9px; margin-top: 5px; }
 
         /* MODAL ERROR */
         #errorModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .error-box { background: #111; border: 2px solid #ef4444; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 100%; }
 
-        /* BADGE ALUMNO */
         .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
-
-        .table-data { width: 100%; font-size: 10px; text-align: left; border-top: 1px solid #eee; margin-top: 20px; padding-top: 10px; }
-        .table-data td { padding: 4px 0; font-weight: 900; text-transform: uppercase; }
-        .table-data .val { text-align: right; color: #666; font-weight: 500; }
-
         #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: -30px; }
-        #qrcode img, #qrcode-p img { margin: 0 auto; border: 4px solid white; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -87,12 +90,12 @@
     <!-- MENÚ MÓVIL (ORIGINAL) -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Ticket</a>
-        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
-        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
-        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
+        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500 underline">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
@@ -105,8 +108,7 @@
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
-
-            <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
+            <nav class="hidden md:flex gap-8 nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link">Rutas</a>
                 <a href="ticket.html" class="nav-link active-link">Ticket</a>
@@ -114,16 +116,13 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
-                MENU <i class="fa-solid fa-bars-staggered"></i>
-            </button>
+            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl"><i class="fa-solid fa-bars"></i></button>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
             
             <div id="main-header" class="text-center mb-10 animate-fade-up">
-                <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block text-white">SISTEMA DE GESTIÓN OFICIAL</span>
+                <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">SISTEMA DE GESTIÓN OFICIAL</span>
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
                 <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
             </div>
@@ -152,51 +151,65 @@
                         <span id="badge-m" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Mañana</div>
                         <div class="salida-text text-yellow-500 font-black">SALIDA: 05:15 AM</div>
-                        <p class="text-[9px] text-white/60 mt-3 uppercase font-black tracking-widest">Ticket Acceso Libre</p>
                     </div>
                     <div id="card-tarde" class="card-panorama card-t-img" onclick="validarHorarioYGenerar('TARDE')">
                         <span id="badge-t" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Tarde</div>
                         <div class="salida-text text-white font-black">SALIDA: 06:00 PM</div>
-                        <p class="text-[9px] text-white/60 mt-3 uppercase font-black tracking-widest">Reserva 1-40 Premium / 41+ Cola</p>
                     </div>
                 </div>
 
-                <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500 mb-10">
+                <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500">
                     <p class="text-[9px] text-gray-500 font-black uppercase mb-1">Cupos registrados (Tarde):</p>
                     <div id="conteo-real" class="text-4xl font-black text-white">0</div>
-                    <p class="text-[7px] text-yellow-500/50 mt-1 uppercase">Sincronizado en tiempo real</p>
                 </div>
             </div>
 
-            <!-- PASO 3: TICKETS -->
-            <div id="step-ticket" class="w-full max-w-2xl mx-auto text-center hidden animate-fade-up">
-                
-                <!-- TICKET PREMIUM TARDE -->
-                <div id="premium-ticket" class="ticket-white hidden">
-                    <div class="fecha-ticket font-black text-sm text-gray-400" id="p-fecha"></div>
-                    <div class="border-t border-gray-100 my-4"></div>
-                    <p style="font-size: 12px; font-weight: bold; color: #444;">NÚMERO DE ASIENTO:</p>
-                    <div class="asiento-num" id="p-asiento"></div>
-                    <div class="border-t border-gray-100 my-4"></div>
-                    <table class="table-data">
-                        <tr><td>Estudiante:</td><td class="val" id="td-nom"></td></tr>
-                        <tr><td>Facultad:</td><td class="val" id="td-fac"></td></tr>
-                        <tr><td>DNI:</td><td class="val" id="td-dni"></td></tr>
-                    </table>
-                    <div id="qrcode-p" class="my-6 flex justify-center"></div>
-                </div>
-
-                <!-- TICKET BOARDING PASS (MAÑANA / COLA TARDE) -->
-                <div id="std-ticket" class="ticket-std hidden">
-                    <div class="border-b border-white/10 pb-4 mb-6">
-                        <span class="text-yellow-500 font-black text-[10px] tracking-widest uppercase">Pase de Abordaje Oficial</span>
-                        <h2 id="std-shift-name" class="text-white text-3xl font-black italic uppercase"></h2>
+            <!-- PASO 3: TICKET VIP (DISEÑO IMAGEN) -->
+            <div id="step-ticket" class="w-full max-w-2xl mx-auto hidden animate-fade-up">
+                <div class="vip-ticket-card">
+                    <div class="vip-header">
+                        <h2>¡PASE VIP VERIFICADO!</h2>
+                        <p>MOVILIDAD UNIVERSITARIA - RUTA VENTANILLA</p>
                     </div>
-                    <div id="qrcode" class="flex justify-center mb-6 p-2 bg-white rounded-xl"></div>
-                    <div class="text-left">
-                        <p id="std-nom" class="font-black uppercase text-xl text-white"></p>
-                        <p id="std-info" class="text-yellow-500 font-bold text-xs uppercase mt-1"></p>
+                    
+                    <div class="ticket-body">
+                        <p class="ticket-greeting">Hola <strong id="t-saludo"></strong>, se te hace entrega de tu ticket digital:</p>
+                        
+                        <div class="ticket-main-box">
+                            <p class="valid-day">VÁLIDO ÚNICAMENTE PARA EL DÍA:</p>
+                            <p class="valid-date" id="t-fecha"></p>
+                            <div class="ticket-divider"></div>
+                            
+                            <!-- MOSTRAR ASIENTO SOLO EN TARDE -->
+                            <div id="asiento-area">
+                                <p class="asiento-label">Tu número de asiento es:</p>
+                                <div class="asiento-num-big" id="t-asiento"></div>
+                            </div>
+                            <!-- MENSAJE PARA MAÑANA -->
+                            <div id="mañana-label" class="hidden">
+                                <p class="asiento-label">TICKET DE ACCESO LIBRE</p>
+                                <div class="asiento-num-big" style="font-size: 40px; color: #10b981;">MAÑANA</div>
+                            </div>
+
+                            <div class="qr-wrapper">
+                                <div id="qrcode-vip"></div>
+                            </div>
+                            <p class="qr-footer-text">ESCANEO REQUERIDO PARA EL INGRESO</p>
+                            <p class="timestamp-text">Validado a las <span id="t-hora"></span> hs.</p>
+                        </div>
+
+                        <table class="data-table">
+                            <tr><td class="label">ESTUDIANTE:</td><td class="value" id="t-nom"></td></tr>
+                            <tr><td class="label">FACULTAD:</td><td class="value" id="t-fac"></td></tr>
+                            <tr><td class="label">CÓDIGO:</td><td class="value" id="t-cod"></td></tr>
+                            <tr><td class="label">DNI/CE:</td><td class="value" id="t-dni"></td></tr>
+                        </table>
+
+                        <div class="vip-footer">
+                            Atentamente,<br>DELEGADO DE LA RUTA VENTANILLA
+                            <div class="hashtags">#SIGAMOS_MEJORANDO<br>#UNAC_UNIDO</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -205,14 +218,13 @@
             <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden animate-fade-up">
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
                 <h2 class="text-3xl font-black uppercase text-white">ESCANEO EXITOSO</h2>
-                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-8 py-3 rounded-full text-xs uppercase">Finalizar</button>
+                <button onclick="location.reload()" class="mt-8 bg-white text-black font-black px-8 py-3 rounded-full text-xs uppercase shadow-xl">Finalizar</button>
             </div>
 
             <div id="globe-container" class="animate-float"></div>
             <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </main>
 
-        <!-- FOOTER (ORIGINAL) -->
         <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
             <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
             <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
@@ -224,10 +236,7 @@
         const L2_COLA = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
         const L3_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
 
-        const REGLAS = {
-            manana: { abre: 21, cierra: 7 },
-            tarde: { hAbre: 19, mAbre: 12, hCierra: 20, mCierra: 0 }
-        };
+        const REGLAS = { manana: { abre: 21, cierra: 7 }, tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 0 } };
 
         let alumno = null;
         let cInt = null;
@@ -294,35 +303,37 @@
         function generarTicket(turno) {
             clearInterval(cInt);
             document.getElementById('step-selection').classList.add('hidden');
-            const fecha = new Date().toLocaleDateString();
+            const now = new Date();
+            const fecha = now.toLocaleDateString();
+            const horaActual = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
             const qrData = btoa(`${alumno.dni}|${turno}|${fecha}`);
-            document.getElementById('step-ticket').classList.remove('hidden');
+
+            document.getElementById('t-saludo').innerText = alumno.Estudiante;
+            document.getElementById('t-fecha').innerText = fecha;
+            document.getElementById('t-hora').innerText = horaActual;
+            document.getElementById('t-nom').innerText = alumno.Estudiante;
+            document.getElementById('t-fac').innerText = alumno.Facultad || "UNAC";
+            document.getElementById('t-cod').innerText = alumno.Codigo || "---";
+            document.getElementById('t-dni').innerText = alumno.dni;
 
             if (turno === 'MAÑANA') {
-                document.getElementById('std-ticket').classList.remove('hidden');
-                document.getElementById('std-shift-name').innerText = "Turno Mañana";
-                document.getElementById('std-nom').innerText = alumno.Estudiante;
-                document.getElementById('std-info').innerText = "Acceso General | Salida 05:15 AM";
-                new QRCode(document.getElementById("qrcode"), { text: qrData, width: 200, height: 200 });
+                document.getElementById('asiento-area').classList.add('hidden');
+                document.getElementById('mañana-label').classList.remove('hidden');
+                finalizarGeneracion(qrData);
             } else {
                 fetch(`${L2_COLA}?dni=${alumno.dni}&accion=solicitar_cola`).then(r => r.json()).then(res => {
-                    if(res.orden <= 40) {
-                        document.getElementById('premium-ticket').classList.remove('hidden');
-                        document.getElementById('p-fecha').innerText = fecha;
-                        document.getElementById('p-asiento').innerText = res.orden;
-                        document.getElementById('td-nom').innerText = alumno.Estudiante;
-                        document.getElementById('td-fac').innerText = alumno.Facultad;
-                        document.getElementById('td-dni').innerText = alumno.dni;
-                        new QRCode(document.getElementById("qrcode-p"), { text: qrData, width: 160, height: 160 });
-                    } else {
-                        document.getElementById('std-ticket').classList.remove('hidden');
-                        document.getElementById('std-shift-name').innerText = "Turno Tarde";
-                        document.getElementById('std-nom').innerText = alumno.Estudiante;
-                        document.getElementById('std-info').innerText = `En Cola | Orden: ${res.orden}`;
-                        new QRCode(document.getElementById("qrcode"), { text: qrData, width: 200, height: 200 });
-                    }
+                    document.getElementById('asiento-area').classList.remove('hidden');
+                    document.getElementById('mañana-label').classList.add('hidden');
+                    document.getElementById('t-asiento').innerText = res.orden;
+                    finalizarGeneracion(qrData);
                 });
             }
+        }
+
+        function finalizarGeneracion(qrData) {
+            document.getElementById('step-ticket').classList.remove('hidden');
+            document.getElementById('qrcode-vip').innerHTML = "";
+            new QRCode(document.getElementById("qrcode-vip"), { text: qrData, width: 140, height: 140 });
             esperarSincronizacion();
         }
 
