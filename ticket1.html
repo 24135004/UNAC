@@ -39,9 +39,6 @@
         input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; }
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; }
         
-        /* ESTILO BADGE HABILITADO */
-        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
-
         .card-panorama {
             position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
             height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -49,36 +46,45 @@
         }
         .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
         .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
+        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
         .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: #10b981; color: white; }
         .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
 
+        /* TICKET PREMIUM Y BOARDING PASS */
         .ticket-white { background: #ffffff; color: #333333; border: 2px dashed #ffc107; border-radius: 15px; padding: 25px; width: 100%; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .asiento-num { color: #e53e3e; font-size: 80px; font-weight: 900; line-height: 1; margin: 5px 0; }
-        
-        /* MODAL DE ERROR */
-        #errorModal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-box { background: #111; border: 2px solid #ef4444; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px; }
+        .ticket-std { background: rgba(255,255,255,0.05); border: 2px solid var(--accent); border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; margin: 0 auto; backdrop-filter: blur(20px); }
+
+        /* MODAL ERROR */
+        #errorModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .error-box { background: #111; border: 2px solid #ef4444; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 100%; }
+
+        /* BADGE ALUMNO */
+        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
+
+        .table-data { width: 100%; font-size: 10px; text-align: left; border-top: 1px solid #eee; margin-top: 20px; padding-top: 10px; }
+        .table-data td { padding: 4px 0; font-weight: 900; text-transform: uppercase; }
+        .table-data .val { text-align: right; color: #666; font-weight: 500; }
 
         #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: -30px; }
-        .loading-spin { border: 4px solid rgba(255,193,7,0.1); border-top: 4px solid #ffc107; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #qrcode img, #qrcode-p img { margin: 0 auto; border: 4px solid white; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- MODAL DE ERROR (PERSONALIZADO) -->
+    <!-- MODAL ERROR DNI -->
     <div id="errorModal">
-        <div class="modal-box">
-            <i class="fa-solid fa-circle-exclamation text-red-500 text-6xl mb-4"></i>
-            <h2 class="text-2xl font-black uppercase text-white mb-2">No Verificado</h2>
-            <p class="text-gray-400 text-sm mb-6">Su DNI no se encuentra en nuestra base de datos. Para acceder, debe registrarse primero.</p>
-            <a href="registro.html" class="bg-red-500 text-white px-6 py-3 rounded-lg font-bold uppercase text-xs">Ir al Registro</a>
+        <div class="error-box">
+            <i class="fa-solid fa-circle-xmark text-red-500 text-6xl mb-4"></i>
+            <h2 class="text-white text-2xl font-black uppercase mb-2">No Verificado</h2>
+            <p class="text-gray-400 text-sm mb-6">Su DNI no está registrado en el padrón oficial. Debe registrarse para acceder.</p>
+            <a href="registro.html" class="inline-block bg-red-500 text-white px-8 py-3 rounded-xl font-bold uppercase text-xs">Ir a Registro</a>
         </div>
     </div>
 
-    <!-- MENÚ MÓVIL ORIGINAL -->
+    <!-- MENÚ MÓVIL (ORIGINAL) -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
@@ -90,7 +96,7 @@
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER ORIGINAL -->
+        <!-- HEADER (ORIGINAL) -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
@@ -99,6 +105,7 @@
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
+
             <nav class="hidden md:flex gap-8 nav-minimal nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link">Rutas</a>
@@ -107,7 +114,10 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">MENU <i class="fa-solid fa-bars-staggered"></i></button>
+            
+            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
+                MENU <i class="fa-solid fa-bars-staggered"></i>
+            </button>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
@@ -138,13 +148,13 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
-                    <div id="card-mañana" class="card-panorama card-m-img" onclick="generarTicket('MAÑANA')">
+                    <div id="card-mañana" class="card-panorama card-m-img" onclick="validarHorarioYGenerar('MAÑANA')">
                         <span id="badge-m" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Mañana</div>
                         <div class="salida-text text-yellow-500 font-black">SALIDA: 05:15 AM</div>
                         <p class="text-[9px] text-white/60 mt-3 uppercase font-black tracking-widest">Ticket Acceso Libre</p>
                     </div>
-                    <div id="card-tarde" class="card-panorama card-t-img" onclick="generarTicket('TARDE')">
+                    <div id="card-tarde" class="card-panorama card-t-img" onclick="validarHorarioYGenerar('TARDE')">
                         <span id="badge-t" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Tarde</div>
                         <div class="salida-text text-white font-black">SALIDA: 06:00 PM</div>
@@ -152,18 +162,23 @@
                     </div>
                 </div>
 
-                <!-- CONTADOR AUTOMÁTICO -->
                 <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500 mb-10">
-                    <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Cupos registrados (Tarde):</p>
+                    <p class="text-[9px] text-gray-500 font-black uppercase mb-1">Cupos registrados (Tarde):</p>
                     <div id="conteo-real" class="text-4xl font-black text-white">0</div>
                     <p class="text-[7px] text-yellow-500/50 mt-1 uppercase">Sincronizado en tiempo real</p>
                 </div>
             </div>
 
-            <!-- PASO 3: TICKET -->
+            <!-- PASO 3: TICKETS -->
             <div id="step-ticket" class="w-full max-w-2xl mx-auto text-center hidden animate-fade-up">
-                <div id="premium-ticket" class="ticket-white hidden animate-fade-up">
+                
+                <!-- TICKET PREMIUM TARDE -->
+                <div id="premium-ticket" class="ticket-white hidden">
+                    <div class="fecha-ticket font-black text-sm text-gray-400" id="p-fecha"></div>
+                    <div class="border-t border-gray-100 my-4"></div>
+                    <p style="font-size: 12px; font-weight: bold; color: #444;">NÚMERO DE ASIENTO:</p>
                     <div class="asiento-num" id="p-asiento"></div>
+                    <div class="border-t border-gray-100 my-4"></div>
                     <table class="table-data">
                         <tr><td>Estudiante:</td><td class="val" id="td-nom"></td></tr>
                         <tr><td>Facultad:</td><td class="val" id="td-fac"></td></tr>
@@ -172,13 +187,21 @@
                     <div id="qrcode-p" class="my-6 flex justify-center"></div>
                 </div>
 
-                <div id="std-ticket" class="glass p-8 w-full max-w-sm mx-auto hidden">
-                    <div id="qrcode" class="flex justify-center mb-6 p-2 bg-white rounded-lg shadow-2xl"></div>
-                    <p id="ticketName" class="font-black uppercase text-lg text-white"></p>
+                <!-- TICKET BOARDING PASS (MAÑANA / COLA TARDE) -->
+                <div id="std-ticket" class="ticket-std hidden">
+                    <div class="border-b border-white/10 pb-4 mb-6">
+                        <span class="text-yellow-500 font-black text-[10px] tracking-widest uppercase">Pase de Abordaje Oficial</span>
+                        <h2 id="std-shift-name" class="text-white text-3xl font-black italic uppercase"></h2>
+                    </div>
+                    <div id="qrcode" class="flex justify-center mb-6 p-2 bg-white rounded-xl"></div>
+                    <div class="text-left">
+                        <p id="std-nom" class="font-black uppercase text-xl text-white"></p>
+                        <p id="std-info" class="text-yellow-500 font-bold text-xs uppercase mt-1"></p>
+                    </div>
                 </div>
             </div>
 
-            <!-- ÉXITO -->
+            <!-- PASO 4: ÉXITO -->
             <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden animate-fade-up">
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
                 <h2 class="text-3xl font-black uppercase text-white">ESCANEO EXITOSO</h2>
@@ -189,38 +212,40 @@
             <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </main>
 
-        <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20 text-white">
+        <!-- FOOTER (ORIGINAL) -->
+        <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
             <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
-            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">© 2026 UNAC - Movilidad Universitaria.</span>
+            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
         </footer>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE LINKS (TUS LINKS OFICIALES)
         const L1_BD = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
         const L2_COLA = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
         const L3_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
 
-        const HORARIOS = { manana: { abre: 21, cierra: 7 }, tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 0 } };
+        const REGLAS = {
+            manana: { abre: 21, cierra: 7 },
+            tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 0 }
+        };
 
         let alumno = null;
-        let counterInterval = null;
+        let cInt = null;
 
         function updateClock() {
             const now = new Date();
             document.getElementById('live-clock').innerText = now.toLocaleTimeString();
-            const h = now.getHours(), m = now.getMinutes();
+            const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
 
             const cardM = document.getElementById('card-mañana'), badgeM = document.getElementById('badge-m');
-            if (h >= HORARIOS.manana.abre || h < HORARIOS.manana.cierra) {
+            if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) {
                 cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto";
             } else {
                 cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado";
             }
 
             const cardT = document.getElementById('card-tarde'), badgeT = document.getElementById('badge-t');
-            const totalM = h * 60 + m;
-            if (totalM >= (HORARIOS.tarde.hAbre * 60 + HORARIOS.tarde.mAbre) && totalM < (HORARIOS.tarde.hCierra * 60)) {
+            if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) {
                 cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto";
             } else {
                 cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado";
@@ -240,7 +265,7 @@
                     document.getElementById('step-verify').classList.add('hidden');
                     document.getElementById('step-selection').classList.remove('hidden');
                     actualizarContador();
-                    counterInterval = setInterval(actualizarContador, 5000);
+                    cInt = setInterval(actualizarContador, 5000);
                 } else {
                     document.getElementById('errorModal').style.display = 'flex';
                     this.innerText = "Verificar Alumno";
@@ -254,21 +279,36 @@
             });
         }
 
+        function validarHorarioYGenerar(turno) {
+            const now = new Date();
+            const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
+            if (turno === 'MAÑANA') {
+                if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) generarTicket(turno);
+                else alert("Turno Mañana fuera de horario.");
+            } else {
+                if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) generarTicket(turno);
+                else alert("Turno Tarde fuera de horario.");
+            }
+        }
+
         function generarTicket(turno) {
-            clearInterval(counterInterval);
+            clearInterval(cInt);
             document.getElementById('step-selection').classList.add('hidden');
-            const qrData = btoa(`${alumno.dni}|${turno}|${new Date().toLocaleDateString()}`);
+            const fecha = new Date().toLocaleDateString();
+            const qrData = btoa(`${alumno.dni}|${turno}|${fecha}`);
+            document.getElementById('step-ticket').classList.remove('hidden');
 
             if (turno === 'MAÑANA') {
-                document.getElementById('step-ticket').classList.remove('hidden');
                 document.getElementById('std-ticket').classList.remove('hidden');
-                document.getElementById('ticketName').innerText = alumno.Estudiante;
+                document.getElementById('std-shift-name').innerText = "Turno Mañana";
+                document.getElementById('std-nom').innerText = alumno.Estudiante;
+                document.getElementById('std-info').innerText = "Acceso General | Salida 05:15 AM";
                 new QRCode(document.getElementById("qrcode"), { text: qrData, width: 200, height: 200 });
             } else {
                 fetch(`${L2_COLA}?dni=${alumno.dni}&accion=solicitar_cola`).then(r => r.json()).then(res => {
-                    document.getElementById('step-ticket').classList.remove('hidden');
                     if(res.orden <= 40) {
                         document.getElementById('premium-ticket').classList.remove('hidden');
+                        document.getElementById('p-fecha').innerText = fecha;
                         document.getElementById('p-asiento').innerText = res.orden;
                         document.getElementById('td-nom').innerText = alumno.Estudiante;
                         document.getElementById('td-fac').innerText = alumno.Facultad;
@@ -276,7 +316,9 @@
                         new QRCode(document.getElementById("qrcode-p"), { text: qrData, width: 160, height: 160 });
                     } else {
                         document.getElementById('std-ticket').classList.remove('hidden');
-                        document.getElementById('ticketName').innerText = alumno.Estudiante;
+                        document.getElementById('std-shift-name').innerText = "Turno Tarde";
+                        document.getElementById('std-nom').innerText = alumno.Estudiante;
+                        document.getElementById('std-info').innerText = `En Cola | Orden: ${res.orden}`;
                         new QRCode(document.getElementById("qrcode"), { text: qrData, width: 200, height: 200 });
                     }
                 });
@@ -297,7 +339,6 @@
         }
 
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
-        
         let scene, camera, renderer, globe;
         function initThree() {
             const container = document.getElementById('globe-container');
