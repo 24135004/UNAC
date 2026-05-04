@@ -48,7 +48,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 
-        /* NOTIFICACIÓN RELÁMPAGO */
         #flash-notif {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             z-index: 9999; background: #10b981; color: white; padding: 25px 50px;
@@ -56,7 +55,6 @@
             box-shadow: 0 0 50px rgba(16, 185, 129, 0.6); display: none;
             border: 2px solid white; pointer-events: none;
         }
-        /* Color rojo para errores */
         .notif-error { background: #ef4444 !important; box-shadow: 0 0 50px rgba(239, 68, 68, 0.6) !important; }
     </style>
 </head>
@@ -94,7 +92,6 @@
             <div class="text-left mb-4">
                 <label class="text-[9px] font-black text-yellow-500 uppercase tracking-widest ml-1">Documento DNI</label>
                 <input type="text" id="userDni" placeholder="7XXXXXXX" maxlength="8">
-                
                 <label class="text-[9px] font-black text-yellow-500 uppercase tracking-widest ml-1">Contraseña</label>
                 <input type="password" id="userPass" placeholder="••••••••">
             </div>
@@ -105,7 +102,6 @@
 
     <!-- SECCIÓN 2: ESCÁNER Y ESTADÍSTICAS -->
     <div id="scanner-container" class="w-full max-w-lg px-4 py-4 hidden animate-fade-in">
-        
         <div class="flex justify-between items-center mb-6 px-2">
             <div>
                 <h2 class="text-xl font-black italic uppercase">Panel de <span class="text-yellow-500">Control</span></h2>
@@ -119,7 +115,7 @@
         <div class="glass p-4 mb-6">
             <div class="flex items-center gap-2 mb-4 text-yellow-500">
                 <i class="fa-solid fa-camera text-xs"></i>
-                <span class="text-[10px] font-black uppercase tracking-widest">Lector de Tickets</span>
+                <span class="text-[10px] font-black uppercase tracking-widest">Lector de Tickets (Cooldown 3s)</span>
             </div>
             <div id="reader"></div>
         </div>
@@ -135,25 +131,23 @@
             </div>
         </div>
 
-        <!-- HISTORIAL LOCAL DETALLADO -->
+        <!-- HISTORIAL LOCAL FILTRADO -->
         <div class="glass p-6 mb-6">
             <h3 class="text-[10px] font-black uppercase text-gray-400 mb-4 border-b border-white/10 pb-2 flex justify-between">
-                <span>Registro Detallado</span>
-                <span id="label-turno" class="text-yellow-500">TURNO ACTUAL</span>
+                <span>Registro Oficial (Solo Hoy)</span>
+                <span id="label-turno" class="text-yellow-500">Sincronizado</span>
             </h3>
             <div id="listaEscaneo" class="space-y-3 max-h-64 overflow-y-auto pr-2">
-                <p class="text-[10px] text-gray-600 italic text-center py-6">Esperando escaneos...</p>
+                <p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros válidos hoy.</p>
             </div>
         </div>
 
-        <!-- BOTÓN RENOMBRADO Y FUNCIONAL PARA REINICIO -->
         <button onclick="enviarYReiniciar()" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-xl uppercase text-xs transition shadow-xl mb-10">
             <i class="fa-solid fa-rotate mr-2"></i> Reiniciar Sistema (Limpiar Excel)
         </button>
     </div>
 
     <script>
-        // CONFIGURACIÓN
         const DELEGADOS = ["71886034", "77570731", "63229248"];
         const LINK_POST_REINICIO = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec"; 
         const LINK_MARCAR_ASISTENCIA = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
@@ -161,6 +155,7 @@
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
         let delegadoActivo = "";
         let html5QrcodeScanner;
+        let isScanningLocked = false; // Control de sensibilidad
 
         function intentarLogin() {
             const dni = document.getElementById('userDni').value;
@@ -184,33 +179,40 @@
 
         function iniciarSistema() {
             renderList();
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 250 });
+            // FPS ajustado para estabilidad
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
             html5QrcodeScanner.render(onScanSuccess);
         }
 
         async function onScanSuccess(decodedText) {
+            if (isScanningLocked) return; // Si está bloqueado por el delay, ignorar
+
             try {
                 let decodedInfo = decodedText;
                 if(!decodedText.includes('|')) {
                     try { decodedInfo = atob(decodedText); } catch(e) {}
                 }
 
-                // El QR tiene formato: DNI|TURNO|FECHA
                 const [dniAlumno, turno, fechaTicket] = decodedInfo.split('|');
                 const fechaHoy = new Date().toLocaleDateString();
 
-                // 1. VALIDACIÓN DE FECHA (ANTI-VIVOS)
+                // Bloquear escáner para procesar (Delay solicitado de 3 segundos)
+                isScanningLocked = true;
+                setTimeout(() => { isScanningLocked = false; }, 3000);
+
+                // 1. VALIDACIÓN DE FECHA
                 if (fechaTicket !== fechaHoy) {
                     notificarFlash("TICKET CADUCADO", false);
-                    return;
+                    return; // NO se agrega al historial
                 }
 
-                // 2. VALIDACIÓN DE DUPLICADO (ANTI-CAPTURAS)
+                // 2. VALIDACIÓN DE DUPLICADO
                 if (scannedData.some(item => item.dni === dniAlumno)) {
                     notificarFlash("YA ESCANEADO", false);
-                    return;
+                    return; // NO se agrega al historial
                 }
 
+                // SI PASA LAS PRUEBAS, ES UN ESCANEO CORRECTO
                 const registro = {
                     dni: dniAlumno,
                     turno: turno,
@@ -225,13 +227,13 @@
                 notificarFlash("ESCANEO VERIFICADO", true);
                 renderList();
 
-                // --- MARCAR EN LINK 3 (Sincroniza con el ticket del alumno para que se borre) ---
                 fetch(`${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`, {
                     mode: 'no-cors'
                 });
 
             } catch (e) {
-                console.log("Error de lectura");
+                console.log("QR no reconocido");
+                isScanningLocked = false;
             }
         }
 
@@ -244,24 +246,26 @@
             if (exito) {
                 flash.classList.remove('notif-error');
                 flashIcon.className = "fa-solid fa-circle-check text-5xl mb-2";
-                notificarLector(text, true);
             } else {
                 flash.classList.add('notif-error');
                 flashIcon.className = "fa-solid fa-circle-xmark text-5xl mb-2";
-                notificarLector(text, false);
             }
 
             flash.style.display = 'block';
+            notificarLector(text, exito);
             setTimeout(() => { flash.style.display = 'none'; }, 2000);
         }
 
         function renderList() {
             document.getElementById('contador').innerText = scannedData.length;
             const lista = document.getElementById('listaEscaneo');
+            
             if (scannedData.length === 0) {
-                lista.innerHTML = '<p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros.</p>';
+                lista.innerHTML = '<p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros válidos hoy.</p>';
                 return;
             }
+            
+            // Renderiza solo lo que está en scannedData (que ya filtramos arriba)
             lista.innerHTML = scannedData.map(item => `
                 <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border-l-4 border-yellow-500 animate-fade-in mb-2">
                     <div class="flex-1">
@@ -285,10 +289,8 @@
         }
 
         async function enviarYReiniciar() {
-            if (!confirm("Esto guardará los datos finales y BORRARÁ todas las colas del Excel (Link 2 y 3). ¿Estás seguro?")) return;
-
+            if (!confirm("Esto guardará los datos finales y BORRARÁ todas las colas del Excel. ¿Estás seguro?")) return;
             const btn = document.querySelector('button[onclick="enviarYReiniciar()"]');
-            const originalText = btn.innerHTML;
             btn.innerText = "REINICIANDO...";
             btn.disabled = true;
 
@@ -305,7 +307,7 @@
             } catch (e) {
                 alert("Error de conexión al reiniciar.");
             }
-            btn.innerHTML = originalText;
+            btn.innerHTML = '<i class="fa-solid fa-rotate mr-2"></i> Reiniciar Sistema (Limpiar Excel)';
             btn.disabled = false;
         }
     </script>
