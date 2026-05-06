@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Interactivo | UNAC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@400;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        body { background: #050505; font-family: 'Inter', sans-serif; color: white; overflow: hidden; }
+        .phone-mockup {
+            width: 360px; height: 740px; border: 12px solid #1a1a1a; border-radius: 40px;
+            position: relative; background: #000; overflow: hidden; box-shadow: 0 0 50px rgba(255,193,7,0.2);
+        }
+        .cursor {
+            width: 40px; height: 40px; background: rgba(255,193,7,0.5); border: 2px solid #ffc107;
+            border-radius: 50%; position: absolute; pointer-events: none; z-index: 9999;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); transform: translate(-50%, -50%);
+            display: none;
+        }
+        .step-overlay {
+            position: absolute; bottom: 40px; left: 20px; right: 20px;
+            background: rgba(0,0,0,0.8); padding: 15px; border-radius: 15px;
+            border-left: 4px solid #ffc107; z-index: 100; display: none;
+        }
+        /* Estilos replicados del original para el simulador */
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border-radius: 20px; }
+        .btn-search { background: #ffc107; color: #000; font-weight: 900; padding: 10px 20px; border-radius: 8px; font-size: 10px; }
+        .card-panorama { height: 120px; border-radius: 20px; background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .vip-card { background: white; color: #333; border-radius: 15px; padding: 15px; text-align: center; }
+        
+        #loading-3d { position: absolute; inset: 0; background: #050505; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-height-screen py-10">
+
+    <h1 class="text-yellow-500 font-black text-2xl mb-4 uppercase italic">Tutorial: Pase Turno Tarde</h1>
+    
+    <div class="phone-mockup" id="screen">
+        <div id="virtual-cursor" class="cursor"></div>
+        
+        <!-- STEP OVERLAY -->
+        <div id="step-msg" class="step-overlay animate-bounce">
+            <p class="text-xs font-bold text-yellow-500 uppercase mb-1">Instrucción:</p>
+            <p id="step-text" class="text-[11px] text-white"></p>
+        </div>
+
+        <!-- CONTENIDO SIMULADO -->
+        <div class="p-6 h-full flex flex-col" id="content-area">
+            <!-- Header simulado -->
+            <div class="flex justify-between items-center mb-10">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 bg-yellow-500 rounded flex items-center justify-center"><i class="fa-solid fa-bus text-black text-[10px]"></i></div>
+                    <span class="text-[10px] font-black">UNAC</span>
+                </div>
+                <i class="fa-solid fa-bars text-yellow-500"></i>
+            </div>
+
+            <!-- Paso 1: Login -->
+            <div id="sim-step-1" class="text-center">
+                <h2 class="text-xl font-black mb-6 uppercase italic">Tickets <span class="text-yellow-500">Oficiales</span></h2>
+                <div class="glass p-6">
+                    <p class="text-[9px] text-gray-400 mb-4 uppercase">Ingrese su DNI</p>
+                    <div id="fake-input" class="bg-black/50 border border-yellow-500 p-3 rounded-lg mb-4 text-sm"></div>
+                    <button id="fake-verify" class="btn-search w-full">VERIFICAR ALUMNO</button>
+                </div>
+            </div>
+
+            <!-- Paso 2: Selección -->
+            <div id="sim-step-2" class="hidden">
+                <div class="glass p-3 mb-4 border-l-4 border-yellow-500 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-yellow-500"><i class="fa-solid fa-user"></i></div>
+                    <div>
+                        <p class="text-[10px] font-bold">GARCIA LOPEZ, JUAN</p>
+                        <p class="text-[8px] text-green-500 uppercase">Apto para viaje</p>
+                    </div>
+                </div>
+                <div class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400'); opacity:0.4">
+                    <span class="text-[10px] font-black uppercase">Mañana</span>
+                </div>
+                <div id="target-tarde" class="card-panorama border-2 border-yellow-500" style="background-image: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400');">
+                    <span class="bg-green-500 text-[8px] px-2 py-1 rounded-full mb-1">Abierto</span>
+                    <span class="text-[18px] font-black uppercase italic">Tarde</span>
+                    <span class="text-yellow-500 text-[10px] font-bold">SALIDA: 06:00 PM</span>
+                </div>
+            </div>
+
+            <!-- Paso 3: Ticket -->
+            <div id="sim-step-3" class="hidden overflow-y-auto">
+                <div class="vip-card">
+                    <div class="bg-yellow-500 p-2 rounded mb-2 text-[10px] font-black">¡PASE VIP VERIFICADO!</div>
+                    <p class="text-[10px] mb-2">Hola Juan, tu asiento es:</p>
+                    <div class="text-4xl font-black text-red-600 mb-2">24</div>
+                    <div class="border-2 border-yellow-500 p-2 inline-block mb-2">
+                        <i class="fa-solid fa-qrcode text-5xl"></i>
+                    </div>
+                    <table class="w-full text-[8px] text-left">
+                        <tr class="border-b"><td>FACULTAD:</td><td class="text-right">FIEE</td></tr>
+                        <tr><td>DNI:</td><td class="text-right">77777777</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla de Carga 3D -->
+        <div id="loading-3d">
+            <div id="loader-canvas"></div>
+            <p class="text-yellow-500 font-black text-[10px] uppercase tracking-widest mt-4">recolectando tus datos</p>
+        </div>
+    </div>
+
+    <button onclick="startTutorial()" class="mt-8 bg-yellow-500 text-black font-black px-10 py-4 rounded-full hover:bg-yellow-400 transition-all shadow-xl flex items-center gap-2">
+        <i class="fa-solid fa-play"></i> INICIAR VIDEO TUTORIAL
+    </button>
+
+    <script>
+        const stepMsg = document.getElementById('step-msg');
+        const stepText = document.getElementById('step-text');
+        const cursor = document.getElementById('virtual-cursor');
+
+        // Narrador
+        function hablar(texto) {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(texto);
+            msg.lang = 'es-ES';
+            msg.rate = 1;
+            window.speechSynthesis.speak(msg);
+        }
+
+        async function moveCursor(elementId, click = false) {
+            const el = document.getElementById(elementId);
+            const rect = el.getBoundingClientRect();
+            const screenRect = document.getElementById('screen').getBoundingClientRect();
+            
+            cursor.style.display = 'block';
+            cursor.style.top = (rect.top - screenRect.top + rect.height/2) + 'px';
+            cursor.style.left = (rect.left - screenRect.left + rect.width/2) + 'px';
+            
+            await new Promise(r => setTimeout(r, 1000));
+            if(click) {
+                cursor.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                setTimeout(() => cursor.style.transform = 'translate(-50%, -50%) scale(1)', 200);
+            }
+        }
+
+        async function startTutorial() {
+            hablar("Bienvenido al tutorial oficial. Primero, ingresa tu número de DNI para verificar tu identidad.");
+            stepMsg.style.display = 'block';
+            stepText.innerText = "Paso 1: Ingresa tu DNI y verifica tu cuenta.";
+            
+            // Simular escritura
+            await moveCursor('fake-input');
+            const input = document.getElementById('fake-input');
+            const dni = "74582133";
+            for(let char of dni) {
+                input.innerText += char;
+                await new Promise(r => setTimeout(r, 100));
+            }
+
+            await new Promise(r => setTimeout(r, 500));
+            await moveCursor('fake-verify', true);
+            
+            // Cambio a selección
+            document.getElementById('sim-step-1').classList.add('hidden');
+            document.getElementById('sim-step-2').classList.remove('hidden');
+            
+            hablar("Una vez habilitado, selecciona el turno Tarde. Recuerda que solo se abre a las 5 y 10 de la tarde en punto.");
+            stepText.innerText = "Paso 2: Selecciona el Turno Tarde (Abre 5:10 PM).";
+            
+            await new Promise(r => setTimeout(r, 3000));
+            await moveCursor('target-tarde', true);
+
+            // Pantalla de carga
+            document.getElementById('sim-step-2').classList.add('hidden');
+            document.getElementById('loading-3d').style.display = 'flex';
+            init3DLoader();
+            
+            hablar("Al solicitar el ticket, el sistema procesará tus datos durante 10 segundos para asignarte un lugar oficial.");
+            stepText.innerText = "Procesando... Espera 10 segundos mientras recolectamos tus datos.";
+
+            await new Promise(r => setTimeout(r, 10000)); // Espera real de 10 seg
+
+            // Mostrar Ticket
+            document.getElementById('loading-3d').style.display = 'none';
+            document.getElementById('sim-step-3').classList.remove('hidden');
+            
+            hablar("¡Listo! Si estás entre los primeros 40, verás tu número de asiento. Si eres del 41 en adelante, solo verás el código QR para el abordaje.");
+            stepText.innerText = "Paso 3: Obtén tu ticket. Si eres del 1 al 40 tienes asiento. Si eres más de 40, solo QR.";
+            
+            await new Promise(r => setTimeout(r, 5000));
+            hablar("Tutorial finalizado. Recuerda respetar los horarios. ¡Buen viaje!");
+            stepText.innerText = "Tutorial completado. ¡Usa el sistema con responsabilidad!";
+        }
+
+        // Animación 3D del loader
+        function init3DLoader() {
+            const container = document.getElementById('loader-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(200, 200);
+            container.innerHTML = "";
+            container.appendChild(renderer.domElement);
+            
+            const geometry = new THREE.IcosahedronGeometry(1.5, 1);
+            const material = new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true });
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+            camera.position.z = 4;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                mesh.rotation.x += 0.02;
+                mesh.rotation.y += 0.02;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
