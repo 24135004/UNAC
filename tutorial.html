@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNAC | Tutorial Oficial Sistema de Movilidad</title>
+    <title>UNAC | Tutorial Maestro de Movilidad</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -15,8 +15,8 @@
         :root { --accent: #ffc107; --dark: #050505; }
         body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
         
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-float { animation: float 4s ease-in-out infinite; }
 
@@ -43,7 +43,6 @@
         }
         .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
         .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
-        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
         .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: #10b981; color: white; }
@@ -65,26 +64,25 @@
         .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
         #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: -30px; }
 
-        /* LOADER 3D REGLA 10 SEGUNDOS */
         #loading-screen { position: fixed; inset: 0; background: #050505; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
         #loader-3d-canvas { width: 300px; height: 300px; }
-        .loader-text { color: var(--accent); font-weight: 900; text-transform: uppercase; letter-spacing: 4px; font-size: 14px; margin-top: 20px; animation: pulse 1.5s infinite; text-align: center; line-height: 1.5; }
+        .loader-text { color: var(--accent); font-weight: 900; text-transform: uppercase; letter-spacing: 4px; font-size: 14px; margin-top: 20px; animation: pulse 1.5s infinite; text-align: center; }
 
-        /* TUTORIAL OVERLAY */
-        #tutorial-layer { position: fixed; inset: 0; z-index: 10000; pointer-events: none; display: none; }
-        #virtual-pointer { width: 50px; height: 50px; background: rgba(255, 193, 7, 0.5); border: 2px solid #ffc107; border-radius: 50%; position: absolute; transform: translate(-50%, -50%); transition: all 1s cubic-bezier(0.19, 1, 0.22, 1); }
-        #tutorial-caption { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 800px; background: rgba(0,0,0,0.98); border-left: 6px solid #ffc107; padding: 25px; border-radius: 15px; color: white; z-index: 10001; box-shadow: 0 20px 60px rgba(0,0,0,1); }
-        .btn-start { position: fixed; top: 120px; right: 20px; z-index: 10005; background: #ffc107; color: black; font-weight: 900; padding: 15px 30px; border-radius: 50px; cursor: pointer; border: none; }
+        /* CAPA TUTORIAL */
+        #tutorial-overlay { position: fixed; inset: 0; z-index: 10000; pointer-events: none; display: none; background: rgba(0,0,0,0.3); }
+        #virtual-pointer { width: 60px; height: 60px; background: rgba(255, 193, 7, 0.4); border: 3px solid #ffc107; border-radius: 50%; position: absolute; transform: translate(-50%, -50%); transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1); z-index: 10001; }
+        #tutorial-caption { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 800px; background: #000; border-left: 8px solid #ffc107; padding: 30px; border-radius: 15px; color: white; z-index: 10002; box-shadow: 0 25px 50px rgba(0,0,0,1); }
+        .btn-tutorial { position: fixed; top: 120px; right: 20px; z-index: 10005; background: #ffc107; color: black; font-weight: 900; padding: 15px 30px; border-radius: 50px; cursor: pointer; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-    <button class="btn-start" onclick="iniciarTutorialMaestro()"><i class="fa-solid fa-play mr-2"></i> INICIAR TUTORIAL COMPLETO</button>
+    <button class="btn-tutorial" onclick="startMasterTutorial()"><i class="fa-solid fa-play mr-2"></i> REPRODUCIR TUTORIAL DETALLADO</button>
 
-    <div id="tutorial-layer">
+    <div id="tutorial-overlay">
         <div id="virtual-pointer"></div>
         <div id="tutorial-caption">
-            <p id="tut-text" class="text-base md:text-xl font-bold leading-relaxed"></p>
+            <p id="tut-msg" class="text-lg md:text-xl font-bold leading-relaxed"></p>
         </div>
     </div>
 
@@ -105,11 +103,10 @@
     </div>
 
     <div class="main-wrapper">
-        <!-- NAVEGACIÓN ORIGINAL -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
-                <div class="flex flex-col text-left leading-none uppercase">
+                <div class="flex flex-col text-left leading-none uppercase text-white">
                     <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
@@ -125,24 +122,27 @@
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
+            
             <div id="main-header" class="text-center mb-10 animate-fade-up">
                 <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">SISTEMA DE GESTIÓN OFICIAL</span>
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
                 <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
             </div>
 
+            <!-- PASO 1 -->
             <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
                 <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su DNI para habilitar sistema</p>
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
                 <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
             </div>
 
+            <!-- PASO 2 -->
             <div id="step-selection" class="w-full max-w-5xl mx-auto hidden animate-fade-up">
                 <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
                     <div class="flex items-center gap-4">
                         <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
                         <div>
-                            <h2 id="welcomeName" class="text-xl font-black uppercase italic text-white"></h2>
+                            <h2 id="welcomeName" class="text-xl font-black uppercase italic leading-none text-white">ESTUDIANTE EJEMPLO</h2>
                             <div class="status-badge"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO - APTO</div>
                         </div>
                     </div>
@@ -150,7 +150,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
                     <div id="card-mañana" class="card-panorama card-m-img">
-                        <span id="badge-m" class="badge-img badge-abierto">Abierto</span>
+                        <span class="badge-img badge-abierto">Abierto</span>
                         <div class="shift-title text-white">Mañana</div>
                         <div class="salida-text text-yellow-500 font-black">SALIDA: 05:15 AM</div>
                     </div>
@@ -162,7 +162,7 @@
                 </div>
             </div>
 
-            <!-- TICKET VIP MODELO 100% ORIGINAL -->
+            <!-- PASO 3 -->
             <div id="step-ticket" class="w-full max-w-2xl mx-auto hidden animate-fade-up">
                 <div class="vip-ticket-card">
                     <div class="vip-header">
@@ -198,7 +198,7 @@
     </div>
 
     <script>
-        // GLOBO 3D INICIO
+        // GLOBE 3D
         let scene, camera, renderer, globe;
         function initGlobe() {
             const container = document.getElementById('globe-container');
@@ -211,17 +211,36 @@
         function animateGlobe() { requestAnimationFrame(animateGlobe); if(globe) globe.rotation.y += 0.002; renderer.render(scene, camera); }
         window.onload = initGlobe;
 
-        // TUTORIAL MAESTRO
+        // TUTORIAL ENGINE
         const pointer = document.getElementById('virtual-pointer');
-        const tutLayer = document.getElementById('tutorial-layer');
-        const tutText = document.getElementById('tut-text');
+        const tutOverlay = document.getElementById('tutorial-overlay');
+        const tutMsg = document.getElementById('tut-msg');
 
-        function speakFormal(text) {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'es-MX'; msg.rate = 0.88;
-            window.speechSynthesis.speak(msg);
-            tutText.innerText = text;
+        // FUNCIÓN MEJORADA: HABLAR POR FRASES PARA EVITAR CORTES
+        function speak(text) {
+            return new Promise((resolve) => {
+                window.speechSynthesis.cancel();
+                const phrases = text.split('. ');
+                let currentPhrase = 0;
+
+                function speakNext() {
+                    if (currentPhrase < phrases.length) {
+                        const utterance = new SpeechSynthesisUtterance(phrases[currentPhrase]);
+                        utterance.lang = 'es-MX';
+                        utterance.rate = 0.9;
+                        utterance.pitch = 1;
+                        tutMsg.innerText = phrases[currentPhrase];
+                        utterance.onend = () => {
+                            currentPhrase++;
+                            setTimeout(speakNext, 300);
+                        };
+                        window.speechSynthesis.speak(utterance);
+                    } else {
+                        resolve();
+                    }
+                }
+                speakNext();
+            });
         }
 
         async function movePointer(selector, click = false) {
@@ -229,57 +248,52 @@
             const rect = el.getBoundingClientRect();
             pointer.style.left = `${rect.left + rect.width / 2}px`;
             pointer.style.top = `${rect.top + rect.height / 2}px`;
-            await new Promise(r => setTimeout(r, 1300));
+            await new Promise(r => setTimeout(r, 1500));
             if(click) {
-                pointer.style.transform = 'translate(-50%, -50%) scale(0.7)';
+                pointer.style.transform = 'translate(-50%, -50%) scale(0.8)';
                 setTimeout(() => pointer.style.transform = 'translate(-50%, -50%) scale(1)', 200);
             }
         }
 
-        async function iniciarTutorialMaestro() {
-            tutLayer.style.display = 'block';
+        async function startMasterTutorial() {
+            tutOverlay.style.display = 'block';
             
-            // FASE 1: DNI FALLIDO
-            speakFormal("Estimado alumno, bienvenido. Para iniciar, debe ingresar su número de DNI en el campo correspondiente.");
+            // PASO 1: DNI FALLIDO
             await movePointer('#dniInput');
+            await speak("Iniciamos ingresando al sistema. Primero probaremos con un DNI que no se encuentra registrado en nuestro padrón oficial.");
             for(let c of "00000000") { document.getElementById('dniInput').value += c; await new Promise(r => setTimeout(r, 100)); }
             await movePointer('#verifyBtn', true);
             document.getElementById('errorModal').style.display = 'flex';
             
-            await new Promise(r => setTimeout(r, 4500));
-            speakFormal("Si su documento no se encuentra registrado en el padrón, el sistema emitirá esta notificación. En este caso, el estudiante debe proceder con su registro oficial.");
+            await speak("Como puede observar, si usted no está registrado, el sistema lanzará una notificación de alerta. En este caso, su obligación es realizar el registro previo para poder acceder.");
 
-            // FASE 2: DNI CORRECTO
-            await new Promise(r => setTimeout(r, 3500));
+            // PASO 2: DNI ÉXITO
+            await new Promise(r => setTimeout(r, 2000));
             document.getElementById('errorModal').style.display = 'none';
             document.getElementById('dniInput').value = "";
-            speakFormal("Ahora realizaremos la prueba con un documento de identidad debidamente registrado.");
+            await speak("Ahora procederemos con una prueba utilizando un documento de identidad que sí se encuentra registrado.");
             await movePointer('#dniInput');
             for(let c of "77441122") { document.getElementById('dniInput').value += c; await new Promise(r => setTimeout(r, 100)); }
             await movePointer('#verifyBtn', true);
             
             document.getElementById('step-verify').classList.add('hidden');
             document.getElementById('step-selection').classList.remove('hidden');
-            document.getElementById('welcomeName').innerText = "JUAN PEREZ GARCIA";
 
-            // FASE 3: HORARIOS
-            await new Promise(r => setTimeout(r, 2000));
-            speakFormal("Al ingresar, podrá visualizar los dos turnos disponibles. El turno mañana se habilita desde las 9 de la noche del día anterior hasta las 7 de la mañana del mismo día.");
+            // PASO 3: HORARIOS
+            await speak("Al ingresar correctamente, el sistema le dará acceso y podrá visualizar los dos turnos disponibles.");
+            
             await movePointer('#card-mañana');
+            await speak("El turno mañana se habilita desde las 9 de la noche del día anterior hasta las 7 de la mañana del mismo día.");
             
-            await new Promise(r => setTimeout(r, 4500));
-            speakFormal("Para el turno tarde, el acceso se habilita estrictamente a las 5 y 10 de la tarde, cerrándose puntualmente a las 6 de la tarde.");
             await movePointer('#card-tarde');
+            await speak("En el caso del turno tarde, el sistema se habilita exactamente a las 5 y 10 de la tarde y se cierra a las 6 en punto.");
 
-            // FASE 4: CARGA 10S
-            await new Promise(r => setTimeout(r, 3500));
-            speakFormal("Al seleccionar el turno tarde, se iniciará una ventana de procesamiento durante 10 segundos, donde el sistema recopila, configura y ordena sus datos en la cola oficial.");
+            // PASO 4: CARGA 3D
             await movePointer('#card-tarde', true);
-            
             document.getElementById('step-selection').classList.add('hidden');
             document.getElementById('loading-screen').style.display = 'flex';
             
-            // 3D LOADER
+            // Lanzar 3D
             const lCanvas = document.getElementById('loader-3d-canvas');
             const lScene = new THREE.Scene(); const lCam = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
             const lRen = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -289,9 +303,11 @@
             function lAnim() { requestAnimationFrame(lAnim); lMesh.rotation.x += 0.02; lRen.render(lScene, lCam); }
             lAnim();
 
-            await new Promise(r => setTimeout(r, 10000)); // 10 Segundos
+            await speak("Al solicitar su pase para el turno tarde, se activará esta ventana de carga durante 10 segundos. En este tiempo, el sistema está recopilando, configurando y ordenando sus datos de manera precisa.");
 
-            // FASE 5: TICKET 1-40
+            await new Promise(r => setTimeout(r, 6000)); // Espera el resto de los 10s
+
+            // PASO 5: TICKET Y REGLAS
             document.getElementById('loading-screen').style.display = 'none';
             document.getElementById('step-ticket').classList.remove('hidden');
             document.getElementById('t-nom').innerText = "JUAN PEREZ GARCIA";
@@ -300,37 +316,27 @@
             document.getElementById('t-asiento').innerText = "24";
             new QRCode(document.getElementById("qrcode-vip"), { text: "TUTORIAL", width: 140, height: 140 });
 
-            speakFormal("Si usted se encuentra entre los primeros 40 alumnos, el ticket mostrará su número de asiento. Usted tiene el derecho de tomar un asiento conforme al orden numérico indicado.");
-            
-            await new Promise(r => setTimeout(r, 7000));
-            speakFormal("Al abordar, el delegado se acercará para realizar el escaneo correspondiente de su código QR.");
+            await speak("Una vez finalizada la carga, aparecerá su ticket digital. Si usted es uno de los primeros 40 alumnos, el sistema le asignará automáticamente un número de asiento.");
+            await speak("Usted tiene la opción de tomar un asiento de acuerdo al número de ticket obtenido al momento de subir a la movilidad. El delegado encargado se acercará para escanear su código.");
 
-            // FASE 6: REGLA 41+
-            await new Promise(r => setTimeout(r, 3000));
+            // REGLA 41+
+            await new Promise(r => setTimeout(r, 2000));
             document.getElementById('asiento-area').style.display = 'none';
-            speakFormal("Tenga en cuenta que, una vez superado el cupo de 40 alumnos, el ticket solo mostrará el código QR. Esto indica que podrá abordar la unidad, pero deberá viajar de pie.");
+            await speak("Tenga en cuenta que, pasado el cupo de los 40 primeros, el sistema solo le mostrará el código QR. Esto significa que podrá subir a la movilidad, pero deberá viajar de pie.");
 
-            // FASE 7: SEGURIDAD Y BLOQUEO
-            await new Promise(r => setTimeout(r, 5000));
-            speakFormal("Advertencia importante: No comparta su código QR. El sistema de los delegados verifica la fecha, la autenticidad y duplicidad en tiempo real.");
+            // SEGURIDAD
+            await speak("Es fundamental que no compartan sus códigos QR. El panel de los delegados está configurado para verificar la fecha exacta y detectar duplicados.");
+            await speak("Si intenta usar un QR de fechas pasadas, ya escaneado o duplicado, el sistema del delegado lanzará un error inmediato.");
+            await speak("Si detectamos que un DNI intenta realizar estas acciones de forma reiterada, el sistema bloqueará su acceso automáticamente durante una semana completa.");
             
-            await new Promise(r => setTimeout(r, 6000));
-            speakFormal("Si intenta utilizar un código QR de fechas pasadas, ya escaneado o duplicado, el sistema arrojará un error inmediato.");
+            await speak("Atentamente el cuerpo de delegados. Muchas gracias por su atención y les deseamos un excelente viaje.");
             
-            await new Promise(r => setTimeout(r, 6000));
-            speakFormal("Cualquier intento reiterado de vulnerar el sistema resultará en el bloqueo automático de su DNI durante una semana.");
-            
-            await new Promise(r => setTimeout(r, 6000));
-            speakFormal("Atentamente, el cuerpo de delegados. Muchas gracias por su cooperación y que tenga un excelente viaje.");
-            
-            await new Promise(r => setTimeout(r, 5000));
+            await new Promise(r => setTimeout(r, 4000));
             location.reload();
         }
 
-        // RELOJ
         setInterval(() => {
-            const now = new Date();
-            document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString();
         }, 1000);
     </script>
 </body>
