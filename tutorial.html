@@ -3,213 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutorial Interactivo | UNAC</title>
+    <title>Video Tutorial Oficial | UNAC Movilidad</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@400;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
-        body { background: #050505; font-family: 'Inter', sans-serif; color: white; overflow: hidden; }
-        .phone-mockup {
-            width: 360px; height: 740px; border: 12px solid #1a1a1a; border-radius: 40px;
-            position: relative; background: #000; overflow: hidden; box-shadow: 0 0 50px rgba(255,193,7,0.2);
+        :root { --accent: #ffc107; --dark: #050505; }
+        body { background-color: #111; font-family: 'Inter', sans-serif; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow: hidden; }
+
+        /* MOCKUP DEL CELULAR */
+        .phone-container {
+            width: 375px; height: 750px; background: var(--dark); border: 12px solid #1a1a1a; border-radius: 45px;
+            position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background-image: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover; background-position: center;
         }
-        .cursor {
-            width: 40px; height: 40px; background: rgba(255,193,7,0.5); border: 2px solid #ffc107;
+
+        /* CURSOR VIRTUAL */
+        #virtual-cursor {
+            width: 35px; height: 35px; background: rgba(255, 193, 7, 0.4); border: 2px solid var(--accent);
             border-radius: 50%; position: absolute; pointer-events: none; z-index: 9999;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); transform: translate(-50%, -50%);
-            display: none;
+            transform: translate(-50%, -50%); display: none; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .step-overlay {
-            position: absolute; bottom: 40px; left: 20px; right: 20px;
-            background: rgba(0,0,0,0.8); padding: 15px; border-radius: 15px;
-            border-left: 4px solid #ffc107; z-index: 100; display: none;
-        }
-        /* Estilos replicados del original para el simulador */
-        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border-radius: 20px; }
-        .btn-search { background: #ffc107; color: #000; font-weight: 900; padding: 10px 20px; border-radius: 8px; font-size: 10px; }
-        .card-panorama { height: 120px; border-radius: 20px; background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1); }
-        .vip-card { background: white; color: #333; border-radius: 15px; padding: 15px; text-align: center; }
+
+        /* REPLICA DE TUS ESTILOS ORIGINALES */
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
+        .btn-search { background: var(--accent); color: #000; padding: 12px; border-radius: 10px; font-weight: 900; font-size: 10px; text-transform: uppercase; width: 100%; }
+        input { width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 10px; text-align: center; font-size: 1rem; }
         
-        #loading-3d { position: absolute; inset: 0; background: #050505; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .card-panorama { height: 130px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 24px; text-transform: uppercase; }
+
+        /* TICKET VIP REPLICA */
+        .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; overflow: hidden; text-align: center; margin-top: 10px; }
+        .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 15px 5px; color: #111; }
+        .vip-header h2 { font-weight: 900; font-size: 16px; }
+        .asiento-num-big { font-size: 60px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 5px 0; }
+        .data-table { width: 100%; font-size: 8px; text-align: left; margin-top: 10px; }
+        .data-table td { padding: 5px; border-bottom: 1px solid #eee; font-weight: 800; }
+
+        /* LOADER 3D REPLICA */
+        #loading-screen { position: absolute; inset: 0; background: rgba(5,5,5,0.98); z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        #loader-3d-canvas { width: 250px; height: 250px; }
+
+        /* SUBTÍTULOS DEL TUTORIAL */
+        .caption-box {
+            position: absolute; bottom: 80px; left: 20px; right: 20px;
+            background: rgba(0,0,0,0.9); padding: 15px; border-radius: 12px;
+            border-left: 4px solid var(--accent); z-index: 7000; display: none;
+        }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-height-screen py-10">
+<body>
 
-    <h1 class="text-yellow-500 font-black text-2xl mb-4 uppercase italic">Tutorial: Pase Turno Tarde</h1>
-    
-    <div class="phone-mockup" id="screen">
-        <div id="virtual-cursor" class="cursor"></div>
+    <div class="phone-container" id="app-frame">
+        <div id="virtual-cursor"></div>
         
-        <!-- STEP OVERLAY -->
-        <div id="step-msg" class="step-overlay animate-bounce">
-            <p class="text-xs font-bold text-yellow-500 uppercase mb-1">Instrucción:</p>
-            <p id="step-text" class="text-[11px] text-white"></p>
+        <div id="tutorial-caption" class="caption-box">
+            <p id="caption-text" class="text-xs font-bold leading-tight"></p>
         </div>
 
-        <!-- CONTENIDO SIMULADO -->
-        <div class="p-6 h-full flex flex-col" id="content-area">
-            <!-- Header simulado -->
-            <div class="flex justify-between items-center mb-10">
+        <!-- CONTENIDO DE LA APP -->
+        <div class="p-5 h-full flex flex-col overflow-y-auto">
+            
+            <header class="flex justify-between items-center mb-8">
                 <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 bg-yellow-500 rounded flex items-center justify-center"><i class="fa-solid fa-bus text-black text-[10px]"></i></div>
-                    <span class="text-[10px] font-black">UNAC</span>
+                    <div class="w-7 h-7 bg-yellow-500 rounded flex items-center justify-center"><i class="fa-solid fa-bus text-black text-xs"></i></div>
+                    <span class="text-[9px] font-black tracking-widest">UNAC MOVILIDAD</span>
                 </div>
-                <i class="fa-solid fa-bars text-yellow-500"></i>
+                <i class="fa-solid fa-bars text-yellow-500 text-lg"></i>
+            </header>
+
+            <!-- VISTA 1: VERIFICACIÓN -->
+            <div id="view-verify" class="animate-fade-up">
+                <div class="text-center mb-6">
+                    <h1 class="text-2xl font-black uppercase italic italic text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
+                </div>
+                <div class="glass p-6 text-center">
+                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-4">Ingrese su DNI</p>
+                    <div id="input-container">
+                        <input type="text" id="fake-dni" placeholder="DOCUMENTO DNI" readonly>
+                    </div>
+                    <button class="btn-search mt-4" id="btn-v">Verificar Alumno</button>
+                </div>
             </div>
 
-            <!-- Paso 1: Login -->
-            <div id="sim-step-1" class="text-center">
-                <h2 class="text-xl font-black mb-6 uppercase italic">Tickets <span class="text-yellow-500">Oficiales</span></h2>
-                <div class="glass p-6">
-                    <p class="text-[9px] text-gray-400 mb-4 uppercase">Ingrese su DNI</p>
-                    <div id="fake-input" class="bg-black/50 border border-yellow-500 p-3 rounded-lg mb-4 text-sm"></div>
-                    <button id="fake-verify" class="btn-search w-full">VERIFICAR ALUMNO</button>
-                </div>
-            </div>
-
-            <!-- Paso 2: Selección -->
-            <div id="sim-step-2" class="hidden">
-                <div class="glass p-3 mb-4 border-l-4 border-yellow-500 flex items-center gap-2">
-                    <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-yellow-500"><i class="fa-solid fa-user"></i></div>
+            <!-- VISTA 2: SELECCIÓN -->
+            <div id="view-selection" class="hidden">
+                <div class="glass p-3 mb-6 flex items-center gap-3 border-l-4 border-yellow-500">
+                    <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-yellow-500"><i class="fa-solid fa-user-graduate"></i></div>
                     <div>
-                        <p class="text-[10px] font-bold">GARCIA LOPEZ, JUAN</p>
-                        <p class="text-[8px] text-green-500 uppercase">Apto para viaje</p>
+                        <h2 class="text-xs font-black uppercase text-white">ESTUDIANTE EJEMPLO</h2>
+                        <span class="text-[8px] bg-green-500/20 text-green-500 px-2 py-0.5 rounded-full font-bold">ALUMNO HABILITADO</span>
                     </div>
                 </div>
-                <div class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400'); opacity:0.4">
-                    <span class="text-[10px] font-black uppercase">Mañana</span>
+
+                <div class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400'); opacity: 0.5;">
+                    <span class="shift-title text-white">Mañana</span>
+                    <span class="text-[8px] text-red-500 font-bold uppercase">Cerrado</span>
                 </div>
-                <div id="target-tarde" class="card-panorama border-2 border-yellow-500" style="background-image: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400');">
-                    <span class="bg-green-500 text-[8px] px-2 py-1 rounded-full mb-1">Abierto</span>
-                    <span class="text-[18px] font-black uppercase italic">Tarde</span>
-                    <span class="text-yellow-500 text-[10px] font-bold">SALIDA: 06:00 PM</span>
+
+                <div id="card-tarde-target" class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400'); border: 2px solid var(--accent);">
+                    <span class="bg-green-500 text-[8px] px-3 py-1 rounded-full text-white font-black mb-1">ABIERTO</span>
+                    <span class="shift-title text-white">Tarde</span>
+                    <span class="text-yellow-500 text-[10px] font-black">SALIDA: 06:00 PM</span>
                 </div>
             </div>
 
-            <!-- Paso 3: Ticket -->
-            <div id="sim-step-3" class="hidden overflow-y-auto">
-                <div class="vip-card">
-                    <div class="bg-yellow-500 p-2 rounded mb-2 text-[10px] font-black">¡PASE VIP VERIFICADO!</div>
-                    <p class="text-[10px] mb-2">Hola Juan, tu asiento es:</p>
-                    <div class="text-4xl font-black text-red-600 mb-2">24</div>
-                    <div class="border-2 border-yellow-500 p-2 inline-block mb-2">
-                        <i class="fa-solid fa-qrcode text-5xl"></i>
+            <!-- VISTA 3: TICKET VIP -->
+            <div id="view-ticket" class="hidden">
+                <div class="vip-ticket-card">
+                    <div class="vip-header">
+                        <h2>¡PASE VIP VERIFICADO!</h2>
                     </div>
-                    <table class="w-full text-[8px] text-left">
-                        <tr class="border-b"><td>FACULTAD:</td><td class="text-right">FIEE</td></tr>
-                        <tr><td>DNI:</td><td class="text-right">77777777</td></tr>
-                    </table>
+                    <div class="p-4">
+                        <div class="border-2 border-dashed border-yellow-600 rounded-lg p-3">
+                            <p class="text-[8px] font-bold text-gray-500 uppercase">VÁLIDO ÚNICAMENTE PARA HOY</p>
+                            <p class="text-yellow-600 font-black text-sm" id="fecha-hoy"></p>
+                            <div id="area-asiento">
+                                <p class="text-[10px] font-bold text-gray-600 mt-2">Número de asiento:</p>
+                                <div class="asiento-num-big">24</div>
+                            </div>
+                            <div class="p-2 border-2 border-yellow-500 inline-block bg-white my-2">
+                                <div id="qrcode"></div>
+                            </div>
+                        </div>
+                        <table class="data-table">
+                            <tr><td>ESTUDIANTE:</td><td class="text-right">ESTUDIANTE EJEMPLO</td></tr>
+                            <tr><td>FACULTAD:</td><td class="text-right">FIEE / UNAC</td></tr>
+                            <tr><td>DNI/CE:</td><td class="text-right">********</td></tr>
+                        </table>
+                    </div>
                 </div>
             </div>
+
         </div>
 
-        <!-- Pantalla de Carga 3D -->
-        <div id="loading-3d">
-            <div id="loader-canvas"></div>
-            <p class="text-yellow-500 font-black text-[10px] uppercase tracking-widest mt-4">recolectando tus datos</p>
+        <!-- PANTALLA DE CARGA 3D (REPLICA) -->
+        <div id="loading-screen">
+            <div id="loader-3d-canvas"></div>
+            <p class="text-yellow-500 font-black text-[10px] uppercase tracking-[4px] animate-pulse">recolectando tus datos</p>
         </div>
+
     </div>
 
-    <button onclick="startTutorial()" class="mt-8 bg-yellow-500 text-black font-black px-10 py-4 rounded-full hover:bg-yellow-400 transition-all shadow-xl flex items-center gap-2">
+    <button onclick="iniciarTutorial()" class="mt-8 bg-yellow-500 text-black font-black px-12 py-4 rounded-full shadow-2xl hover:scale-105 transition-all flex items-center gap-3">
         <i class="fa-solid fa-play"></i> INICIAR VIDEO TUTORIAL
     </button>
 
     <script>
-        const stepMsg = document.getElementById('step-msg');
-        const stepText = document.getElementById('step-text');
         const cursor = document.getElementById('virtual-cursor');
+        const caption = document.getElementById('tutorial-caption');
+        const captionText = document.getElementById('caption-text');
 
-        // Narrador
-        function hablar(texto) {
+        // Función de voz
+        function narrar(texto) {
             window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(texto);
-            msg.lang = 'es-ES';
-            msg.rate = 1;
-            window.speechSynthesis.speak(msg);
+            const speech = new SpeechSynthesisUtterance(texto);
+            speech.lang = 'es-PE';
+            speech.rate = 0.9;
+            window.speechSynthesis.speak(speech);
         }
 
-        async function moveCursor(elementId, click = false) {
-            const el = document.getElementById(elementId);
+        // Mover cursor a elemento
+        async function moverA(id, click = false) {
+            const el = document.getElementById(id);
             const rect = el.getBoundingClientRect();
-            const screenRect = document.getElementById('screen').getBoundingClientRect();
+            const frame = document.getElementById('app-frame').getBoundingClientRect();
             
             cursor.style.display = 'block';
-            cursor.style.top = (rect.top - screenRect.top + rect.height/2) + 'px';
-            cursor.style.left = (rect.left - screenRect.left + rect.width/2) + 'px';
+            cursor.style.top = (rect.top - frame.top + rect.height/2) + 'px';
+            cursor.style.left = (rect.left - frame.left + rect.width/2) + 'px';
             
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 1200));
             if(click) {
                 cursor.style.transform = 'translate(-50%, -50%) scale(0.8)';
-                setTimeout(() => cursor.style.transform = 'translate(-50%, -50%) scale(1)', 200);
+                el.style.opacity = '0.7';
+                setTimeout(() => {
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                    el.style.opacity = '1';
+                }, 200);
             }
         }
 
-        async function startTutorial() {
-            hablar("Bienvenido al tutorial oficial. Primero, ingresa tu número de DNI para verificar tu identidad.");
-            stepMsg.style.display = 'block';
-            stepText.innerText = "Paso 1: Ingresa tu DNI y verifica tu cuenta.";
-            
-            // Simular escritura
-            await moveCursor('fake-input');
-            const input = document.getElementById('fake-input');
-            const dni = "74582133";
+        async function escribirDNI() {
+            const input = document.getElementById('fake-dni');
+            const dni = "77441122";
             for(let char of dni) {
-                input.innerText += char;
-                await new Promise(r => setTimeout(r, 100));
+                input.value += char;
+                await new Promise(r => setTimeout(r, 150));
             }
+        }
 
+        async function iniciarTutorial() {
+            document.getElementById('fecha-hoy').innerText = new Date().toLocaleDateString();
+            
+            // PASO 1
+            caption.style.display = 'block';
+            captionText.innerText = "1. Ingresa a la plataforma y coloca tu número de DNI para verificar tu estado.";
+            narrar(captionText.innerText);
+            
+            await moverA('fake-dni');
+            await escribirDNI();
             await new Promise(r => setTimeout(r, 500));
-            await moveCursor('fake-verify', true);
+            await moverA('btn-v', true);
             
-            // Cambio a selección
-            document.getElementById('sim-step-1').classList.add('hidden');
-            document.getElementById('sim-step-2').classList.remove('hidden');
-            
-            hablar("Una vez habilitado, selecciona el turno Tarde. Recuerda que solo se abre a las 5 y 10 de la tarde en punto.");
-            stepText.innerText = "Paso 2: Selecciona el Turno Tarde (Abre 5:10 PM).";
-            
-            await new Promise(r => setTimeout(r, 3000));
-            await moveCursor('target-tarde', true);
+            // TRANSICIÓN A SELECCIÓN
+            document.getElementById('view-verify').classList.add('hidden');
+            document.getElementById('view-selection').classList.remove('hidden');
 
-            // Pantalla de carga
-            document.getElementById('sim-step-2').classList.add('hidden');
-            document.getElementById('loading-3d').style.display = 'flex';
-            init3DLoader();
+            // PASO 2
+            await new Promise(r => setTimeout(r, 1000));
+            captionText.innerText = "2. Selecciona el 'Turno Tarde'. Recuerda que solo se abre a las 5:10 PM en punto. No intentes antes.";
+            narrar(captionText.innerText);
             
-            hablar("Al solicitar el ticket, el sistema procesará tus datos durante 10 segundos para asignarte un lugar oficial.");
-            stepText.innerText = "Procesando... Espera 10 segundos mientras recolectamos tus datos.";
+            await moverA('card-tarde-target');
+            await new Promise(r => setTimeout(r, 2000));
+            await moverA('card-tarde-target', true);
 
-            await new Promise(r => setTimeout(r, 10000)); // Espera real de 10 seg
-
-            // Mostrar Ticket
-            document.getElementById('loading-3d').style.display = 'none';
-            document.getElementById('sim-step-3').classList.remove('hidden');
+            // PASO 3: CARGA 3D
+            document.getElementById('view-selection').classList.add('hidden');
+            document.getElementById('loading-screen').style.display = 'flex';
+            init3D();
             
-            hablar("¡Listo! Si estás entre los primeros 40, verás tu número de asiento. Si eres del 41 en adelante, solo verás el código QR para el abordaje.");
-            stepText.innerText = "Paso 3: Obtén tu ticket. Si eres del 1 al 40 tienes asiento. Si eres más de 40, solo QR.";
+            captionText.innerText = "3. El sistema procesará tu solicitud durante 10 segundos. No cierres la ventana, estamos recolectando tus datos.";
+            narrar(captionText.innerText);
+
+            await new Promise(r => setTimeout(r, 10000)); // 10 Segundos de carga realista
+
+            // PASO 4: TICKET
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('view-ticket').classList.remove('hidden');
+            new QRCode(document.getElementById("qrcode"), { text: "TUTORIAL_UNAC", width: 80, height: 80 });
+            
+            captionText.innerText = "4. ¡Listo! Se generará tu Pase VIP. Si estás entre los primeros 40, verás tu número de asiento resaltado.";
+            narrar(captionText.innerText);
+            
+            await new Promise(r => setTimeout(r, 4000));
+            captionText.innerText = "Si tu número es mayor a 40, solo se mostrará tu QR para el abordaje. Presenta esto al delegado al subir.";
+            narrar(captionText.innerText);
             
             await new Promise(r => setTimeout(r, 5000));
-            hablar("Tutorial finalizado. Recuerda respetar los horarios. ¡Buen viaje!");
-            stepText.innerText = "Tutorial completado. ¡Usa el sistema con responsabilidad!";
+            captionText.innerText = "Tutorial finalizado. ¡Buen viaje!";
+            narrar(captionText.innerText);
+            cursor.style.display = 'none';
         }
 
-        // Animación 3D del loader
-        function init3DLoader() {
-            const container = document.getElementById('loader-canvas');
+        // REPLICA DEL MOTOR 3D
+        function init3D() {
+            const container = document.getElementById('loader-3d-canvas');
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(200, 200);
+            renderer.setSize(250, 250);
             container.innerHTML = "";
             container.appendChild(renderer.domElement);
-            
-            const geometry = new THREE.IcosahedronGeometry(1.5, 1);
+            const geometry = new THREE.TorusKnotGeometry(1, 0.3, 100, 16);
             const material = new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true });
             const mesh = new THREE.Mesh(geometry, material);
             scene.add(mesh);
-            camera.position.z = 4;
-
+            camera.position.z = 3;
             function animate() {
                 requestAnimationFrame(animate);
                 mesh.rotation.x += 0.02;
