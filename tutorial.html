@@ -2,10 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutorial Interactivo UNAC | Paso a Paso</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UNAC | Tutorial Interactivo Pase de Movilidad</title>
     
-    <!-- LIBRERÍAS ORIGINALES -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -13,214 +12,291 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* REPLICANDO TUS ESTILOS EXACTOS */
         :root { --accent: #ffc107; --dark: #050505; }
-        body { background: #111; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow: hidden; }
+        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
+        
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .animate-float { animation: float 4s ease-in-out infinite; }
 
-        /* MARCO DE CELULAR REALISTA */
-        .mockup-phone {
-            width: 380px; height: 800px; background: var(--dark); border: 14px solid #1a1a1a; border-radius: 50px;
-            position: relative; overflow: hidden; box-shadow: 0 0 100px rgba(0,0,0,0.8);
-            transform: scale(0.9);
+        .main-wrapper { 
+            position: relative; z-index: 10; 
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
+            background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; width: 100%; 
         }
 
-        /* CURSOR PARA EL VIDEO */
-        #virtual-tap {
-            width: 40px; height: 40px; background: rgba(255, 193, 7, 0.5); border: 2px solid var(--accent);
-            border-radius: 50%; position: absolute; pointer-events: none; z-index: 10000;
-            transform: translate(-50%, -50%); display: none; transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-        }
+        header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
+        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
+        .nav-link:hover, .active-link { color: var(--accent); }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
+        .nav-link:hover::after, .active-link::after { width: 100%; }
 
-        /* CAJA DE SUBTÍTULOS */
-        .subtitles {
-            position: absolute; bottom: 100px; left: 20px; right: 20px;
-            background: rgba(0,0,0,0.95); padding: 15px; border-radius: 15px;
-            border-left: 5px solid var(--accent); z-index: 11000; display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
+        input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; }
+        .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; }
+        
+        .card-panorama {
+            position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
+            height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background-size: cover; background-position: center; transition: 0.4s; cursor: pointer;
         }
+        .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
+        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
+        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
+        .badge-cerrado { background: #ef4444; color: white; }
+        .badge-abierto { background: #10b981; color: white; }
+        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
 
-        /* INTEGRACIÓN DE TU DISEÑO ORIGINAL DENTRO DEL MOCKUP */
-        iframe { width: 100%; height: 100%; border: none; }
+        .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; }
+        .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 25px 10px; color: #111; }
+        .vip-header h2 { font-weight: 900; font-size: 24px; letter-spacing: 1px; }
+        .ticket-body { padding: 25px; }
+        .ticket-main-box { border: 1px dashed #d4a017; border-radius: 10px; padding: 20px; }
+        .valid-date { font-size: 24px; font-weight: 900; color: #d4a017; }
+        .asiento-num-big { font-size: 80px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 10px 0; }
+        .qr-wrapper { border: 2px solid #d4a017; display: inline-block; padding: 10px; background: #fff; margin: 15px 0; }
+        .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; }
+        .data-table td { padding: 8px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; }
 
-        .btn-play {
-            background: var(--accent); color: black; font-weight: 900; padding: 15px 40px;
-            border-radius: 50px; cursor: pointer; display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 0 20px rgba(255, 193, 7, 0.4); transition: 0.3s;
-        }
-        .btn-play:hover { transform: scale(1.1); }
+        #errorModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .error-box { background: #111; border: 2px solid #ef4444; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 100%; }
+        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
+
+        #loading-screen { position: fixed; inset: 0; background: #050505; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        #loader-3d-canvas { width: 300px; height: 300px; }
+        .loader-text { color: var(--accent); font-weight: 900; text-transform: uppercase; letter-spacing: 4px; font-size: 14px; margin-top: 20px; animation: pulse 1.5s infinite; }
+        
+        /* ESTILOS DEL TUTORIAL */
+        #tutorial-overlay { position: fixed; inset: 0; z-index: 10000; pointer-events: none; display: none; }
+        #virtual-cursor { width: 40px; height: 40px; background: rgba(255, 193, 7, 0.5); border: 2px solid #ffc107; border-radius: 50%; position: absolute; transform: translate(-50%, -50%); transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1); }
+        #caption-box { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; background: rgba(0,0,0,0.95); border-left: 5px solid #ffc107; padding: 20px; border-radius: 10px; color: white; z-index: 10001; text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .btn-start-tutorial { position: fixed; top: 20px; right: 20px; z-index: 10005; background: #ffc107; color: black; font-weight: 900; padding: 10px 20px; border-radius: 50px; cursor: pointer; border: 2px solid black; }
     </style>
 </head>
 <body>
 
-    <div class="mockup-phone" id="phone-ui">
-        <!-- El cursor que simula el toque del dedo -->
-        <div id="virtual-tap"></div>
+    <button class="btn-start-tutorial" onclick="runTutorial()"><i class="fa-solid fa-play"></i> INICIAR TUTORIAL</button>
 
-        <!-- El cuadro de texto informativo -->
-        <div id="tutorial-info" class="subtitles">
-            <p id="info-text" class="text-white text-xs font-bold leading-snug"></p>
-        </div>
-
-        <!-- Contenedor que simula la web -->
-        <div id="web-simulator" class="w-full h-full overflow-y-auto bg-black" style="zoom: 0.8;">
-            <!-- AQUÍ SE REPLICA TU CÓDIGO -->
-             <div id="simulated-content">
-                 <!-- Se inyectará vía JS para controlarlo -->
-             </div>
+    <div id="tutorial-overlay">
+        <div id="virtual-cursor"></div>
+        <div id="caption-box">
+            <p id="tutorial-text" class="text-sm md:text-base font-bold"></p>
         </div>
     </div>
 
-    <button onclick="startTutorialVideo()" id="play-btn" class="btn-play">
-        <i class="fa-solid fa-circle-play text-2xl"></i> VER TUTORIAL PASO A PASO
-    </button>
+    <!-- TODO EL CONTENIDO ES TU WEB ORIGINAL -->
+    <div id="loading-screen">
+        <div id="loader-3d-canvas"></div>
+        <p class="loader-text">recolectando tus datos</p>
+    </div>
+
+    <div id="errorModal">
+        <div class="error-box">
+            <i class="fa-solid fa-circle-xmark text-red-500 text-6xl mb-4"></i>
+            <h2 class="text-white text-2xl font-black uppercase mb-2">No Verificado</h2>
+            <p class="text-gray-400 text-sm mb-6">Su DNI no está registrado en el padrón oficial. Debe registrarse para acceder.</p>
+            <a href="#" class="inline-block bg-red-500 text-white px-8 py-3 rounded-xl font-bold uppercase text-xs">Ir a Registro</a>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <header class="flex justify-between items-center relative z-20 animate-fade-up">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
+                <div class="flex flex-col text-left leading-none uppercase">
+                    <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
+                    <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
+                </div>
+            </div>
+            <nav class="hidden md:flex gap-8">
+                <a href="#" class="nav-link">Inicio</a>
+                <a href="#" class="nav-link active-link">Ticket</a>
+                <a href="#" class="nav-link">Registro</a>
+            </nav>
+        </header>
+
+        <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
+            
+            <div id="main-header" class="text-center mb-10 animate-fade-up">
+                <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">SISTEMA DE GESTIÓN OFICIAL</span>
+                <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
+                <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70">17:10:00 PM</p>
+            </div>
+
+            <!-- PASO 1: VERIFICACIÓN -->
+            <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
+                <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su DNI para habilitar sistema</p>
+                <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
+                <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
+            </div>
+
+            <!-- PASO 2: SELECCIÓN -->
+            <div id="step-selection" class="w-full max-w-5xl mx-auto hidden animate-fade-up">
+                <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
+                        <div>
+                            <h2 id="welcomeName" class="text-xl font-black uppercase italic leading-none text-white">ESTUDIANTE EJEMPLO</h2>
+                            <div class="status-badge"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO - APTO</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
+                    <div id="card-mañana" class="card-panorama card-m-img locked">
+                        <span class="badge-img badge-cerrado">Cerrado</span>
+                        <div class="shift-title text-white">Mañana</div>
+                    </div>
+                    <div id="card-tarde" class="card-panorama card-t-img">
+                        <span id="badge-t" class="badge-img badge-abierto">Abierto</span>
+                        <div class="shift-title text-white">Tarde</div>
+                        <div class="salida-text text-white font-black">SALIDA: 06:00 PM</div>
+                        <p class="text-[8px] text-white/40 mt-1 uppercase font-bold">Apertura: 05:10 PM</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 3: TICKET VIP -->
+            <div id="step-ticket" class="w-full max-w-2xl mx-auto hidden animate-fade-up">
+                <div class="vip-ticket-card">
+                    <div class="vip-header">
+                        <h2>¡PASE VIP VERIFICADO!</h2>
+                        <p>MOVILIDAD UNIVERSITARIA - RUTA VENTANILLA</p>
+                    </div>
+                    <div class="ticket-body">
+                        <p class="ticket-greeting text-left italic font-bold">Hola ESTUDIANTE, se te entrega tu ticket digital:</p>
+                        <div class="ticket-main-box mt-4">
+                            <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">VÁLIDO ÚNICAMENTE PARA HOY:</p>
+                            <p class="valid-date" id="t-fecha">24/05/2026</p>
+                            <div id="asiento-area">
+                                <p class="text-[14px] font-bold text-gray-600 mt-4">Tu número de asiento es:</p>
+                                <div class="asiento-num-big" id="t-asiento">24</div>
+                            </div>
+                            <div class="qr-wrapper"><div id="qrcode-vip"></div></div>
+                        </div>
+                        <table class="data-table">
+                            <tr><td>ESTUDIANTE:</td><td class="text-right">JUAN PEREZ GARCIA</td></tr>
+                            <tr><td>DNI:</td><td class="text-right">77441122</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
-        const tap = document.getElementById('virtual-tap');
-        const info = document.getElementById('tutorial-info');
-        const infoText = document.getElementById('info-text');
+        const cursor = document.getElementById('virtual-cursor');
+        const overlay = document.getElementById('tutorial-overlay');
+        const tText = document.getElementById('tutorial-text');
 
-        // FUNCIÓN DE VOZ PARA EL VIDEO
-        function narrar(texto) {
+        function speak(text) {
             window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(texto);
+            const msg = new SpeechSynthesisUtterance(text);
             msg.lang = 'es-ES';
             msg.rate = 1;
             window.speechSynthesis.speak(msg);
-            info.style.display = 'block';
-            infoText.innerText = texto;
+            tText.innerText = text;
         }
 
-        // SIMULACIÓN DE MOVIMIENTO
-        async function moverDedo(selector, xOff = 0, yOff = 0) {
+        async function moveCursor(selector, click = false) {
             const el = document.querySelector(selector);
             const rect = el.getBoundingClientRect();
-            const phone = document.getElementById('phone-ui').getBoundingClientRect();
-            
-            tap.style.display = 'block';
-            tap.style.left = (rect.left - phone.left + rect.width / 2 + xOff) + 'px';
-            tap.style.top = (rect.top - phone.top + rect.height / 2 + yOff) + 'px';
-            
+            cursor.style.left = `${rect.left + rect.width / 2}px`;
+            cursor.style.top = `${rect.top + rect.height / 2}px`;
             await new Promise(r => setTimeout(r, 1200));
+            if(click) {
+                cursor.style.transform = 'translate(-50%, -50%) scale(0.7)';
+                setTimeout(() => cursor.style.transform = 'translate(-50%, -50%) scale(1)', 200);
+            }
         }
 
-        async function escribir(id, texto) {
+        async function type(id, text) {
             const el = document.getElementById(id);
-            for(let c of texto) {
+            el.value = "";
+            for(let c of text) {
                 el.value += c;
                 await new Promise(r => setTimeout(r, 100));
             }
         }
 
-        // LÓGICA DEL VIDEO TUTORIAL
-        async function startTutorialVideo() {
-            document.getElementById('play-btn').style.display = 'none';
+        async function runTutorial() {
+            overlay.style.display = 'block';
             
-            // Inyectar tu estructura original en el simulador
-            const content = document.getElementById('simulated-content');
-            content.innerHTML = `
-                <div class="main-wrapper p-4 min-h-screen">
-                    <div id="s-verify" class="glass p-10 text-center mt-20 border-t-2 border-yellow-500">
-                        <p class="text-[11px] text-gray-400 uppercase font-bold mb-6">Ingrese su DNI</p>
-                        <input type="text" id="dniSim" placeholder="DOCUMENTO DNI" class="bg-black/50 border border-yellow-500 p-3 w-full rounded text-white text-center">
-                        <button id="btnSim" class="bg-yellow-500 text-black font-black w-full mt-4 p-3 rounded">Verificar Alumno</button>
-                    </div>
-                    <!-- MODAL ERROR SIMULADO -->
-                    <div id="errSim" class="fixed inset-0 bg-black/95 z-[5000] hidden flex items-center justify-center p-10">
-                        <div class="border-2 border-red-500 p-10 rounded-3xl text-center">
-                             <i class="fa-solid fa-circle-xmark text-red-500 text-6xl mb-4"></i>
-                             <h2 class="text-white font-black uppercase">No Verificado</h2>
-                             <p class="text-gray-400 text-xs">Su DNI no está registrado.</p>
-                             <button class="bg-red-500 text-white p-2 mt-4 rounded-xl text-[10px] font-bold">Ir a Registro</button>
-                        </div>
-                    </div>
-                    <!-- SELECCIÓN SIMULADA -->
-                    <div id="s-selection" class="hidden mt-10">
-                        <div class="glass p-4 border-l-4 border-yellow-500 flex items-center gap-4 mb-10">
-                            <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-yellow-500"><i class="fa-solid fa-user-graduate"></i></div>
-                            <div><p class="text-white font-black text-xs">JUAN PÉREZ GARCÍA</p><p class="text-green-500 text-[8px] font-bold">ALUMNO HABILITADO</p></div>
-                        </div>
-                        <div id="card-t" class="card-panorama border-2 border-yellow-500 rounded-3xl h-40 flex flex-col items-center justify-center" style="background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400'); background-size: cover;">
-                            <span class="bg-green-500 text-[8px] px-2 py-1 rounded-full text-white mb-2">ABIERTO</span>
-                            <p class="text-white font-black text-3xl italic italic uppercase">TARDE</p>
-                            <p class="text-yellow-500 font-bold text-[10px]">SALIDA: 06:00 PM</p>
-                        </div>
-                    </div>
-                    <!-- CARGA 3D SIMULADA -->
-                    <div id="s-loading" class="fixed inset-0 bg-black z-[6000] hidden flex flex-col items-center justify-center">
-                        <div id="canvas-sim"></div>
-                        <p class="text-yellow-500 font-black text-xs uppercase tracking-[4px] mt-4 animate-pulse">recolectando tus datos</p>
-                    </div>
-                    <!-- TICKET SIMULADO -->
-                    <div id="s-ticket" class="hidden mt-4">
-                        <div class="bg-white rounded-2xl overflow-hidden text-center text-black">
-                             <div class="bg-yellow-500 p-4 font-black">PASE VIP VERIFICADO</div>
-                             <div class="p-6">
-                                 <p class="text-xs font-bold text-gray-500">ASIENTO ASIGNADO:</p>
-                                 <p class="text-6xl font-black text-red-600">24</p>
-                                 <div class="border-2 border-yellow-500 p-2 inline-block my-4"><i class="fa-solid fa-qrcode text-6xl"></i></div>
-                                 <p class="text-[8px] font-bold uppercase">Presentar al delegado</p>
-                             </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // ESCENA 1: ERROR DE REGISTRO
-            narrar("Hola. Primero ingresaremos un DNI que no está en el sistema para que veas qué sucede.");
-            await moverDedo('#dniSim');
-            await escribir('dniSim', '12345678');
-            await moverDedo('#btnSim', 0, 0);
-            document.getElementById('errSim').classList.remove('hidden');
+            // ESCENA 1: ERROR DNI
+            speak("Hola. Primero ingresaremos un DNI que no está registrado para ver qué sucede.");
+            await moveCursor('#dniInput');
+            await type('dniInput', '00000000');
+            await moveCursor('#verifyBtn', true);
+            document.getElementById('errorModal').style.display = 'flex';
             
-            await new Promise(r => setTimeout(r, 3000));
-            narrar("Si no estás registrado, saldrá este aviso. Deberás ir al botón rojo para registrarte oficialmente.");
-            
-            // ESCENA 2: INGRESO EXITOSO
             await new Promise(r => setTimeout(r, 4000));
-            document.getElementById('errSim').classList.add('hidden');
-            document.getElementById('dniSim').value = "";
-            narrar("Ahora ingresaremos con un DNI verificado.");
-            await escribir('dniSim', '77441122');
-            await moverDedo('#btnSim');
-            document.getElementById('s-verify').classList.add('hidden');
-            document.getElementById('s-selection').classList.remove('hidden');
-
-            // ESCENA 3: HORARIO
-            await new Promise(r => setTimeout(r, 2000));
-            narrar("Dentro del sistema, verás el Turno Tarde. Muy importante: Este se habilita exactamente a las 5 y 10 de la tarde.");
-            await moverDedo('#card-t');
-
-            // ESCENA 4: CARGA 10S
-            await new Promise(r => setTimeout(r, 3000));
-            narrar("Al solicitar tu ticket, el sistema procesará tu información durante 10 segundos. No cierres la ventana.");
-            document.getElementById('s-selection').classList.add('hidden');
-            document.getElementById('s-loading').style.display = 'flex';
+            speak("Si tu DNI no figura en el padrón, saldrá este error. Debes ir al botón rojo para registrarte.");
             
-            // Iniciar animacion 3D replica
+            // ESCENA 2: INGRESO CORRECTO
+            await new Promise(r => setTimeout(r, 3000));
+            document.getElementById('errorModal').style.display = 'none';
+            speak("Ahora ingresaremos con un DNI válido para entrar al sistema.");
+            await moveCursor('#dniInput');
+            await type('dniInput', '77441122');
+            await moveCursor('#verifyBtn', true);
+            
+            document.getElementById('step-verify').classList.add('hidden');
+            document.getElementById('step-selection').classList.remove('hidden');
+
+            // ESCENA 3: HORARIOS Y REGLA 5:10 PM
+            await new Promise(r => setTimeout(r, 2000));
+            speak("¡Ya estamos dentro! Aquí verás los turnos. Recuerda: El turno tarde abre exactamente a las 5 y 10 de la tarde en punto. No intentes solicitar antes.");
+            await moveCursor('#card-tarde');
+
+            // ESCENA 4: CARGA 10 SEGUNDOS Y 3D
+            await new Promise(r => setTimeout(r, 3000));
+            speak("Al hacer clic, el sistema procesará tu solicitud durante 10 segundos. Aquí verás el diagrama 3D recolectando tus datos.");
+            
+            document.getElementById('step-selection').classList.add('hidden');
+            document.getElementById('loading-screen').style.display = 'flex';
+            init3D(); // Lanzamos tu 3D original
+
+            await new Promise(r => setTimeout(r, 10000)); // ESPERA REAL DE 10 SEGUNDOS
+
+            // ESCENA 5: TICKET VIP Y REGLA ASIENTOS
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('step-ticket').classList.remove('hidden');
+            new QRCode(document.getElementById("qrcode-vip"), { text: "TUTORIAL", width: 120, height: 120 });
+
+            speak("¡Felicidades, tienes tu ticket! Si tu número de asiento es del 1 al 40, aparecerá aquí. Si es mayor a 40, solo verás el código QR.");
+            
+            await new Promise(r => setTimeout(r, 5000));
+            speak("Presenta este QR al delegado al subir al bus. ¡Buen viaje y recuerda ser puntual!");
+            
+            await new Promise(r => setTimeout(r, 4000));
+            overlay.style.display = 'none';
+            location.reload(); // Reinicia al terminar
+        }
+
+        // REPLICA DE TU MOTOR 3D ORIGINAL
+        function init3D() {
+            const container = document.getElementById('loader-3d-canvas');
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(250, 250);
-            document.getElementById('canvas-sim').appendChild(renderer.domElement);
-            const mesh = new THREE.Mesh(new THREE.TorusKnotGeometry(1, 0.3, 100, 16), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true }));
-            scene.add(mesh); camera.position.z = 3;
-            function anim() { requestAnimationFrame(anim); mesh.rotation.x += 0.03; renderer.render(scene, camera); }
-            anim();
-
-            await new Promise(r => setTimeout(r, 10000)); // 10 SEGUNDOS REALES
-
-            // ESCENA 5: TICKET
-            document.getElementById('s-loading').style.display = 'none';
-            document.getElementById('s-ticket').classList.remove('hidden');
-            narrar("¡Listo! Tu ticket se ha generado. Si tu número es del 1 al 40, aparecerá tu asiento. Si es mayor, solo el código QR.");
-            
-            await new Promise(r => setTimeout(r, 5000));
-            narrar("Muestra este QR al delegado al subir al bus. ¡Buen viaje!");
-            await new Promise(r => setTimeout(r, 3000));
-            info.style.display = 'none';
-            tap.style.display = 'none';
+            renderer.setSize(300, 300);
+            container.innerHTML = "";
+            container.appendChild(renderer.domElement);
+            const geometry = new THREE.TorusKnotGeometry(1, 0.3, 100, 16);
+            const material = new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true });
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+            camera.position.z = 3;
+            function animate() {
+                requestAnimationFrame(animate);
+                mesh.rotation.x += 0.02;
+                mesh.rotation.y += 0.02;
+                renderer.render(scene, camera);
+            }
+            animate();
         }
     </script>
-
 </body>
 </html>
