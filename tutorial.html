@@ -8,18 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
         :root { --accent: #ffc107; --dark: #050505; }
-        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
+        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow: hidden; }
         
-        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        .animate-float { animation: float 4s ease-in-out infinite; }
-
+        /* DISEÑO IDENTICO AL BASE */
         .main-wrapper { 
             position: relative; z-index: 10; 
             background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
@@ -30,314 +26,334 @@
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
-        .nav-link:hover::after, .active-link::after { width: 100%; }
 
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; }
         input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; }
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; }
         
-        .card-panorama {
-            position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
-            height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background-size: cover; background-position: center; transition: 0.4s; cursor: pointer;
-        }
-        .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
-        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
-        .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
-        .badge-cerrado { background: #ef4444; color: white; }
-        .badge-abierto { background: #10b981; color: white; }
-        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
-
-        .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; }
+        .card-panorama { position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; }
+        
+        .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 400px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; }
         .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 25px 10px; color: #111; }
         .vip-header h2 { font-weight: 900; font-size: 24px; letter-spacing: 1px; }
         .ticket-body { padding: 25px; }
         .ticket-main-box { border: 1px dashed #d4a017; border-radius: 10px; padding: 20px; }
-        .valid-date { font-size: 24px; font-weight: 900; color: #d4a017; }
         .asiento-num-big { font-size: 80px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 10px 0; }
         .qr-wrapper { border: 2px solid #d4a017; display: inline-block; padding: 10px; background: #fff; margin: 15px 0; }
         .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; }
         .data-table td { padding: 8px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; }
 
-        #errorModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .error-box { background: #111; border: 2px solid #ef4444; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 100%; }
-        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
-        #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: -30px; }
+        /* VIDEO CONTROLS */
+        #video-controls { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.95)); padding: 25px; z-index: 10000; display: flex; flex-direction: column; align-items: center; }
+        .v-btns { display: flex; align-items: center; gap: 30px; margin-top: 5px; }
+        .v-btn { color: white; font-size: 24px; cursor: pointer; transition: 0.3s; }
+        .v-btn:hover { color: var(--accent); scale: 1.2; }
+        #sub-text { background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; border-left: 4px solid var(--accent); text-align: center; max-width: 800px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        #progress-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); position: fixed; bottom: 0; left: 0; z-index: 10001; }
+        #progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.5s linear; }
+
+        /* CURSOR VIRTUAL */
+        #virtual-cursor { position: fixed; width: 35px; height: 35px; background: rgba(255, 193, 7, 0.4); border: 2px solid #ffc107; border-radius: 50%; pointer-events: none; z-index: 15000; transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); display: none; }
+
+        /* FLASH NOTIF DELEGADO */
+        #flash-notif { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 12000; background: #10b981; color: white; padding: 30px 60px; border-radius: 20px; font-weight: 900; text-align: center; display: none; border: 2px solid white; box-shadow: 0 0 60px rgba(16,185,129,0.7); }
+        .notif-error { background: #ef4444 !important; box-shadow: 0 0 60px rgba(239, 68, 68, 0.7) !important; }
 
         #loading-screen { position: fixed; inset: 0; background: #050505; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        #loader-3d-canvas { width: 300px; height: 300px; }
-        .loader-text { color: var(--accent); font-weight: 900; text-transform: uppercase; letter-spacing: 4px; font-size: 14px; margin-top: 20px; animation: pulse 1.5s infinite; text-align: center; }
-
-        /* CAPA TUTORIAL */
-        #tutorial-overlay { position: fixed; inset: 0; z-index: 10000; pointer-events: none; display: none; background: rgba(0,0,0,0.3); }
-        #virtual-pointer { width: 60px; height: 60px; background: rgba(255, 193, 7, 0.4); border: 3px solid #ffc107; border-radius: 50%; position: absolute; transform: translate(-50%, -50%); transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1); z-index: 10001; }
-        #tutorial-caption { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 800px; background: #000; border-left: 8px solid #ffc107; padding: 30px; border-radius: 15px; color: white; z-index: 10002; box-shadow: 0 25px 50px rgba(0,0,0,1); }
-        .btn-tutorial { position: fixed; top: 120px; right: 20px; z-index: 10005; background: #ffc107; color: black; font-weight: 900; padding: 15px 30px; border-radius: 50px; cursor: pointer; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        #errorModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; align-items: center; justify-content: center; }
+        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <button class="btn-tutorial" onclick="startMasterTutorial()"><i class="fa-solid fa-play mr-2"></i> REPRODUCIR TUTORIAL DETALLADO</button>
+    <div id="virtual-cursor"></div>
+    <div id="progress-bar"><div id="progress-fill"></div></div>
 
-    <div id="tutorial-overlay">
-        <div id="virtual-pointer"></div>
-        <div id="tutorial-caption">
-            <p id="tut-msg" class="text-lg md:text-xl font-bold leading-relaxed"></p>
+    <!-- NOTIFICACION TIPO PANEL DELEGADOS -->
+    <div id="flash-notif">
+        <i id="flash-icon" class="fa-solid fa-circle-check text-5xl mb-2"></i><br>
+        <span id="flash-text" class="text-2xl uppercase italic tracking-tighter">Escaneo Verificado</span>
+    </div>
+
+    <!-- CONTROLES DE VIDEO -->
+    <div id="video-controls">
+        <div id="subtitles"><span id="sub-text">Cargando Tutorial Maestro de Movilidad UNAC...</span></div>
+        <div class="v-btns">
+            <i class="fa-solid fa-rotate-left v-btn" onclick="location.reload()" title="Reiniciar"></i>
+            <i id="play-pause" class="fa-solid fa-pause v-btn" onclick="togglePlay()"></i>
+            <span id="v-timer" class="text-xs font-mono font-bold text-yellow-500">00:00</span>
         </div>
     </div>
 
     <!-- PANTALLA DE CARGA 3D -->
     <div id="loading-screen">
         <div id="loader-3d-canvas"></div>
-        <p class="loader-text">recopilando, configurando y<br>ordenando tus datos</p>
+        <p class="loader-text" style="color:var(--accent); font-weight:900; text-transform:uppercase; margin-top:20px; text-align:center;">recopilando, configurando y<br>ordenando tus datos</p>
     </div>
 
     <!-- MODAL ERROR -->
     <div id="errorModal">
-        <div class="error-box">
+        <div class="error-box" style="background:#111; border:2px solid #ef4444; padding:40px; border-radius:25px; text-align:center; max-width:400px;">
             <i class="fa-solid fa-circle-xmark text-red-500 text-6xl mb-4"></i>
             <h2 class="text-white text-2xl font-black uppercase mb-2">No Verificado</h2>
-            <p class="text-gray-400 text-sm mb-6">Su DNI no está registrado en el padrón oficial. Debe registrarse para acceder.</p>
-            <a href="#" class="inline-block bg-red-500 text-white px-8 py-3 rounded-xl font-bold uppercase text-xs">Ir a Registro</a>
+            <p class="text-gray-400 text-sm">Su DNI no está registrado en el padrón oficial. Debe registrarse para acceder.</p>
         </div>
     </div>
 
     <div class="main-wrapper">
-        <header class="flex justify-between items-center relative z-20 animate-fade-up">
+        <!-- BARRA DE NAVEGACION (6 PUNTOS IDENTICOS) -->
+        <header class="flex justify-between items-center relative z-20">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
-                <div class="flex flex-col text-left leading-none uppercase text-white">
-                    <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
+                <div class="flex flex-col text-left leading-none uppercase">
+                    <span class="text-[10px] font-black tracking-widest text-white leading-none">UNAC</span>
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
-            <nav class="hidden md:flex gap-8 nav-desktop">
-                <a href="#" class="nav-link">Inicio</a>
-                <a href="#" class="nav-link">Rutas</a>
-                <a href="#" class="nav-link active-link">Ticket</a>
-                <a href="#" class="nav-link">Registro</a>
-                <a href="#" class="nav-link">Noticias</a>
-                <a href="#" class="nav-link">Contacto</a>
+            <nav class="hidden md:flex gap-6 nav-desktop">
+                <a id="nav-1" href="#" class="nav-link">Inicio</a>
+                <a id="nav-2" href="#" class="nav-link">Rutas</a>
+                <a id="nav-3" href="#" class="nav-link active-link">Ticket</a>
+                <a id="nav-4" href="#" class="nav-link">Registro</a>
+                <a id="nav-5" href="#" class="nav-link">Noticias</a>
+                <a id="nav-6" href="#" class="nav-link">Contacto</a>
             </nav>
+            <button class="md:hidden text-yellow-500 text-2xl"><i class="fa-solid fa-bars"></i></button>
         </header>
 
-        <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center">
-            
-            <div id="main-header" class="text-center mb-10 animate-fade-up">
+        <main class="max-w-5xl mx-auto px-4 py-8 flex flex-col items-center">
+            <div id="main-header" class="text-center mb-8">
                 <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">SISTEMA DE GESTIÓN OFICIAL</span>
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
                 <p id="live-clock" class="text-white font-mono text-lg font-bold opacity-70"></p>
             </div>
 
-            <!-- PASO 1 -->
-            <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
+            <!-- PASO 1: LOGIN -->
+            <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500">
                 <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su DNI para habilitar sistema</p>
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
                 <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
             </div>
 
-            <!-- PASO 2 -->
-            <div id="step-selection" class="w-full max-w-5xl mx-auto hidden animate-fade-up">
+            <!-- PASO 2: SELECCION CON DATOS COMPLETOS -->
+            <div id="step-selection" class="w-full max-w-5xl hidden">
                 <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
                     <div class="flex items-center gap-4">
                         <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
                         <div>
-                            <h2 id="welcomeName" class="text-xl font-black uppercase italic leading-none text-white">ESTUDIANTE EJEMPLO</h2>
+                            <h2 class="text-xl font-black uppercase italic leading-none text-white">JUAN ALBERTO PEREZ GARCIA</h2>
                             <div class="status-badge"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO - APTO</div>
                         </div>
+                    </div>
+                    <div class="mt-4 md:mt-0 text-right">
+                        <p class="text-[10px] text-yellow-500 font-black uppercase tracking-widest">Facultad de Ingeniería</p>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase">DNI: 77441122</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
-                    <div id="card-mañana" class="card-panorama card-m-img">
-                        <span class="badge-img badge-abierto">Abierto</span>
-                        <div class="shift-title text-white">Mañana</div>
-                        <div class="salida-text text-yellow-500 font-black">SALIDA: 05:15 AM</div>
+                    <div id="card-mañana" class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800');">
+                        <span id="badge-mañana" class="badge-img bg-red-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase mb-2">Cerrado</span>
+                        <div class="text-3xl font-black italic uppercase text-white">Mañana</div>
+                        <div class="salida-text text-yellow-500 font-black text-xs">SALIDA: 05:15 AM</div>
+                        <p class="text-[8px] text-white/40 mt-1 uppercase font-bold">Apertura: 09:00 PM</p>
                     </div>
-                    <div id="card-tarde" class="card-panorama card-t-img">
-                        <span id="badge-t" class="badge-img badge-abierto">Abierto</span>
-                        <div class="shift-title text-white">Tarde</div>
-                        <div class="salida-text text-white font-black">SALIDA: 06:00 PM</div>
+                    <div id="card-tarde" class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); border: 2px solid var(--accent);">
+                        <span id="badge-tarde" class="badge-img bg-green-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase mb-2">Abierto</span>
+                        <div class="text-3xl font-black italic uppercase text-white">Tarde</div>
+                        <div class="salida-text text-white font-black text-xs">SALIDA: 06:00 PM</div>
+                        <p class="text-[8px] text-white/40 mt-1 uppercase font-bold">Apertura: 05:10 PM</p>
                     </div>
                 </div>
             </div>
 
-            <!-- PASO 3 -->
-            <div id="step-ticket" class="w-full max-w-2xl mx-auto hidden animate-fade-up">
+            <!-- PASO 3: TICKET -->
+            <div id="step-ticket" class="w-full max-w-2xl hidden">
                 <div class="vip-ticket-card">
-                    <div class="vip-header">
-                        <h2>¡PASE VIP VERIFICADO!</h2>
-                        <p class="text-[10px] font-bold">MOVILIDAD UNIVERSITARIA - RUTA VENTANILLA</p>
-                    </div>
+                    <div class="vip-header"><h2>¡PASE VIP VERIFICADO!</h2></div>
                     <div class="ticket-body">
                         <div class="ticket-main-box">
-                            <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">VÁLIDO ÚNICAMENTE PARA EL DÍA:</p>
-                            <p class="valid-date" id="t-fecha"></p>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">VÁLIDO ÚNICAMENTE PARA HOY</p>
+                            <p id="t-fecha" class="text-2xl font-black text-yellow-600"></p>
+                            
                             <div id="asiento-area">
                                 <p class="text-[14px] font-bold text-gray-600 mt-4">Tu número de asiento es:</p>
-                                <div class="asiento-num-big" id="t-asiento"></div>
+                                <div id="t-asiento" class="asiento-num-big">24</div>
                             </div>
-                            <div class="qr-wrapper"><div id="qrcode-vip"></div></div>
+
+                            <div id="parado-area" class="hidden">
+                                <p class="text-[14px] font-black text-red-600 mt-4 uppercase italic">Deberás viajar de pie (Cupo > 40)</p>
+                                <div class="py-6"><i class="fa-solid fa-person-walking text-7xl text-gray-400"></i></div>
+                            </div>
+
+                            <div class="qr-wrapper"><div id="qrcode-tut"></div></div>
                         </div>
                         <table class="data-table">
-                            <tr><td>ESTUDIANTE:</td><td id="t-nom" class="text-right"></td></tr>
-                            <tr><td>DNI/CE:</td><td id="t-dni" class="text-right"></td></tr>
+                            <tr><td>ESTUDIANTE:</td><td style="text-align:right">JUAN ALBERTO PEREZ GARCIA</td></tr>
+                            <tr><td>DNI/CE:</td><td style="text-align:right">77441122</td></tr>
                         </table>
-                        <div style="color:#d4a017; font-size:9px; font-weight:900; margin-top:15px;">#SIGAMOS_MEJORANDO<br>#UNAC_UNIDO</div>
                     </div>
                 </div>
             </div>
-
-            <div id="globe-container" class="animate-float"></div>
+            <div id="globe-container" style="height:300px; width:100%;"></div>
         </main>
-
-        <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 mt-10 relative z-20">
-            <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
-            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
-        </footer>
     </div>
 
     <script>
-        // GLOBE 3D
-        let scene, camera, renderer, globe;
-        function initGlobe() {
-            const container = document.getElementById('globe-container');
-            scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.z = 100; renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight); container.appendChild(renderer.domElement);
-            globe = new THREE.Mesh(new THREE.IcosahedronGeometry(30, 4), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.1 }));
-            scene.add(globe); animateGlobe();
+        let isPlaying = true;
+        let currentTime = 0;
+        const synth = window.speechSynthesis;
+
+        // CRONOGRAMA DETALLADO (2 MINUTOS DE TUTORIAL)
+        const timeline = [
+            { t: 0, s: "Bienvenidos al tutorial maestro de movilidad UNAC. Soy tu guía interactivo y hoy aprenderás paso a paso cómo gestionar tu ticket oficial.", f: () => {} },
+            { t: 10, s: "Paso 1: Verificación de identidad. Iniciaremos probando con un DNI que no se encuentra registrado en el padrón oficial.", f: simTypingError },
+            { t: 25, s: "Como puedes ver, el sistema detecta de forma inmediata que el alumno no está habilitado, mostrando una alerta de seguridad.", f: () => {} },
+            { t: 35, s: "Ahora, procederemos a ingresar de forma correcta con un documento de identidad habilitado por la universidad.", f: simTypingSuccess },
+            { t: 50, s: "Hablemos de los horarios. El sistema es estricto: El turno mañana se habilita desde las 9 de la noche del día anterior hasta las 7 de la mañana.", f: highlightMañana },
+            { t: 65, s: "El turno tarde, en cambio, se habilita exactamente a las 5 y 10 de la tarde y se cierra en punto a las 6.", f: highlightTarde },
+            { t: 75, s: "Al elegir el turno tarde, notarás esta ventana durante 10 segundos. No te preocupes, el sistema está configurando tus datos en tiempo real.", f: simCarga },
+            { t: 95, s: "¡Ticket generado! Presta mucha atención: Si eres de los primeros 40 alumnos en registrarte, el sistema te asignará este asiento gigante para viajar sentado.", f: showSentado },
+            { t: 110, s: "Pero si el cupo supera los 40, tu ticket cambiará así. Solo aparecerá el código QR y deberás viajar de pie por seguridad.", f: showParado },
+            { t: 125, s: "Al abordar, el delegado escaneará tu código. Su panel detectará de inmediato si tu ticket es caducado o si ya fue escaneado anteriormente.", f: simDelegado },
+            { t: 140, s: "Tutorial finalizado. Esperamos que esta información te sea de gran utilidad para tus viajes diarios. UNAC siempre contigo. ¡Buen viaje!", f: () => location.reload() }
+        ];
+
+        function runVideo() {
+            if(!isPlaying) return;
+            currentTime++;
+            document.getElementById('v-timer').innerText = formatTime(currentTime);
+            document.getElementById('progress-fill').style.width = (currentTime / 150 * 100) + "%";
+            
+            let action = timeline.find(x => x.t === currentTime);
+            if(action) {
+                document.getElementById('sub-text').innerText = action.s;
+                speak(action.s);
+                action.f();
+            }
+            setTimeout(runVideo, 1000);
         }
-        function animateGlobe() { requestAnimationFrame(animateGlobe); if(globe) globe.rotation.y += 0.002; renderer.render(scene, camera); }
-        window.onload = initGlobe;
 
-        // TUTORIAL ENGINE
-        const pointer = document.getElementById('virtual-pointer');
-        const tutOverlay = document.getElementById('tutorial-overlay');
-        const tutMsg = document.getElementById('tut-msg');
+        function formatTime(s) {
+            let m = Math.floor(s/60);
+            let rs = s % 60;
+            return `${m.toString().padStart(2,'0')}:${rs.toString().padStart(2,'0')}`;
+        }
 
-        // FUNCIÓN MEJORADA: HABLAR POR FRASES PARA EVITAR CORTES
         function speak(text) {
-            return new Promise((resolve) => {
-                window.speechSynthesis.cancel();
-                const phrases = text.split('. ');
-                let currentPhrase = 0;
-
-                function speakNext() {
-                    if (currentPhrase < phrases.length) {
-                        const utterance = new SpeechSynthesisUtterance(phrases[currentPhrase]);
-                        utterance.lang = 'es-MX';
-                        utterance.rate = 0.9;
-                        utterance.pitch = 1;
-                        tutMsg.innerText = phrases[currentPhrase];
-                        utterance.onend = () => {
-                            currentPhrase++;
-                            setTimeout(speakNext, 300);
-                        };
-                        window.speechSynthesis.speak(utterance);
-                    } else {
-                        resolve();
-                    }
-                }
-                speakNext();
-            });
+            synth.cancel();
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'es-MX'; utter.rate = 1.0;
+            synth.speak(utter);
         }
 
-        async function movePointer(selector, click = false) {
-            const el = document.querySelector(selector);
-            const rect = el.getBoundingClientRect();
-            pointer.style.left = `${rect.left + rect.width / 2}px`;
-            pointer.style.top = `${rect.top + rect.height / 2}px`;
-            await new Promise(r => setTimeout(r, 1500));
-            if(click) {
-                pointer.style.transform = 'translate(-50%, -50%) scale(0.8)';
-                setTimeout(() => pointer.style.transform = 'translate(-50%, -50%) scale(1)', 200);
+        // SIMULACIONES DETALLADAS
+        async function typeInInput(id, text) {
+            const el = document.getElementById(id);
+            el.value = "";
+            for (let i = 0; i < text.length; i++) {
+                el.value += text[i];
+                await new Promise(r => setTimeout(r, 100));
             }
         }
 
-        async function startMasterTutorial() {
-            tutOverlay.style.display = 'block';
-            
-            // PASO 1: DNI FALLIDO
-            await movePointer('#dniInput');
-            await speak("Iniciamos ingresando al sistema. Primero probaremos con un DNI que no se encuentra registrado en nuestro padrón oficial.");
-            for(let c of "00000000") { document.getElementById('dniInput').value += c; await new Promise(r => setTimeout(r, 100)); }
-            await movePointer('#verifyBtn', true);
-            document.getElementById('errorModal').style.display = 'flex';
-            
-            await speak("Como puede observar, si usted no está registrado, el sistema lanzará una notificación de alerta. En este caso, su obligación es realizar el registro previo para poder acceder.");
-
-            // PASO 2: DNI ÉXITO
-            await new Promise(r => setTimeout(r, 2000));
-            document.getElementById('errorModal').style.display = 'none';
-            document.getElementById('dniInput').value = "";
-            await speak("Ahora procederemos con una prueba utilizando un documento de identidad que sí se encuentra registrado.");
-            await movePointer('#dniInput');
-            for(let c of "77441122") { document.getElementById('dniInput').value += c; await new Promise(r => setTimeout(r, 100)); }
-            await movePointer('#verifyBtn', true);
-            
-            document.getElementById('step-verify').classList.add('hidden');
-            document.getElementById('step-selection').classList.remove('hidden');
-
-            // PASO 3: HORARIOS
-            await speak("Al ingresar correctamente, el sistema le dará acceso y podrá visualizar los dos turnos disponibles.");
-            
-            await movePointer('#card-mañana');
-            await speak("El turno mañana se habilita desde las 9 de la noche del día anterior hasta las 7 de la mañana del mismo día.");
-            
-            await movePointer('#card-tarde');
-            await speak("En el caso del turno tarde, el sistema se habilita exactamente a las 5 y 10 de la tarde y se cierra a las 6 en punto.");
-
-            // PASO 4: CARGA 3D
-            await movePointer('#card-tarde', true);
-            document.getElementById('step-selection').classList.add('hidden');
-            document.getElementById('loading-screen').style.display = 'flex';
-            
-            // Lanzar 3D
-            const lCanvas = document.getElementById('loader-3d-canvas');
-            const lScene = new THREE.Scene(); const lCam = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-            const lRen = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            lRen.setSize(300, 300); lCanvas.innerHTML = ""; lCanvas.appendChild(lRen.domElement);
-            const lMesh = new THREE.Mesh(new THREE.TorusKnotGeometry(1, 0.3, 100, 16), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true }));
-            lScene.add(lMesh); lCam.position.z = 3;
-            function lAnim() { requestAnimationFrame(lAnim); lMesh.rotation.x += 0.02; lRen.render(lScene, lCam); }
-            lAnim();
-
-            await speak("Al solicitar su pase para el turno tarde, se activará esta ventana de carga durante 10 segundos. En este tiempo, el sistema está recopilando, configurando y ordenando sus datos de manera precisa.");
-
-            await new Promise(r => setTimeout(r, 6000)); // Espera el resto de los 10s
-
-            // PASO 5: TICKET Y REGLAS
-            document.getElementById('loading-screen').style.display = 'none';
-            document.getElementById('step-ticket').classList.remove('hidden');
-            document.getElementById('t-nom').innerText = "JUAN PEREZ GARCIA";
-            document.getElementById('t-dni').innerText = "77441122";
-            document.getElementById('t-fecha').innerText = new Date().toLocaleDateString();
-            document.getElementById('t-asiento').innerText = "24";
-            new QRCode(document.getElementById("qrcode-vip"), { text: "TUTORIAL", width: 140, height: 140 });
-
-            await speak("Una vez finalizada la carga, aparecerá su ticket digital. Si usted es uno de los primeros 40 alumnos, el sistema le asignará automáticamente un número de asiento.");
-            await speak("Usted tiene la opción de tomar un asiento de acuerdo al número de ticket obtenido al momento de subir a la movilidad. El delegado encargado se acercará para escanear su código.");
-
-            // REGLA 41+
-            await new Promise(r => setTimeout(r, 2000));
-            document.getElementById('asiento-area').style.display = 'none';
-            await speak("Tenga en cuenta que, pasado el cupo de los 40 primeros, el sistema solo le mostrará el código QR. Esto significa que podrá subir a la movilidad, pero deberá viajar de pie.");
-
-            // SEGURIDAD
-            await speak("Es fundamental que no compartan sus códigos QR. El panel de los delegados está configurado para verificar la fecha exacta y detectar duplicados.");
-            await speak("Si intenta usar un QR de fechas pasadas, ya escaneado o duplicado, el sistema del delegado lanzará un error inmediato.");
-            await speak("Si detectamos que un DNI intenta realizar estas acciones de forma reiterada, el sistema bloqueará su acceso automáticamente durante una semana completa.");
-            
-            await speak("Atentamente el cuerpo de delegados. Muchas gracias por su atención y les deseamos un excelente viaje.");
-            
-            await new Promise(r => setTimeout(r, 4000));
-            location.reload();
+        function simTypingError() {
+            moveCursor('dniInput', async () => {
+                await typeInInput('dniInput', '00000000');
+                moveCursor('verifyBtn', () => {
+                    document.getElementById('errorModal').style.display = 'flex';
+                    setTimeout(() => document.getElementById('errorModal').style.display = 'none', 4000);
+                });
+            });
         }
 
-        setInterval(() => {
-            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString();
-        }, 1000);
+        function simTypingSuccess() {
+            document.getElementById('dniInput').value = "";
+            moveCursor('dniInput', async () => {
+                await typeInInput('dniInput', '77441122');
+                moveCursor('verifyBtn', () => {
+                    document.getElementById('step-verify').classList.add('hidden');
+                    document.getElementById('step-selection').classList.remove('hidden');
+                });
+            });
+        }
+
+        function highlightMañana() { moveCursor('card-mañana', () => {}); }
+        function highlightTarde() { moveCursor('card-tarde', () => {}); }
+
+        function simCarga() {
+            document.getElementById('step-selection').classList.add('hidden');
+            document.getElementById('loading-screen').style.display = 'flex';
+            init3DLoader();
+            setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 10000);
+        }
+
+        function showSentado() {
+            document.getElementById('step-ticket').classList.remove('hidden');
+            document.getElementById('t-fecha').innerText = new Date().toLocaleDateString();
+            new QRCode(document.getElementById("qrcode-tut"), { text: "TUTORIAL_SENTADO", width: 140, height: 140 });
+        }
+
+        function showParado() {
+            document.getElementById('asiento-area').classList.add('hidden');
+            document.getElementById('parado-area').classList.remove('hidden');
+        }
+
+        function simDelegado() {
+            const flash = document.getElementById('flash-notif');
+            flash.style.display = 'block';
+            setTimeout(() => {
+                flash.classList.add('notif-error');
+                document.getElementById('flash-icon').className = "fa-solid fa-circle-xmark text-5xl mb-2";
+                document.getElementById('flash-text').innerText = "TICKET YA ESCANEADO";
+            }, 6000);
+        }
+
+        function moveCursor(id, callback) {
+            const el = document.getElementById(id);
+            const rect = el.getBoundingClientRect();
+            const cursor = document.getElementById('virtual-cursor');
+            cursor.style.display = 'block';
+            cursor.style.left = `${rect.left + rect.width/2}px`;
+            cursor.style.top = `${rect.top + rect.height/2}px`;
+            setTimeout(callback, 1200);
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.getElementById('play-pause').className = isPlaying ? "fa-solid fa-pause v-btn" : "fa-solid fa-play v-btn";
+            if(isPlaying) runVideo(); else synth.cancel();
+        }
+
+        function init3DLoader() {
+            const container = document.getElementById('loader-3d-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(300, 300); container.innerHTML = ""; container.appendChild(renderer.domElement);
+            const torus = new THREE.Mesh(new THREE.TorusKnotGeometry(1, 0.3, 100, 16), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true }));
+            scene.add(torus); camera.position.z = 3;
+            function anim() { requestAnimationFrame(anim); torus.rotation.x += 0.02; renderer.render(scene, camera); }
+            anim();
+        }
+
+        // GLOBE 3D
+        let gScene, gCam, gRen, globe;
+        function initGlobe() {
+            const container = document.getElementById('globe-container');
+            gScene = new THREE.Scene(); gCam = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            gCam.position.z = 100; gRen = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            gRen.setSize(container.clientWidth, container.clientHeight); container.appendChild(gRen.domElement);
+            globe = new THREE.Mesh(new THREE.IcosahedronGeometry(30, 4), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.1 }));
+            gScene.add(globe); animateG();
+        }
+        function animateG() { requestAnimationFrame(animateG); if(globe) globe.rotation.y += 0.002; gRen.render(gScene, gCam); }
+
+        window.onload = () => {
+            initGlobe();
+            runVideo();
+            setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        };
     </script>
 </body>
 </html>
