@@ -15,7 +15,6 @@
         :root { --accent: #ffc107; --dark: #050505; }
         body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
         
-        /* DISEÑO ORIGINAL IDENTICO */
         .main-wrapper { 
             position: relative; z-index: 10; 
             background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
@@ -64,6 +63,19 @@
         #loading-screen { background: #050505; }
         .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
         #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: -30px; }
+
+        /* UNICA MODIFICACION PARA RESPONSIVIDAD MOVIL */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem !important; }
+            .flash-notif-sim { padding: 30px 20px !important; width: 90%; }
+            .flash-notif-sim span { font-size: 1.8rem !important; }
+            .flash-notif-sim i { font-size: 4rem !important; }
+            #subtitle-box { font-size: 0.9rem !important; padding: 12px 15px !important; width: 90%; }
+            .v-btns { gap: 20px !important; }
+            .asiento-num-big { font-size: 60px !important; }
+            #globe-container { height: 200px; }
+            #video-controls-ui { padding: 15px; }
+        }
     </style>
 </head>
 <body>
@@ -73,30 +85,30 @@
 
     <!-- PANTALLA DE SIMULACION DELEGADOS -->
     <div id="delegate-layer">
-        <h3 class="text-yellow-500 font-black uppercase tracking-[8px] mb-16 text-2xl italic">Módulo de Verificación Delegados</h3>
-        <div id="flash-box" class="flash-notif-sim">
+        <h3 class="text-yellow-500 font-black uppercase tracking-[8px] mb-16 text-center text-xl italic px-4">Módulo de Verificación Delegados</h3>
+        <div id="flash-box" class="flash-notif-sim mx-4">
             <i id="flash-sim-icon" class="fa-solid fa-circle-check text-8xl mb-6"></i><br>
             <span id="flash-sim-text" class="text-5xl uppercase italic tracking-tighter">Acceso Válido</span>
         </div>
     </div>
 
-    <!-- PANTALLA DE CARGA 3D (DE TU BASE) -->
+    <!-- PANTALLA DE CARGA 3D -->
     <div id="loading-screen">
         <div id="loader-3d-canvas"></div>
-        <p class="loader-text" style="color:var(--accent); font-weight:900; text-transform:uppercase; margin-top:20px; text-align:center; letter-spacing: 4px;">Sincronizando con el padrón oficial...</p>
+        <p class="loader-text" style="color:var(--accent); font-weight:900; text-transform:uppercase; margin-top:20px; text-align:center; letter-spacing: 4px; padding: 0 20px;">Sincronizando con el padrón oficial...</p>
     </div>
 
-    <!-- MODAL ERROR (DE TU BASE) -->
-    <div id="errorModal">
-        <div class="glass p-12 text-center max-w-lg" style="background:#111; border:2px solid #ef4444; border-radius: 35px;">
-            <i class="fa-solid fa-circle-xmark text-red-500 text-8xl mb-8"></i>
-            <h2 class="text-white text-4xl font-black uppercase mb-4 tracking-tighter">No Verificado</h2>
-            <p class="text-gray-400 text-lg leading-relaxed">Lo sentimos, su DNI no se encuentra registrado en el padrón oficial de movilidad UNAC. Es indispensable realizar el registro previo.</p>
+    <!-- MODAL ERROR -->
+    <div id="errorModal" class="px-4">
+        <div class="glass p-8 md:p-12 text-center max-w-lg" style="background:#111; border:2px solid #ef4444; border-radius: 35px;">
+            <i class="fa-solid fa-circle-xmark text-red-500 text-6xl md:text-8xl mb-8"></i>
+            <h2 class="text-white text-3xl md:text-4xl font-black uppercase mb-4 tracking-tighter">No Verificado</h2>
+            <p class="text-gray-400 text-base md:text-lg leading-relaxed">Lo sentimos, su DNI no se encuentra registrado en el padrón oficial de movilidad UNAC. Es indispensable realizar el registro previo.</p>
         </div>
     </div>
 
     <div class="main-wrapper">
-        <!-- BARRA DE NAVEGACION (6 PUNTOS IDENTICOS) -->
+        <!-- BARRA DE NAVEGACION -->
         <header class="flex justify-between items-center relative z-20">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
@@ -123,23 +135,23 @@
             </div>
 
             <!-- PASO 1 -->
-            <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500">
+            <div id="step-verify" class="glass p-6 md:p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500">
                 <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su DNI para habilitar sistema</p>
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
-                <div class="mt-6"><button class="btn-search" id="verifyBtn">Verificar Alumno</button></div>
+                <div class="mt-6"><button class="btn-search w-full md:w-auto" id="verifyBtn">Verificar Alumno</button></div>
             </div>
 
             <!-- PASO 2 -->
             <div id="step-selection" class="w-full max-w-5xl hidden">
-                <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
+                <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500 gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
+                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10 shrink-0"><i class="fa-solid fa-user-graduate"></i></div>
                         <div>
-                            <h2 class="text-xl font-black uppercase italic leading-none text-white">JUAN ALBERTO PEREZ GARCIA</h2>
-                            <div class="status-badge"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO - APTO</div>
+                            <h2 class="text-lg md:text-xl font-black uppercase italic leading-none text-white">JUAN ALBERTO PEREZ GARCIA</h2>
+                            <div class="status-badge"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO</div>
                         </div>
                     </div>
-                    <div class="mt-4 md:mt-0 text-right">
+                    <div class="text-center md:text-right">
                         <p class="text-[10px] text-yellow-500 font-black uppercase tracking-widest">Facultad de Ingeniería</p>
                         <p class="text-[9px] text-gray-500 font-bold uppercase">DNI: 77441122</p>
                     </div>
@@ -147,28 +159,27 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
                     <div id="card-mañana" class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800');">
-                        <span class="badge-img bg-red-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase mb-2">Cerrado</span>
+                        <span class="bg-red-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase mb-2">Cerrado</span>
                         <div class="text-3xl font-black italic uppercase text-white">Mañana</div>
-                        <p class="text-[9px] text-yellow-500 font-bold">HORARIO: 9:00 PM - 7:00 AM</p>
+                        <p class="text-[9px] text-yellow-500 font-bold">9:00 PM - 7:00 AM</p>
                     </div>
                     <div id="card-tarde" class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); border: 2px solid var(--accent);">
-                        <span class="badge-img bg-green-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase mb-2">Abierto</span>
+                        <span class="bg-green-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase mb-2">Abierto</span>
                         <div class="text-3xl font-black italic uppercase text-white">Tarde</div>
-                        <p class="text-[9px] text-white font-bold">HORARIO: 5:10 PM - 6:00 PM</p>
+                        <p class="text-[9px] text-white font-bold">5:10 PM - 6:00 PM</p>
                     </div>
                 </div>
             </div>
 
             <!-- PASO 3 -->
-            <div id="step-ticket" class="w-full max-w-2xl hidden">
+            <div id="step-ticket" class="w-full max-w-2xl hidden px-2">
                 <div class="vip-ticket-card">
                     <div class="vip-header"><h2>¡PASE VIP VERIFICADO!</h2></div>
                     <div class="ticket-body">
                         <div class="ticket-main-box">
                             <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">VÁLIDO ÚNICAMENTE PARA HOY</p>
-                            <p id="t-fecha" class="text-2xl font-black text-yellow-600 mb-2"></p>
+                            <p id="t-fecha" class="text-xl md:text-2xl font-black text-yellow-600 mb-2"></p>
                             
-                            <!-- COMPARATIVA DINAMICA -->
                             <div id="area-asiento">
                                 <p class="text-[14px] font-bold text-gray-600 mt-4">Tu número de asiento es:</p>
                                 <div class="asiento-num-big" id="t-asiento">24</div>
@@ -209,7 +220,6 @@
         let time = 0;
         const synth = window.speechSynthesis;
 
-        // TIMELINE DETALLADO
         const script = [
             { t: 0, s: "Hola Estudiante. Bienvenido al tutorial maestro de movilidad UNAC. Te guiaré paso a paso con total detalle para que domines el sistema y obtengas tu ticket sin problemas.", f: () => {} },
             { t: 14, s: "Paso 1: Verificación de Identidad. El sistema valida tu DNI contra el padrón oficial. Veamos qué sucede al ingresar un documento que no ha sido registrado previamente.", f: actionError },
@@ -244,7 +254,6 @@
 
         function formatTime(s) { let m = Math.floor(s/60); let r = s%60; return `${m.toString().padStart(2,'0')}:${r.toString().padStart(2,'0')}`; }
 
-        // ACCIONES VIRTUALES
         async function humanType(id, text) {
             const el = document.getElementById(id); el.value = "";
             for(let c of text) { el.value += c; await new Promise(r => setTimeout(r, 130)); }
@@ -295,7 +304,7 @@
             const f = document.getElementById('flash-box');
             setTimeout(() => { f.style.display = 'block'; }, 2000);
             setTimeout(() => {
-                f.className = "flash-notif-sim notif-error-sim";
+                f.className = "flash-notif-sim notif-error-sim mx-4";
                 document.getElementById('flash-sim-icon').className = "fa-solid fa-circle-xmark text-8xl mb-6";
                 document.getElementById('flash-sim-text').innerText = "TICKET YA USADO";
             }, 6000);
@@ -322,7 +331,6 @@
         }
 
         window.onload = () => {
-            // GLOBE 3D IDENTICO AL BASE
             const container = document.getElementById('globe-container');
             const scene = new THREE.Scene(); const cam = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
             const ren = new THREE.WebGLRenderer({ antialias: true, alpha: true }); ren.setSize(container.clientWidth, container.clientHeight);
