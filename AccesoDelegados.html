@@ -112,30 +112,42 @@
             <div id="reader"></div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-6 text-center">
-            <div class="glass p-5 border-b-2 border-yellow-500">
-                <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Pasajeros Hoy</span>
-                <span id="contador" class="text-4xl font-black text-yellow-500">0</span>
+        <!-- CONTADORES -->
+        <div class="grid grid-cols-2 gap-4 mb-4 text-center">
+            <div class="glass p-4 border-b-2 border-yellow-500">
+                <span class="text-[8px] text-gray-500 uppercase font-black block mb-1">Mis Escaneos</span>
+                <span id="contador" class="text-3xl font-black text-yellow-500">0</span>
             </div>
-            <div class="glass p-5 border-b-2 border-green-500">
-                <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Estado Lector</span>
-                <span id="scan-status" class="text-[10px] font-black text-green-500 uppercase">Esperando...</span>
+            <div class="glass p-4 border-b-2 border-blue-500 relative">
+                <span class="text-[8px] text-gray-500 uppercase font-black block mb-1">Total Global <i class="fa-solid fa-rotate ml-1 text-gray-500 hover:text-white cursor-pointer" onclick="actualizarTotalGlobal()"></i></span>
+                <span id="contador-global" class="text-3xl font-black text-blue-500">0</span>
             </div>
+        </div>
+
+        <div class="glass p-3 border-b-2 border-green-500 text-center mb-6">
+            <span class="text-[9px] text-gray-500 uppercase font-black block mb-1">Estado Lector</span>
+            <span id="scan-status" class="text-[10px] font-black text-green-500 uppercase">Esperando...</span>
         </div>
 
         <div class="glass p-6 mb-6">
             <h3 class="text-[10px] font-black uppercase text-gray-400 mb-4 border-b border-white/10 pb-2 flex justify-between">
-                <span>Registro Oficial (Solo Hoy)</span>
-                <span id="label-turno" class="text-yellow-500">Sincronizado</span>
+                <span>Registro Local (Solo Hoy)</span>
+                <span id="label-turno" class="text-yellow-500">En vivo</span>
             </h3>
             <div id="listaEscaneo" class="space-y-3 max-h-64 overflow-y-auto pr-2">
                 <p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros válidos hoy.</p>
             </div>
         </div>
 
-        <button onclick="enviarYReiniciar()" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-xl uppercase text-xs transition shadow-xl mb-10">
-            <i class="fa-solid fa-rotate mr-2"></i> Reiniciar Sistema (Limpiar Excel)
-        </button>
+        <!-- BOTONES DE ACCIÓN (LIMPIAR HISTORIAL Y REINICIAR SISTEMA) -->
+        <div class="grid grid-cols-2 gap-3 mb-10">
+            <button onclick="limpiarHistorial()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
+                <i class="fa-solid fa-eraser mr-1"></i> Borrar Historial
+            </button>
+            <button id="btn-reiniciar" onclick="enviarYReiniciar()" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
+                <i class="fa-solid fa-rotate mr-1"></i> Reiniciar Sistema
+            </button>
+        </div>
     </div>
 
     <script>
@@ -170,6 +182,10 @@
 
         function iniciarSistema() {
             renderList();
+            actualizarTotalGlobal(); 
+            // Sincroniza el contador global cada 15 segundos
+            setInterval(actualizarTotalGlobal, 15000); 
+
             html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
             html5QrcodeScanner.render(onScanSuccess);
         }
@@ -213,13 +229,44 @@
                 notificarFlash("ESCANEO VERIFICADO", true);
                 renderList();
 
+                // Enviar asistencia en segundo plano
                 fetch(`${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`, {
                     mode: 'no-cors'
                 });
 
+                // Intenta sumar al contador global visualmente
+                setTimeout(actualizarTotalGlobal, 1500);
+
             } catch (e) {
                 isScanningLocked = false;
             }
+        }
+
+        // --- NUEVA FUNCIÓN: Obtener total global de la base de datos ---
+        async function actualizarTotalGlobal() {
+            try {
+                const response = await fetch(`${LINK_MARCAR_ASISTENCIA}?accion=obtener_total`);
+                const data = await response.json();
+                if (data && typeof data.total !== 'undefined') {
+                    document.getElementById('contador-global').innerText = data.total;
+                }
+            } catch (e) {
+                // Si la macro aún no devuelve el JSON, mostramos al menos el conteo local como base
+                let currentGlobal = parseInt(document.getElementById('contador-global').innerText) || 0;
+                if(scannedData.length > currentGlobal) {
+                    document.getElementById('contador-global').innerText = scannedData.length;
+                }
+            }
+        }
+
+        // --- NUEVA FUNCIÓN: Limpiar Historial solo local ---
+        function limpiarHistorial() {
+            if (!confirm("¿Deseas borrar tu lista de escaneados local de esta pantalla? \n\n(Esto NO borra los registros del Excel general)")) return;
+            
+            scannedData = [];
+            localStorage.removeItem('scanned_unac');
+            renderList();
+            notificarLector("Historial Local Limpio", true);
         }
 
         function notificarFlash(text, exito) {
@@ -266,10 +313,9 @@
             el.innerText = msg;
             el.className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
             
-            // SONIDOS PROFESIONALES
             const soundUrl = exito 
-                ? 'https://raw.githubusercontent.com/Anis-Khemira/QR-Code-Scanner/master/audio/beep.mp3' // Éxito: Beep limpio de escáner
-                : 'https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'; // Error: Tono doble de advertencia
+                ? 'https://raw.githubusercontent.com/Anis-Khemira/QR-Code-Scanner/master/audio/beep.mp3' 
+                : 'https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'; 
             
             try {
                 const audio = new Audio(soundUrl);
@@ -280,8 +326,8 @@
 
         async function enviarYReiniciar() {
             if (!confirm("Esto guardará los datos finales y BORRARÁ todas las colas del Excel. ¿Estás seguro?")) return;
-            const btn = document.querySelector('button[onclick="enviarYReiniciar()"]');
-            btn.innerText = "REINICIANDO...";
+            const btn = document.getElementById('btn-reiniciar');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> REINICIANDO...';
             btn.disabled = true;
 
             try {
@@ -293,11 +339,12 @@
                 alert("✅ Sistema Reiniciado. El Excel ahora está limpio.");
                 scannedData = [];
                 localStorage.removeItem('scanned_unac');
+                document.getElementById('contador-global').innerText = "0";
                 renderList();
             } catch (e) {
                 alert("Error de conexión al reiniciar.");
             }
-            btn.innerHTML = '<i class="fa-solid fa-rotate mr-2"></i> Reiniciar Sistema (Limpiar Excel)';
+            btn.innerHTML = '<i class="fa-solid fa-rotate mr-1"></i> Reiniciar Sistema';
             btn.disabled = false;
         }
     </script>
