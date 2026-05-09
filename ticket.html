@@ -83,8 +83,8 @@
 
         .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
         
-        /* 3D CONTAINERS */
-        #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: -30px; position: absolute; bottom: 0; z-index: 0; opacity: 0.8; }
+        /* 3D CONTAINERS - MODIFICADO PARA ESTAR EN EL FLUJO */
+        #globe-container { width: 100%; height: 350px; pointer-events: none; position: relative; z-index: 0; opacity: 0.8; margin-top: -30px; margin-bottom: 20px; }
         
         /* PANTALLA DE CARGA 3D GALAXIA */
         #loading-screen { position: fixed; inset: 0; background: #050505; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
@@ -238,16 +238,16 @@
                 <p class="text-xs text-gray-400 mb-8">Puede proceder a tomar su asiento.</p>
                 <button onclick="location.reload()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase shadow-xl transition-transform hover:scale-105">Finalizar</button>
             </div>
-
-            <!-- BOTONES EXTRAS INFERIORES -->
-            <div id="extra-links-container" class="mt-8 text-center relative z-20">
-                <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
-            </div>
             
         </main>
         
         <!-- GLOBO 3D ORIGINAL MANTENIDO -->
         <div id="globe-container" class="animate-float"></div>
+
+        <!-- BOTONES EXTRAS INFERIORES MOVIDOS DEBAJO DEL GLOBO -->
+        <div id="extra-links-container" class="mb-10 text-center relative z-20">
+            <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
+        </div>
 
         <footer class="w-full py-10 flex flex-col items-center border-t border-white/5 bg-black/40 mt-auto relative z-20 backdrop-blur-sm">
             <span class="text-center text-[10px] font-black tracking-[6px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
