@@ -99,6 +99,11 @@
 </head>
 <body>
 
+    <!-- ====== ETIQUETA DE AUDIO AGREGADA ====== -->
+    <!-- Reemplaza TU_ENLACE_DE_MUSICA_AQUI.mp3 por la URL de tu canción -->
+    <audio id="musica-verificacion" src="Frost and Fire.mp3" preload="auto"></audio>
+    <!-- ======================================= -->
+
     <!-- LOADER 3D GALAXIA -->
     <div id="loading-screen">
         <div id="loader-3d-canvas"></div>
@@ -322,6 +327,13 @@
             },
 
             verifyStudent: async () => {
+                // ====== REPRODUCCIÓN DE MÚSICA AL HACER CLIC ======
+                const audio = document.getElementById('musica-verificacion');
+                if (audio) {
+                    audio.play().catch(e => console.log("La reproducción de audio fue bloqueada por el navegador:", e));
+                }
+                // ==================================================
+
                 const dni = document.getElementById('dniInput').value.trim();
                 const btn = document.getElementById('verifyBtn');
 
