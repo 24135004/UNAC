@@ -36,6 +36,8 @@
         .song-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .song-card .play-overlay { position: absolute; top: 15px; right: 15px; width: 45px; height: 45px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: black; font-size: 20px; opacity: 0; transform: translateY(10px); transition: 0.3s; box-shadow: 0 5px 15px rgba(255,193,7,0.4); }
         .song-card:hover .play-overlay { opacity: 1; transform: translateY(0); }
+        /* Indicador de canción activa */
+        .song-card.active { border: 1px solid var(--accent); background: rgba(255,193,7,0.1); }
 
         /* Reproductor Inferior Fijo */
         .bottom-player { position: fixed; bottom: 0; left: 0; right: 0; height: 90px; background: rgba(5, 5, 5, 0.95); border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; backdrop-filter: blur(30px); }
@@ -63,7 +65,6 @@
 
     <!-- HEADER / NAVEGACIÓN SUPERIOR -->
     <header class="w-full glass-panel h-20 flex items-center justify-between px-6 z-50">
-        <!-- Logo -->
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(255,193,7,0.4)] text-black text-xl">
                 <i class="fa-brands fa-spotify"></i>
@@ -74,14 +75,12 @@
             </div>
         </div>
 
-        <!-- Barra de Búsqueda Central -->
         <div class="flex-grow max-w-xl mx-4 relative">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             <input type="text" id="searchInput" placeholder="¿Qué quieres escuchar? (Ej. Bad Bunny, The Weeknd...)" 
                    class="search-bar w-full py-3 pl-12 pr-4 rounded-full text-sm font-semibold placeholder-gray-400">
         </div>
 
-        <!-- Perfil (Simulado) -->
         <div class="w-10 h-10 rounded-full bg-gray-800 border-2 border-white/10 flex items-center justify-center overflow-hidden">
             <i class="fa-solid fa-user text-gray-400"></i>
         </div>
@@ -90,16 +89,11 @@
     <!-- ÁREA PRINCIPAL DE RESULTADOS -->
     <main class="flex-grow overflow-y-auto p-6 pb-32">
         <div class="max-w-7xl mx-auto">
-            
             <h2 id="sectionTitle" class="text-3xl font-black uppercase italic tracking-tighter text-white mb-6">Explorar <span class="text-yellow-500">Tendencias</span></h2>
-            
             <div id="loading" class="loader"></div>
-            
-            <!-- Grilla de Canciones -->
             <div id="resultsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 <!-- Los resultados se inyectan aquí -->
             </div>
-
         </div>
     </main>
 
@@ -120,9 +114,10 @@
         <div class="flex flex-col items-center justify-center w-full md:w-1/3 max-w-md gap-2">
             <div class="flex items-center gap-6">
                 <button class="control-btn"><i class="fa-solid fa-shuffle"></i></button>
-                <button class="control-btn text-xl"><i class="fa-solid fa-backward-step"></i></button>
+                <!-- BOTONES PREV Y NEXT AGREGADOS -->
+                <button id="prevBtn" class="control-btn text-xl"><i class="fa-solid fa-backward-step"></i></button>
                 <button id="playBtn" class="play-btn"><i id="playIcon" class="fa-solid fa-play ml-1"></i></button>
-                <button class="control-btn text-xl"><i class="fa-solid fa-forward-step"></i></button>
+                <button id="nextBtn" class="control-btn text-xl"><i class="fa-solid fa-forward-step"></i></button>
                 <button class="control-btn"><i class="fa-solid fa-repeat"></i></button>
             </div>
             <div class="progress-container w-full hidden md:flex">
@@ -154,6 +149,8 @@
         // Referencias del Reproductor
         const audioPlayer = document.getElementById('audioPlayer');
         const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn'); // Nuevo
+        const nextBtn = document.getElementById('nextBtn'); // Nuevo
         const playIcon = document.getElementById('playIcon');
         const playerCover = document.getElementById('playerCover');
         const playerTitle = document.getElementById('playerTitle');
@@ -165,6 +162,7 @@
 
         let isPlaying = false;
         let currentPlaylist = [];
+        let currentTrackIndex = -1; // Para saber qué canción se está reproduciendo
 
         // Función para Buscar Canciones (Usando API Pública de iTunes)
         async function searchMusic(query) {
@@ -179,11 +177,12 @@
                 const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=20`);
                 const data = await response.json();
                 
-                currentPlaylist = data.results;
+                // Filtramos canciones que SÍ tengan previewUrl
+                currentPlaylist = data.results.filter(track => track.previewUrl);
                 loading.style.display = 'none';
 
                 if(currentPlaylist.length === 0) {
-                    resultsGrid.innerHTML = '<p class="text-gray-400 text-sm col-span-full text-center py-10">No se encontraron resultados.</p>';
+                    resultsGrid.innerHTML = '<p class="text-gray-400 text-sm col-span-full text-center py-10">No se encontraron resultados de audio.</p>';
                     return;
                 }
 
@@ -204,6 +203,7 @@
                 
                 const card = document.createElement('div');
                 card.className = 'song-card';
+                card.id = `song-card-${index}`; // Para aplicar estilos al reproducir
                 card.innerHTML = `
                     <div class="relative w-full aspect-square mb-4 rounded-md overflow-hidden bg-gray-900 shadow-lg">
                         <img src="${highResImage}" class="w-full h-full object-cover" alt="Cover">
@@ -217,7 +217,8 @@
 
                 // Evento al hacer click en la tarjeta (Reproducir)
                 card.addEventListener('click', () => {
-                    loadAndPlaySong(track, highResImage);
+                    currentTrackIndex = index; // Actualizamos el índice actual
+                    loadAndPlaySong(track, highResImage, index);
                 });
 
                 resultsGrid.appendChild(card);
@@ -225,14 +226,18 @@
         }
 
         // Cargar Canción al Reproductor Inferior y darle Play
-        function loadAndPlaySong(track, coverUrl) {
+        function loadAndPlaySong(track, coverUrl, index) {
+            // Actualizar diseño de la tarjeta activa
+            document.querySelectorAll('.song-card').forEach(c => c.classList.remove('active'));
+            const activeCard = document.getElementById(`song-card-${index}`);
+            if(activeCard) activeCard.classList.add('active');
+
             playerTitle.innerText = track.trackName;
             playerArtist.innerText = track.artistName;
             playerCover.src = coverUrl;
             playerCover.classList.remove('hidden');
             
             audioPlayer.src = track.previewUrl; // Enlace de audio de la API
-            
             playAudio();
         }
 
@@ -253,10 +258,39 @@
             playBtn.style.background = '#fff';
         }
 
+        // Función para Siguiente Canción
+        function playNext() {
+            if (currentTrackIndex < currentPlaylist.length - 1) {
+                currentTrackIndex++;
+                const nextTrack = currentPlaylist[currentTrackIndex];
+                const highResImage = nextTrack.artworkUrl100.replace('100x100bb', '600x600bb');
+                loadAndPlaySong(nextTrack, highResImage, currentTrackIndex);
+            } else {
+                pauseAudio(); // Si es la última, se detiene
+            }
+        }
+
+        // Función para Canción Anterior
+        function playPrev() {
+            if (currentTrackIndex > 0) {
+                currentTrackIndex--;
+                const prevTrack = currentPlaylist[currentTrackIndex];
+                const highResImage = prevTrack.artworkUrl100.replace('100x100bb', '600x600bb');
+                loadAndPlaySong(prevTrack, highResImage, currentTrackIndex);
+            }
+        }
+
+        // EVENTOS DE LOS BOTONES
         playBtn.addEventListener('click', () => {
             if(!audioPlayer.src) return;
             isPlaying ? pauseAudio() : playAudio();
         });
+
+        nextBtn.addEventListener('click', playNext);
+        prevBtn.addEventListener('click', playPrev);
+
+        // ¡EL TRUCO MÁGICO!: Cuando la canción termine, pasa a la siguiente automáticamente
+        audioPlayer.addEventListener('ended', playNext);
 
         // Actualizar barra de progreso de tiempo
         audioPlayer.addEventListener('timeupdate', () => {
@@ -296,9 +330,9 @@
             }
         });
 
-        // Cargar contenido por defecto al abrir la página (Tendencias)
+        // Cargar contenido por defecto al abrir la página
         window.onload = () => {
-            searchMusic('Top Hits 2024'); // Búsqueda inicial automática
+            searchMusic('Top Hits 2024'); 
         };
 
     </script>
