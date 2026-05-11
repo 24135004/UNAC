@@ -5,106 +5,468 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNAC | Pase de Movilidad Oficial</title>
     
-    <!-- Librerías Externas Mantenedas -->
+    <!-- ==========================================
+         LIBRERÍAS EXTERNAS MANTENIDAS
+         ========================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Alertas Profesionales -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
     
-    <!-- Fuentes e Íconos -->
+    <!-- FUENTES E ÍCONOS -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        :root { --accent: #ffc107; --dark: #050505; }
-        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; scroll-behavior: smooth; }
-        
-        /* ANIMACIONES ORIGINALES */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        .animate-float { animation: float 4s ease-in-out infinite; }
-
-        .main-wrapper { 
-            position: relative; z-index: 10; 
-            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
-            background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; width: 100%; 
-            display: flex; flex-direction: column;
+        :root { 
+            --accent: #ffc107; 
+            --dark: #050505; 
         }
 
-        /* NAVEGACIÓN ESTILO RUTAS (MODIFICADO) */
-        header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
-        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
-        .nav-link:hover, .active-link { color: var(--accent); }
-        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
-        .nav-link:hover::after, .active-link::after { width: 100%; }
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh; 
+            background-color: var(--dark); 
+            font-family: 'Inter', sans-serif; 
+            color: #ffffff; 
+            overflow-x: hidden; 
+            scroll-behavior: smooth; 
+        }
+        
+        /* ANIMACIONES ORIGINALES EXTENDIDAS */
+        @keyframes fadeInUp { 
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            } 
+        }
+
+        .animate-fade-up { 
+            animation: fadeInUp 0.8s ease-out forwards; 
+        }
+
+        @keyframes float { 
+            0%, 100% { 
+                transform: translateY(0px); 
+            } 
+            50% { 
+                transform: translateY(-10px); 
+            } 
+        }
+
+        .animate-float { 
+            animation: float 4s ease-in-out infinite; 
+        }
+
+        /* WRAPPER PRINCIPAL CON FONDO */
+        .main-wrapper { 
+            position: relative; 
+            z-index: 10; 
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed; 
+            min-height: 100vh; 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column;
+        }
+
+        /* NAVEGACIÓN Y HEADER ESTILO RUTAS */
+        header { 
+            width: 100%; 
+            max-width: 1200px; 
+            padding: 30px 20px; 
+            z-index: 1000; 
+            margin: 0 auto; 
+        }
+
+        .nav-link { 
+            font-size: 11px; 
+            font-weight: 700; 
+            letter-spacing: 2px; 
+            color: rgba(255, 255, 255, 0.6); 
+            text-transform: uppercase; 
+            position: relative; 
+            transition: 0.3s; 
+        }
+
+        .nav-link:hover, .active-link { 
+            color: var(--accent); 
+        }
+
+        .nav-link::after { 
+            content: ''; 
+            position: absolute; 
+            width: 0; 
+            height: 2px; 
+            bottom: -6px; 
+            left: 0; 
+            background: var(--accent); 
+            transition: width 0.3s; 
+        }
+
+        .nav-link:hover::after, .active-link::after { 
+            width: 100%; 
+        }
 
         /* MENU MÓVIL ESTILO RUTAS */
-        #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 30px; }
-        #mobile-menu.active { display: flex; }
-        #mobile-menu a { font-size: 1.25rem; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; color: white; transition: 0.3s; }
+        #mobile-menu { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(5,5,5,0.98); 
+            z-index: 2000; 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 35px; 
+        }
 
-        /* COMPONENTES ORIGINALES */
-        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        #mobile-menu.active { 
+            display: flex; 
+        }
+
+        /* ESTILOS DE COMPONENTES GLASS */
+        .glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(15px); 
+            border-radius: 20px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
+        }
         
-        input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s; }
-        input[type="text"]:focus { box-shadow: 0 0 15px rgba(255,193,7,0.3); background: rgba(0,0,0,0.8); }
+        input[type="text"] { 
+            width: 100%; 
+            max-width: 400px; 
+            padding: 18px; 
+            background: rgba(0, 0, 0, 0.5); 
+            border: 1px solid var(--accent); 
+            color: #fff; 
+            border-radius: 12px; 
+            font-size: 1.2rem; 
+            text-align: center; 
+            outline: none; 
+            transition: 0.3s; 
+        }
+
+        input[type="text"]:focus { 
+            box-shadow: 0 0 15px rgba(255,193,7,0.3); 
+            background: rgba(0,0,0,0.8); 
+        }
         
-        .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; border: none; width: 100%; max-width: 400px; }
-        .btn-search:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,193,7,0.3); }
-        .btn-search:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-search { 
+            background: var(--accent); 
+            color: #000; 
+            padding: 15px 40px; 
+            border-radius: 10px; 
+            font-weight: 900; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            transition: 0.3s; 
+            cursor: pointer; 
+            border: none; 
+            width: 100%; 
+            max-width: 400px; 
+        }
 
-        .btn-tutorial { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 15px; }
-        .btn-tutorial:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+        .btn-search:hover:not(:disabled) { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 20px rgba(255,193,7,0.3); 
+        }
 
-        .btn-acceso { display: inline-flex; align-items: center; background: #111; border: 1px solid #333; color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; position: relative; z-index: 20; }
-        .btn-acceso:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-search:disabled { 
+            opacity: 0.7; 
+            cursor: not-allowed; 
+        }
+
+        .btn-tutorial { 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 100%; 
+            max-width: 400px; 
+            background: rgba(255,255,255,0.05); 
+            color: #fff; 
+            border: 1px solid rgba(255,255,255,0.2); 
+            padding: 15px 40px; 
+            border-radius: 10px; 
+            font-weight: 800; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            transition: 0.3s; 
+            margin-top: 15px; 
+        }
+
+        .btn-tutorial:hover { 
+            background: rgba(255,255,255,0.1); 
+            border-color: #fff; 
+        }
+
+        .btn-acceso { 
+            display: inline-flex; 
+            align-items: center; 
+            background: #111; 
+            border: 1px solid #333; 
+            color: #fff; 
+            padding: 12px 25px; 
+            border-radius: 30px; 
+            font-size: 10px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            transition: 0.3s; 
+            position: relative; 
+            z-index: 20; 
+        }
+
+        .btn-acceso:hover { 
+            border-color: var(--accent); 
+            color: var(--accent); 
+        }
 
         /* CARDS DE TURNOS */
-        .card-panorama { position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
-        .card-panorama:hover:not(.locked) { transform: scale(1.02); border-color: var(--accent); }
-        .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
-        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
-        .card-n-img { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); }
+        .card-panorama { 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: 30px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            height: 220px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            background-size: cover; 
+            background-position: center; 
+            transition: 0.4s; 
+            cursor: pointer; 
+        }
+
+        .card-panorama:hover:not(.locked) { 
+            transform: scale(1.02); 
+            border-color: var(--accent); 
+        }
+
+        .card-m-img { 
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                              url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); 
+        }
+
+        .card-t-img { 
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                              url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); 
+        }
+
+        .card-n-img { 
+            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                              url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); 
+        }
         
-        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        .card-panorama.locked { 
+            filter: grayscale(1); 
+            opacity: 0.4; 
+            cursor: not-allowed; 
+            pointer-events: none; 
+        }
         
-        .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
-        .badge-cerrado { background: #ef4444; color: white; }
-        .badge-abierto { background: #10b981; color: white; }
-        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .badge-img { 
+            padding: 4px 15px; 
+            border-radius: 20px; 
+            font-size: 10px; 
+            font-weight: 900; 
+            margin-bottom: 10px; 
+            text-transform: uppercase; 
+        }
+
+        .badge-cerrado { 
+            background: #ef4444; 
+            color: white; 
+        }
+
+        .badge-abierto { 
+            background: #10b981; 
+            color: white; 
+        }
+
+        .shift-title { 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 900; 
+            font-style: italic; 
+            font-size: 45px; 
+            text-transform: uppercase; 
+            line-height: 1; 
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+        }
 
         /* TICKET ORIGINAL VIP */
-        .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
-        .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 25px 10px; color: #111; }
-        .vip-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: 1px; }
-        .ticket-body { padding: 25px; }
-        .ticket-main-box { border: 1px dashed #d4a017; border-radius: 10px; padding: 20px; background: #fafafa; }
-        .valid-date { font-size: 24px; font-weight: 900; color: #d4a017; font-family: 'Montserrat', sans-serif;}
-        .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 80px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 10px 0; }
-        .qr-wrapper { border: 2px solid #d4a017; display: inline-block; padding: 10px; background: #fff; margin: 15px 0; border-radius: 10px; }
-        .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; background: #fff;}
-        .data-table td { padding: 10px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; color: #444; }
+        .vip-ticket-card { 
+            background: #ffffff; 
+            color: #333; 
+            border-radius: 15px; 
+            width: 100%; 
+            max-width: 420px; 
+            margin: 0 auto; 
+            overflow: hidden; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
+            text-align: center; 
+        }
 
-        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
+        .vip-header { 
+            background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); 
+            padding: 25px 10px; 
+            color: #111; 
+        }
+
+        .vip-header h2 { 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 900; 
+            font-size: 24px; 
+            letter-spacing: 1px; 
+        }
+
+        .ticket-body { 
+            padding: 25px; 
+        }
+
+        .ticket-main-box { 
+            border: 1px dashed #d4a017; 
+            border-radius: 10px; 
+            padding: 20px; 
+            background: #fafafa; 
+        }
+
+        .valid-date { 
+            font-size: 24px; 
+            font-weight: 900; 
+            color: #d4a017; 
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .asiento-num-big { 
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 80px; 
+            font-weight: 900; 
+            color: #e53e3e; 
+            line-height: 1; 
+            margin: 10px 0; 
+        }
+
+        .qr-wrapper { 
+            border: 2px solid #d4a017; 
+            display: inline-block; 
+            padding: 10px; 
+            background: #fff; 
+            margin: 15px 0; 
+            border-radius: 10px; 
+        }
+
+        .data-table { 
+            width: 100%; 
+            margin-top: 25px; 
+            border: 1px solid #eee; 
+            border-radius: 8px; 
+            font-size: 10px; 
+            text-align: left; 
+            background: #fff;
+        }
+
+        .data-table td { 
+            padding: 10px 12px; 
+            border-bottom: 1px solid #eee; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            color: #444; 
+        }
+
+        .status-badge { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: rgba(16, 185, 129, 0.15); 
+            border: 1px solid #10b981; 
+            color: #10b981; 
+            padding: 6px 15px; 
+            border-radius: 50px; 
+            font-size: 10px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            margin-top: 10px; 
+        }
         
         /* 3D CONTAINERS */
-        #globe-container { width: 100%; height: 350px; pointer-events: none; position: relative; z-index: 0; opacity: 0.8; margin-top: -30px; margin-bottom: 20px; }
+        #globe-container { 
+            width: 100%; 
+            height: 350px; 
+            pointer-events: none; 
+            position: relative; 
+            z-index: 0; 
+            opacity: 0.8; 
+            margin-top: -30px; 
+            margin-bottom: 20px; 
+        }
         
         /* PANTALLA DE CARGA 3D GALAXIA */
-        #loading-screen { position: fixed; inset: 0; background: #050505; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        #loader-3d-canvas { width: 100%; height: 60vh; max-height: 500px; }
-        .loader-text { color: var(--accent); font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; font-size: 14px; margin-top: 20px; animation: pulse 1.5s infinite; text-align: center; z-index: 10; }
-        .loader-subtext { color: #888; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; z-index: 10;}
-        @keyframes pulse { 0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(255,193,7,0.5); } 50% { opacity: 0.5; text-shadow: none; } }
+        #loading-screen { 
+            position: fixed; 
+            inset: 0; 
+            background: #050505; 
+            z-index: 9999; 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        #loader-3d-canvas { 
+            width: 100%; 
+            height: 60vh; 
+            max-height: 500px; 
+        }
+
+        .loader-text { 
+            color: var(--accent); 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: 4px; 
+            font-size: 14px; 
+            margin-top: 20px; 
+            animation: pulse 1.5s infinite; 
+            text-align: center; 
+            z-index: 10; 
+        }
+
+        .loader-subtext { 
+            color: #888; 
+            font-size: 10px; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            margin-top: 8px; 
+            z-index: 10;
+        }
+
+        @keyframes pulse { 
+            0%, 100% { opacity: 1; } 
+            50% { opacity: 0.5; } 
+        }
         
-        /* Ocultar secciones dinámicamente */
-        .hidden-section { display: none !important; }
+        .hidden-section { 
+            display: none !important; 
+        }
     </style>
 </head>
 <body>
 
-    <!-- ETIQUETA DE AUDIO ORIGINAL -->
+    <!-- AUDIO ORIGINAL -->
     <audio id="musica-verificacion" src="Muhteşem Yüzyıl The Magnificent Century Official Soundtrack Vol. 1 01 Muhteşem Yüzyıl Jenerik HQ.mp3" preload="auto"></audio>
 
     <!-- LOADER 3D GALAXIA COMPLETO -->
@@ -147,7 +509,6 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <!-- BOTÓN MENU SINCRONIZADO -->
             <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
                 MENU <i class="fa-solid fa-bars-staggered"></i>
             </button>
@@ -282,25 +643,35 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE APIS ORIGINALES COMPLETAS
+        // ==========================================
+        // CONFIGURACIÓN DE APIS ORIGINALES
+        // ==========================================
         const L1_BD = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
         const L2_COLA = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
         const L3_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
         
-        // REGLAS DE TIEMPO (Cámbialas aquí cuando quieras)
+        // REGLAS DE TIEMPO FLEXIBLES
         const REGLAS = { 
-            manana: { abre: 21, cierra: 7 }, 
-            tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 00 },
+            manana: { 
+                abre: 21, 
+                cierra: 7 
+            }, 
+            tarde: { 
+                hAbre: 17, 
+                mAbre: 10, 
+                hCierra: 18, 
+                mCierra: 00 
+            },
             noche: { 
-                hAbre: 0,   // Hora de apertura (0 = Medianoche)
-                mAbre: 41,  // Minuto de apertura (Cámbialo a 01, 15, 20... lo que quieras)
-                hCierra: 0, // Hora de cierre
-                mCierra: 43  // Minuto de cierre (Cámbialo según necesites)
+                hAbre: 0,   // Medianoche
+                mAbre: 49,  
+                hCierra: 0, 
+                mCierra: 50 
             }
-        }
+        };
 
         /** 
-         * MÓDULO ANTI-TRAMPAS DE TIEMPO EXTENDIDO
+         * MÓDULO ANTI-TRAMPAS DE TIEMPO
          */
         const TimeGuard = {
             offset: 0,
@@ -318,56 +689,73 @@
                 setInterval(TimeGuard.updateUI, 1000);
                 TimeGuard.updateUI();
             },
+
             getNow: function() {
                 return new Date(new Date().getTime() + TimeGuard.offset);
             },
+
             updateUI: function() {
                 const now = TimeGuard.getNow();
                 document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
                 
                 const h = now.getHours();
                 const m = now.getMinutes();
-                const totalM = h * 60 + m; // Minutos transcurridos en el día
+                const totalM = h * 60 + m;
 
-                // LÓGICA MAÑANA (Se mantiene por horas)
+                // Lógica MAÑANA
                 const cardM = document.getElementById('card-mañana');
                 const badgeM = document.getElementById('badge-m');
                 if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) { 
-                    cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
+                    cardM.classList.remove('locked'); 
+                    badgeM.innerText = "Abierto"; 
+                    badgeM.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
-                    cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado"; 
+                    cardM.classList.add('locked'); 
+                    badgeM.innerText = "Cerrado"; 
+                    badgeM.className = "badge-img badge-cerrado"; 
                 }
 
-                // LÓGICA TARDE (Dinámica: Horas + Minutos)
+                // Lógica TARDE (Fórmula Dinámica)
                 const cardT = document.getElementById('card-tarde');
                 const badgeT = document.getElementById('badge-t');
                 let inicioTarde = (REGLAS.tarde.hAbre * 60) + REGLAS.tarde.mAbre;
                 let finTarde = (REGLAS.tarde.hCierra * 60) + REGLAS.tarde.mCierra;
 
                 if (totalM >= inicioTarde && totalM < finTarde) { 
-                    cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
+                    cardT.classList.remove('locked'); 
+                    badgeT.innerText = "Abierto"; 
+                    badgeT.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
-                    cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado"; 
+                    cardT.classList.add('locked'); 
+                    badgeT.innerText = "Cerrado"; 
+                    badgeT.className = "badge-img badge-cerrado"; 
                 }
 
-                // LÓGICA NOCHE (Dinámica: Horas + Minutos - ESTA ES LA QUE PROBABAS)
+                // Lógica NOCHE (Fórmula Dinámica Corregida para 00:xx)
                 const cardN = document.getElementById('card-noche');
                 const badgeN = document.getElementById('badge-n');
                 let inicioNoche = (REGLAS.noche.hAbre * 60) + REGLAS.noche.mAbre;
                 let finNoche = (REGLAS.noche.hCierra * 60) + REGLAS.noche.mCierra;
 
                 if (totalM >= inicioNoche && totalM < finNoche) { 
-                    cardN.classList.remove('locked'); badgeN.innerText = "Abierto"; badgeN.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
+                    cardN.classList.remove('locked'); 
+                    badgeN.innerText = "Abierto"; 
+                    badgeN.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
-                    cardN.classList.add('locked'); badgeN.innerText = "Cerrado"; badgeN.className = "badge-img badge-cerrado"; 
+                    cardN.classList.add('locked'); 
+                    badgeN.innerText = "Cerrado"; 
+                    badgeN.className = "badge-img badge-cerrado"; 
                 }
             }
+        };
 
         /** 
-         * CONTROLADOR PRINCIPAL CORE - LÓGICA EXTENDIDA
+         * CONTROLADOR PRINCIPAL CORE - LÓGICA SIN REDUCIR
          */
         const Core = {
-            alumno: null, pollContador: null, syncInterval: null,
+            alumno: null, 
+            pollContador: null, 
+            syncInterval: null,
 
             hideSections: function() {
                 document.getElementById('step-verify').classList.add('hidden-section');
@@ -378,17 +766,28 @@
 
             verifyStudent: async function() {
                 const audio = document.getElementById('musica-verificacion');
-                if (audio) { audio.play().catch(e => console.log("Audio bloqueado")); }
+                if (audio) { 
+                    audio.play().catch(function(e) { console.log("Audio bloqueado"); }); 
+                }
 
                 const dni = document.getElementById('dniInput').value.trim();
                 const btn = document.getElementById('verifyBtn');
 
                 if(dni.length < 8) {
-                    return Swal.fire({ icon: 'warning', title: 'DNI Inválido', text: 'Debe ingresar 8 dígitos', background: '#111', color: '#fff', confirmButtonColor: '#ffc107' });
+                    return Swal.fire({ 
+                        icon: 'warning', 
+                        title: 'DNI Inválido', 
+                        text: 'Debe ingresar 8 dígitos', 
+                        background: '#111', 
+                        color: '#fff', 
+                        confirmButtonColor: '#ffc107' 
+                    });
                 }
 
                 try {
-                    btn.innerText = "CARGANDO..."; btn.disabled = true;
+                    btn.innerText = "CARGANDO..."; 
+                    btn.disabled = true;
+                    
                     const res = await fetch(L1_BD + "?dni=" + dni);
                     const data = await res.json();
 
@@ -405,18 +804,21 @@
                         Core.actualizarContador();
                         Core.pollContador = setInterval(Core.actualizarContador, 5000);
                     } else { 
-                        // MENSJE ORIGINAL CON LINK A REGISTRO
                         Swal.fire({
-                            icon: 'error', title: 'No Verificado',
+                            icon: 'error', 
+                            title: 'No Verificado',
                             text: 'Su DNI no está registrado en el padrón oficial.',
                             footer: '<a href="registro.html" style="color:#ef4444; font-weight:bold;">Ir a Registro</a>',
-                            background: '#111', color: '#fff', confirmButtonColor: '#ffc107'
+                            background: '#111', 
+                            color: '#fff', 
+                            confirmButtonColor: '#ffc107'
                         });
                     }
                 } catch(e) {
                     Swal.fire({ icon: 'error', title: 'Error', text: 'Fallo de conexión.', background: '#111', color: '#fff' });
                 } finally {
-                    btn.innerText = "Verificar Alumno"; btn.disabled = false;
+                    btn.innerText = "Verificar Alumno"; 
+                    btn.disabled = false;
                 }
             },
 
@@ -441,13 +843,19 @@
                     }
                 } else if (turno === 'TARDE' || turno === 'NOCHE') {
                     let r = (turno === 'TARDE') ? REGLAS.tarde : REGLAS.noche;
-                    if (totalM >= (r.hAbre * 60 + r.mAbre) && totalM < (r.hCierra * 60)) {
+                    let inicio = (r.hAbre * 60) + r.mAbre;
+                    let fin = (r.hCierra * 60) + r.mCierra;
+
+                    if (totalM >= inicio && totalM < fin) {
                         Core.generarTicket(turno);
                     } else {
                         Swal.fire({ 
-                            icon: 'warning', title: 'Acceso Denegado', 
+                            icon: 'warning', 
+                            title: 'Acceso Denegado', 
                             text: 'El sistema abre exactamente a la hora programada.',
-                            background: '#111', color: '#fff', confirmButtonColor: '#ffc107'
+                            background: '#111', 
+                            color: '#fff', 
+                            confirmButtonColor: '#ffc107'
                         });
                     }
                 }
@@ -457,7 +865,6 @@
                 clearInterval(Core.pollContador);
                 Core.hideSections();
                 
-                // MANTENEMOS LA GALAXIA EPIC DE 10 SEGUNDOS
                 document.getElementById('loading-screen').style.display = 'flex';
                 Galaxy3D.init(); 
                 
@@ -465,7 +872,7 @@
                     document.getElementById('loading-screen').style.display = 'none';
                     Galaxy3D.stop();
                     Core.procesarTicket(turno);
-                }, 10000);
+                }, 10000); // 10 Segundos Épicos
             },
 
             procesarTicket: async function(turno) {
@@ -480,13 +887,13 @@
                 document.getElementById('t-dni').innerText = Core.alumno.dni;
 
                 const areaAsiento = document.getElementById('asiento-area');
-                areaAsiento.innerHTML = ""; // Limpieza inicial
+                areaAsiento.innerHTML = ""; 
 
-                // REGLA: Mañana y Noche son idénticos (sin asiento)
+                // TICKET MAÑANA Y NOCHE: SIN ASIENTO
                 if (turno === 'MAÑANA' || turno === 'NOCHE') {
                     areaAsiento.classList.add('hidden');
                 } else {
-                    // REGLA: Tarde tiene sistema de colas y asientos
+                    // TICKET TARDE: CON LÓGICA DE ASIENTO
                     try {
                         const res = await fetch(L2_COLA + "?dni=" + Core.alumno.dni + "&accion=solicitar_cola");
                         const data = await res.json();
@@ -494,7 +901,6 @@
                         
                         areaAsiento.classList.remove('hidden');
 
-                        // LÓGICA DE VIAJE DE PIE SI EXCEDE 40
                         if (nAsiento <= 40) {
                             areaAsiento.innerHTML = `
                                 <p class="text-[12px] font-bold text-gray-600 mt-4 uppercase tracking-widest border-t border-dashed border-yellow-500 pt-4">Tu número de asiento es:</p>
@@ -523,7 +929,10 @@
                 document.getElementById('step-ticket').classList.remove('hidden-section');
                 document.getElementById('qrcode-vip').innerHTML = "";
                 new QRCode(document.getElementById("qrcode-vip"), { 
-                    text: qrData, width: 150, height: 150, correctLevel : QRCode.CorrectLevel.H 
+                    text: qrData, 
+                    width: 150, 
+                    height: 150, 
+                    correctLevel : QRCode.CorrectLevel.H 
                 });
                 Core.esperarSincronizacion();
             },
@@ -547,7 +956,12 @@
          * LOADER 3D GALAXIA EXTENDIDO (4000 PARTÍCULAS)
          */
         const Galaxy3D = {
-            scene: null, camera: null, renderer: null, particles: null, reqId: null,
+            scene: null, 
+            camera: null, 
+            renderer: null, 
+            particles: null, 
+            reqId: null,
+
             init: function() {
                 const container = document.getElementById('loader-3d-canvas');
                 container.innerHTML = "";
@@ -592,7 +1006,10 @@
                 geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
                 const material = new THREE.PointsMaterial({
-                    size: 0.03, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false
+                    size: 0.03, 
+                    vertexColors: true, 
+                    blending: THREE.AdditiveBlending, 
+                    depthWrite: false
                 });
 
                 Galaxy3D.particles = new THREE.Points(geometry, material);
@@ -600,13 +1017,17 @@
 
                 Galaxy3D.animate();
             },
+
             animate: function() {
                 Galaxy3D.reqId = requestAnimationFrame(Galaxy3D.animate);
                 Galaxy3D.particles.rotation.y += 0.005; 
                 Galaxy3D.renderer.render(Galaxy3D.scene, Galaxy3D.camera);
             },
+
             stop: function() {
-                if(Galaxy3D.reqId) cancelAnimationFrame(Galaxy3D.reqId);
+                if(Galaxy3D.reqId) { 
+                    cancelAnimationFrame(Galaxy3D.reqId); 
+                }
             }
         };
 
@@ -617,9 +1038,11 @@
         function initGlobeThree() {
             const container = document.getElementById('globe-container');
             if(!container) return;
+
             sceneGlobe = new THREE.Scene(); 
             cameraGlobe = new THREE.PerspectiveCamera(45, window.innerWidth / 350, 0.1, 1000);
-            cameraGlobe.position.z = 100; 
+            cameraGlobe.position.set(0, 0, 100); 
+
             rendererGlobe = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             rendererGlobe.setSize(window.innerWidth, 350); 
             container.appendChild(rendererGlobe.domElement);
@@ -632,7 +1055,9 @@
             
             function animateGlobe() { 
                 requestAnimationFrame(animateGlobe); 
-                if(globeMesh) globeMesh.rotation.y += 0.002; 
+                if(globeMesh) { 
+                    globeMesh.rotation.y += 0.002; 
+                }
                 rendererGlobe.render(sceneGlobe, cameraGlobe); 
             }
             animateGlobe();
@@ -645,8 +1070,12 @@
             });
         }
 
-        function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
+        // FUNCIÓN MENÚ MÓVIL
+        function toggleMenu() { 
+            document.getElementById('mobile-menu').classList.toggle('active'); 
+        }
 
+        // CARGA INICIAL
         window.onload = function() {
             TimeGuard.init();
             initGlobeThree();
