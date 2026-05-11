@@ -287,11 +287,16 @@
         const L2_COLA = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
         const L3_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
         
-        // REGLAS DE TIEMPO
+        // REGLAS DE TIEMPO (Cámbialas aquí cuando quieras)
         const REGLAS = { 
             manana: { abre: 21, cierra: 7 }, 
-            tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 25 },
-            noche: { hAbre: 0, mAbre: 31, hCierra: 0, mCierra: 40 }
+            tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 00 },
+            noche: { 
+                hAbre: 0,   // Hora de apertura (0 = Medianoche)
+                mAbre: 41,  // Minuto de apertura (Cámbialo a 01, 15, 20... lo que quieras)
+                hCierra: 0, // Hora de cierre
+                mCierra: 43  // Minuto de cierre (Cámbialo según necesites)
+            }
         };
 
         /** 
@@ -322,8 +327,9 @@
                 
                 const h = now.getHours();
                 const m = now.getMinutes();
-                const totalM = h * 60 + m;
+                const totalM = h * 60 + m; // Minutos transcurridos en el día
 
+                // LÓGICA MAÑANA (Se mantiene por horas)
                 const cardM = document.getElementById('card-mañana');
                 const badgeM = document.getElementById('badge-m');
                 if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) { 
@@ -332,23 +338,30 @@
                     cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado"; 
                 }
 
+                // LÓGICA TARDE (Dinámica: Horas + Minutos)
                 const cardT = document.getElementById('card-tarde');
                 const badgeT = document.getElementById('badge-t');
-                if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) { 
+                let inicioTarde = (REGLAS.tarde.hAbre * 60) + REGLAS.tarde.mAbre;
+                let finTarde = (REGLAS.tarde.hCierra * 60) + REGLAS.tarde.mCierra;
+
+                if (totalM >= inicioTarde && totalM < finTarde) { 
                     cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
                     cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado"; 
                 }
 
+                // LÓGICA NOCHE (Dinámica: Horas + Minutos - ESTA ES LA QUE PROBABAS)
                 const cardN = document.getElementById('card-noche');
                 const badgeN = document.getElementById('badge-n');
-                if (totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60)) { 
+                let inicioNoche = (REGLAS.noche.hAbre * 60) + REGLAS.noche.mAbre;
+                let finNoche = (REGLAS.noche.hCierra * 60) + REGLAS.noche.mCierra;
+
+                if (totalM >= inicioNoche && totalM < finNoche) { 
                     cardN.classList.remove('locked'); badgeN.innerText = "Abierto"; badgeN.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
                     cardN.classList.add('locked'); badgeN.innerText = "Cerrado"; badgeN.className = "badge-img badge-cerrado"; 
                 }
             }
-        };
 
         /** 
          * CONTROLADOR PRINCIPAL CORE - LÓGICA EXTENDIDA
