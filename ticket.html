@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Alertas Profesionales -->
     
     <!-- Fuentes e Íconos -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -31,15 +31,18 @@
             display: flex; flex-direction: column;
         }
 
+        /* NAVEGACIÓN ORIGINAL ACTUALIZADA */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
         .nav-link:hover::after, .active-link::after { width: 100%; }
 
-        #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; }
+        /* MENU MOVIL ESTILO RUTAS */
+        #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 30px; }
         #mobile-menu.active { display: flex; }
 
+        /* COMPONENTES ORIGINALES MEJORADOS */
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         
         input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s; }
@@ -55,11 +58,12 @@
         .btn-acceso { display: inline-flex; align-items: center; background: #111; border: 1px solid #333; color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; position: relative; z-index: 20; }
         .btn-acceso:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* CARDS DE TURNOS */
+        /* CARDS DE TURNOS ORIGINALES */
         .card-panorama { position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
         .card-panorama:hover:not(.locked) { transform: scale(1.02); border-color: var(--accent); }
         .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
         .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
+        /* NUEVO TURNO NOCHE */
         .card-n-img { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); }
         
         .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
@@ -69,7 +73,7 @@
         .badge-abierto { background: #10b981; color: white; }
         .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
 
-        /* TICKET VIP */
+        /* TICKET ORIGINAL VIP */
         .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
         .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 25px 10px; color: #111; }
         .vip-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: 1px; }
@@ -83,21 +87,26 @@
 
         .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
         
+        /* 3D CONTAINERS */
         #globe-container { width: 100%; height: 350px; pointer-events: none; position: relative; z-index: 0; opacity: 0.8; margin-top: -30px; margin-bottom: 20px; }
         
+        /* PANTALLA DE CARGA 3D GALAXIA */
         #loading-screen { position: fixed; inset: 0; background: #050505; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
         #loader-3d-canvas { width: 100%; height: 60vh; max-height: 500px; }
         .loader-text { color: var(--accent); font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; font-size: 14px; margin-top: 20px; animation: pulse 1.5s infinite; text-align: center; z-index: 10; }
         .loader-subtext { color: #888; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; z-index: 10;}
         @keyframes pulse { 0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(255,193,7,0.5); } 50% { opacity: 0.5; text-shadow: none; } }
         
+        /* Ocultar secciones dinámicamente */
         .hidden-section { display: none !important; }
     </style>
 </head>
 <body>
 
+    <!-- ETIQUETA DE AUDIO AGREGADA -->
     <audio id="musica-verificacion" src="Muhteşem Yüzyıl The Magnificent Century Official Soundtrack Vol. 1 01 Muhteşem Yüzyıl Jenerik HQ.mp3" preload="auto"></audio>
 
+    <!-- LOADER 3D GALAXIA -->
     <div id="loading-screen">
         <div id="loader-3d-canvas"></div>
         <div style="position: absolute; bottom: 20%; display: flex; flex-direction: column; align-items: center;">
@@ -106,14 +115,15 @@
         </div>
     </div>
 
+    <!-- Menú Móvil (SINCRONIZADO CON RUTAS) -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500 underline">Ticket</a>
-        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
-        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
-        <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
+        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
@@ -133,7 +143,10 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl"><i class="fa-solid fa-bars"></i></button>
+            <!-- BOTON MENU SINCRONIZADO CON RUTAS -->
+            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
+                MENU <i class="fa-solid fa-bars-staggered"></i>
+            </button>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center flex-grow z-20 w-full relative">
@@ -156,6 +169,7 @@
                 
                 <div class="mt-6 flex flex-col items-center gap-3">
                     <button class="btn-search" id="verifyBtn" onclick="Core.verifyStudent()">Verificar Alumno</button>
+                    <!-- BOTÓN TUTORIAL -->
                     <a href="tutorial.html" class="btn-tutorial" id="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
                 </div>
             </div>
@@ -181,15 +195,17 @@
                         <span id="badge-m" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Mañana</div>
                         <div class="salida-text text-yellow-500 font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 05:15 AM</div>
+                        <p class="text-[9px] text-white/60 mt-2 uppercase font-bold tracking-widest">Apertura: 09:00 PM</p>
                     </div>
                     <div id="card-tarde" class="card-panorama card-t-img" onclick="Core.validateAndGenerate('TARDE')">
                         <span id="badge-t" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Tarde</div>
                         <div class="salida-text text-white font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 06:00 PM</div>
+                        <p class="text-[9px] text-white/60 mt-2 uppercase font-bold tracking-widest">Apertura: 05:10 PM</p>
                     </div>
                 </div>
 
-                <!-- NUEVA TARDE DE NOCHE -->
+                <!-- NUEVO TURNO NOCHE IMPLEMENTADO -->
                 <div class="w-full mb-12">
                     <div id="card-noche" class="card-panorama card-n-img max-w-2xl mx-auto" onclick="Core.validateAndGenerate('NOCHE')">
                         <span id="badge-n" class="badge-img">Cerrado</span>
@@ -218,10 +234,13 @@
                         <div class="ticket-main-box">
                             <p class="text-[10px] text-gray-500 font-bold uppercase mb-1 tracking-widest">VÁLIDO ÚNICAMENTE PARA EL DÍA:</p>
                             <p class="valid-date" id="t-fecha"></p>
+                            
+                            <!-- ÁREA DINÁMICA DE ASIENTO MODIFICADA -->
                             <div id="asiento-area">
                                 <p class="text-[12px] font-bold text-gray-600 mt-4 uppercase tracking-widest border-t border-dashed border-yellow-500 pt-4">Tu número de asiento es:</p>
                                 <div class="asiento-num-big drop-shadow-md" id="t-asiento"></div>
                             </div>
+
                             <div class="qr-wrapper shadow-lg"><div id="qrcode-vip"></div></div>
                         </div>
                         <table class="data-table">
@@ -245,8 +264,10 @@
             
         </main>
         
+        <!-- GLOBO 3D ORIGINAL -->
         <div id="globe-container" class="animate-float"></div>
 
+        <!-- BOTONES EXTRAS INFERIORES -->
         <div id="extra-links-container" class="mb-10 text-center relative z-20">
             <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </div>
@@ -258,17 +279,19 @@
     </div>
 
     <script>
+        // CONFIGURACIÓN DE APIS ORIGINALES
         const L1_BD = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
         const L2_COLA = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
         const L3_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
-        
-        // ACTUALIZACIÓN DE REGLAS PARA INCLUIR NOCHE
         const REGLAS = { 
             manana: { abre: 21, cierra: 7 }, 
             tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 25 },
-            noche: { hAbre: 02, mAbre: 0, hCierra: 02, mCierra: 01 } // Ejemplo de horario noche
+            noche: { hAbre: 21, mAbre: 0, hCierra: 22, mCierra: 30 }
         };
 
+        /** =====================================================================
+         *  MÓDULO ANTI-TRAMPAS DE TIEMPO
+         *  ===================================================================== */
         const TimeGuard = {
             offset: 0,
             init: async () => {
@@ -277,7 +300,7 @@
                     const data = await res.json();
                     const realTime = new Date(data.datetime).getTime();
                     const localTime = new Date().getTime();
-                    TimeGuard.offset = realTime - localTime;
+                    TimeGuard.offset = realTime - localTime; 
                     document.getElementById('time-status').classList.remove('hidden');
                 } catch (e) {
                     console.warn("Usando hora local.");
@@ -294,7 +317,6 @@
                 
                 const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
 
-                // Lógica Mañana
                 const cardM = document.getElementById('card-mañana'), badgeM = document.getElementById('badge-m');
                 if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) { 
                     cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
@@ -302,7 +324,6 @@
                     cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado"; 
                 }
 
-                // Lógica Tarde
                 const cardT = document.getElementById('card-tarde'), badgeT = document.getElementById('badge-t');
                 if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) { 
                     cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
@@ -310,7 +331,6 @@
                     cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado"; 
                 }
 
-                // Lógica Noche
                 const cardN = document.getElementById('card-noche'), badgeN = document.getElementById('badge-n');
                 if (totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60)) { 
                     cardN.classList.remove('locked'); badgeN.innerText = "Abierto"; badgeN.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
@@ -320,6 +340,9 @@
             }
         };
 
+        /** =====================================================================
+         *  CONTROLADOR PRINCIPAL LOGICA Y UX
+         *  ===================================================================== */
         const Core = {
             alumno: null, pollContador: null, syncInterval: null,
 
@@ -331,12 +354,14 @@
 
             verifyStudent: async () => {
                 const audio = document.getElementById('musica-verificacion');
-                if (audio) { audio.play().catch(e => {}); }
+                if (audio) {
+                    audio.play().catch(e => console.log("Audio bloqueado:", e));
+                }
 
                 const dni = document.getElementById('dniInput').value.trim();
                 const btn = document.getElementById('verifyBtn');
 
-                if(dni.length < 8) return Swal.fire({ icon: 'warning', title: 'DNI Inválido', text: '8 dígitos', background: '#111', color: '#fff' });
+                if(dni.length < 8) return Swal.fire({ icon: 'warning', title: 'DNI Inválido', text: 'Debe ingresar 8 dígitos', background: '#111', color: '#fff', confirmButtonColor: '#ffc107' });
 
                 try {
                     btn.innerText = "CARGANDO..."; btn.disabled = true;
@@ -356,10 +381,14 @@
                         Core.actualizarContador();
                         Core.pollContador = setInterval(Core.actualizarContador, 5000);
                     } else { 
-                        Swal.fire({ icon: 'error', title: 'No Verificado', background: '#111', color: '#fff' });
+                        Swal.fire({
+                            icon: 'error', title: 'No Verificado',
+                            text: 'Su DNI no está registrado en el padrón oficial.',
+                            background: '#111', color: '#fff', confirmButtonColor: '#ffc107'
+                        });
                     }
                 } catch(e) {
-                    Swal.fire({ icon: 'error', title: 'Error', text: 'Conexión fallida', background: '#111', color: '#fff' });
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Fallo de conexión.', background: '#111', color: '#fff' });
                 } finally {
                     btn.innerText = "Verificar Alumno"; btn.disabled = false;
                 }
@@ -380,13 +409,18 @@
                 if (turno === 'MAÑANA') {
                     if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) Core.generarTicket(turno);
                     else Swal.fire({ icon: 'error', title: 'Fuera de Horario', background: '#111', color: '#fff' });
-                } else if (turno === 'TARDE') {
-                    if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) Core.generarTicket(turno);
-                    else Swal.fire({ icon: 'warning', title: 'Cerrado', background: '#111', color: '#fff' });
-                } else if (turno === 'NOCHE') {
-                    // SE ACTIVA IGUAL QUE EL DE LA TARDE PERO CON SUS REGLAS
-                    if (totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60)) Core.generarTicket(turno);
-                    else Swal.fire({ icon: 'warning', title: 'Muy Pronto', text: 'El horario de noche aún no inicia.', background: '#111', color: '#fff' });
+                } else if (turno === 'TARDE' || turno === 'NOCHE') {
+                    // Turno Noche igual que Tarde pero con sus horas
+                    let regla = (turno === 'TARDE') ? REGLAS.tarde : REGLAS.noche;
+                    if (totalM >= (regla.hAbre * 60 + regla.mAbre) && totalM < (regla.hCierra * 60)) {
+                        Core.generarTicket(turno);
+                    } else {
+                        Swal.fire({ 
+                            icon: 'warning', title: 'Acceso Denegado', 
+                            text: 'El sistema abre exactamente en su horario programado.',
+                            background: '#111', color: '#fff', confirmButtonColor: '#ffc107'
+                        });
+                    }
                 }
             },
 
@@ -394,10 +428,9 @@
                 clearInterval(Core.pollContador);
                 Core.hideSections();
                 
-                // TARDE Y NOCHE ACTIVAN LA ANIMACIÓN GALAXY
                 if (turno === 'TARDE' || turno === 'NOCHE') {
                     document.getElementById('loading-screen').style.display = 'flex';
-                    Galaxy3D.init();
+                    Galaxy3D.init(); 
                     setTimeout(() => {
                         document.getElementById('loading-screen').style.display = 'none';
                         Galaxy3D.stop();
@@ -419,21 +452,33 @@
                 document.getElementById('t-cod').innerText = Core.alumno.Codigo;
                 document.getElementById('t-dni').innerText = Core.alumno.dni;
 
+                const areaAsiento = document.getElementById('asiento-area');
+
                 if (turno === 'MAÑANA') {
-                    document.getElementById('asiento-area').classList.add('hidden');
+                    areaAsiento.classList.add('hidden');
                     Core.finalizarGeneracion(qrData);
                 } else {
-                    // TARDE Y NOCHE SOLICITAN ASIENTO
                     try {
                         const res = await fetch(`${L2_COLA}?dni=${Core.alumno.dni}&accion=solicitar_cola`);
                         const data = await res.json();
                         const nAsiento = parseInt(data.orden);
                         
+                        areaAsiento.classList.remove('hidden');
+
+                        // LÓGICA DE VIAJE DE PIE IMPLEMENTADA
                         if (nAsiento <= 40) {
-                            document.getElementById('asiento-area').classList.remove('hidden');
-                            document.getElementById('t-asiento').innerText = nAsiento < 10 ? `0${nAsiento}` : nAsiento;
+                            areaAsiento.innerHTML = `
+                                <p class="text-[12px] font-bold text-gray-600 mt-4 uppercase tracking-widest border-t border-dashed border-yellow-500 pt-4">Tu número de asiento es:</p>
+                                <div class="asiento-num-big drop-shadow-md">${nAsiento < 10 ? '0'+nAsiento : nAsiento}</div>
+                            `;
                         } else {
-                            document.getElementById('asiento-area').classList.add('hidden');
+                            areaAsiento.innerHTML = `
+                                <div class="flex flex-col items-center border-t border-dashed border-yellow-500 pt-6 mt-4">
+                                    <i class="fa-solid fa-walking text-gray-400 text-6xl mb-3"></i>
+                                    <p class="text-red-600 font-black text-2xl uppercase tracking-tighter leading-none">VIAJE DE PIE</p>
+                                    <p class="text-[10px] text-gray-500 font-bold uppercase mt-1">(CUPO EXCEDE LOS 40)</p>
+                                </div>
+                            `;
                         }
                         Core.finalizarGeneracion(qrData);
                     } catch(e) {
@@ -467,53 +512,76 @@
             }
         };
 
+        /** =====================================================================
+         *  LOADER 3D TIPO GALAXIA (THREE.JS)
+         *  ===================================================================== */
         const Galaxy3D = {
             scene: null, camera: null, renderer: null, particles: null, reqId: null,
             init: () => {
                 const container = document.getElementById('loader-3d-canvas');
                 container.innerHTML = "";
+                
                 Galaxy3D.scene = new THREE.Scene();
                 Galaxy3D.camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 100);
                 Galaxy3D.camera.position.set(0, 3, 5);
                 Galaxy3D.camera.lookAt(0, 0, 0);
+
                 Galaxy3D.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
                 Galaxy3D.renderer.setSize(container.clientWidth, container.clientHeight);
                 container.appendChild(Galaxy3D.renderer.domElement);
+
                 const particleCount = 4000;
                 const geometry = new THREE.BufferGeometry();
                 const positions = new Float32Array(particleCount * 3);
                 const colors = new Float32Array(particleCount * 3);
-                const colorBase = new THREE.Color(0xffc107);
+                const colorBase = new THREE.Color(0xffc107); 
+
                 for(let i=0; i<particleCount; i++) {
                     const i3 = i * 3;
                     const radius = Math.random() * 4;
                     const spinAngle = radius * 1.5;
-                    const branchAngle = ((i % 3) / 3) * Math.PI * 2;
+                    const branchAngle = ((i % 3) / 3) * Math.PI * 2; 
+                    
                     const randomX = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.8;
                     const randomY = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5;
                     const randomZ = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.8;
+
                     positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
                     positions[i3+1] = randomY;
                     positions[i3+2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+
                     const mixedColor = colorBase.clone();
                     mixedColor.lerp(new THREE.Color(0xffffff), 1 - (radius/4));
-                    colors[i3] = mixedColor.r; colors[i3+1] = mixedColor.g; colors[i3+2] = mixedColor.b;
+                    colors[i3] = mixedColor.r;
+                    colors[i3+1] = mixedColor.g;
+                    colors[i3+2] = mixedColor.b;
                 }
+
                 geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
                 geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-                const material = new THREE.PointsMaterial({ size: 0.03, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false });
+
+                const material = new THREE.PointsMaterial({
+                    size: 0.03, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false
+                });
+
                 Galaxy3D.particles = new THREE.Points(geometry, material);
                 Galaxy3D.scene.add(Galaxy3D.particles);
+
                 Galaxy3D.animate();
             },
             animate: () => {
                 Galaxy3D.reqId = requestAnimationFrame(Galaxy3D.animate);
-                Galaxy3D.particles.rotation.y += 0.005;
+                Galaxy3D.particles.rotation.y += 0.005; 
                 Galaxy3D.renderer.render(Galaxy3D.scene, Galaxy3D.camera);
             },
-            stop: () => { if(Galaxy3D.reqId) cancelAnimationFrame(Galaxy3D.reqId); }
+            stop: () => {
+                if(Galaxy3D.reqId) cancelAnimationFrame(Galaxy3D.reqId);
+            }
         };
 
+        /** =====================================================================
+         *  GLOBO 3D ORIGINAL DEL FONDO
+         *  ===================================================================== */
         let sceneGlobe, cameraGlobe, rendererGlobe, globeMesh;
         function initGlobeThree() {
             const container = document.getElementById('globe-container');
@@ -524,21 +592,31 @@
             rendererGlobe = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             rendererGlobe.setSize(window.innerWidth, 350); 
             container.appendChild(rendererGlobe.domElement);
+            
             globeMesh = new THREE.Mesh(
                 new THREE.IcosahedronGeometry(30, 4), 
                 new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.1 })
             );
             sceneGlobe.add(globeMesh); 
+            
             function animateGlobe() { 
                 requestAnimationFrame(animateGlobe); 
                 if(globeMesh) globeMesh.rotation.y += 0.002; 
                 rendererGlobe.render(sceneGlobe, cameraGlobe); 
             }
             animateGlobe();
+
+            window.addEventListener('resize', () => {
+                cameraGlobe.aspect = window.innerWidth / 350;
+                cameraGlobe.updateProjectionMatrix();
+                rendererGlobe.setSize(window.innerWidth, 350);
+            });
         }
 
+        // Utilidad menú móvil original
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
 
+        // Inicialización principal
         window.onload = () => {
             TimeGuard.init();
             initGlobeThree();
