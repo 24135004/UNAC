@@ -413,22 +413,37 @@
             margin-bottom: 20px; 
         }
         
-        /* PANTALLA DE CARGA 3D GALAXIA */
+        /* PANTALLA DE CARGA PROFESIONAL: HIPERESPACIO TOTAL */
         #loading-screen { 
             position: fixed; 
             inset: 0; 
-            background: #050505; 
+            background: #000000; /* Negro puro para resaltar las estrellas */
             z-index: 9999; 
             display: none; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
+            overflow: hidden;
         }
 
+        /* El canvas ahora es pantalla completa total */
         #loader-3d-canvas { 
-            width: 100%; 
-            height: 60vh; 
-            max-height: 500px; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important; 
+            height: 100% !important; 
+            z-index: 1; 
+        }
+
+        /* Capa superior para los textos (para que no los tape el efecto) */
+        .loader-content-overlay {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .loader-text { 
@@ -436,35 +451,33 @@
             font-family: 'Montserrat', sans-serif; 
             font-weight: 900; 
             text-transform: uppercase; 
-            letter-spacing: 4px; 
-            font-size: 14px; 
-            margin-top: 20px; 
-            animation: pulse 1.5s infinite; 
-            text-align: center; 
+            letter-spacing: 10px; /* Estilo futurista muy separado */
+            font-size: 16px; 
+            margin-top: 0; 
+            animation: pulse-pro 1s infinite ease-in-out; 
+            text-shadow: 0 0 15px rgba(255, 193, 7, 0.6);
             z-index: 10; 
         }
 
         .loader-subtext { 
-            color: #888; 
+            color: #ffffff; 
             font-size: 10px; 
-            font-weight: 600; 
+            font-weight: 800; 
             text-transform: uppercase; 
-            letter-spacing: 2px; 
-            margin-top: 8px; 
+            letter-spacing: 4px; 
+            margin-top: 15px; 
             z-index: 10;
+            opacity: 0.7;
         }
 
-        @keyframes pulse { 
-            0%, 100% { opacity: 1; } 
-            50% { opacity: 0.5; } 
+        @keyframes pulse-pro { 
+            0%, 100% { opacity: 1; transform: scale(1); } 
+            50% { opacity: 0.6; transform: scale(0.98); } 
         }
         
         .hidden-section { 
             display: none !important; 
         }
-    </style>
-</head>
-<body>
 
     <!-- AUDIO ORIGINAL -->
     <audio id="musica-verificacion" src="MUSICA ACA" preload="auto"></audio>
@@ -669,42 +682,80 @@
                 mCierra: 50 
             }
         };
-
-        /** 
-         * MÓDULO ANTI-TRAMPAS DE TIEMPO
+        
+         /** 
+         * MÓDULO ANTI-TRAMPAS DE TIEMPO (ESTRICTO Y SINCRONIZADO)
+         * Bloquea el sistema si se intenta manipular la hora local.
          */
         const TimeGuard = {
             offset: 0,
+            isSynced: false, // Flag de seguridad
             init: async function() {
                 try {
+                    // Fetch a servidor de tiempo internacional (Lima, Perú)
                     const res = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
+                    if(!res.ok) throw new Error("Servidor de tiempo no disponible");
+                    
                     const data = await res.json();
                     const realTime = new Date(data.datetime).getTime();
                     const localTime = new Date().getTime();
+                    
+                    // Calculamos la diferencia exacta entre el servidor y el celular del alumno
                     TimeGuard.offset = realTime - localTime;
+                    TimeGuard.isSynced = true; 
+
                     document.getElementById('time-status').classList.remove('hidden');
+                    document.getElementById('time-status').innerText = "✓ RELOJ ATÓMICO SINCRONIZADO";
+                    document.getElementById('time-status').style.color = "#10b981"; 
                 } catch (e) {
-                    console.warn("No se pudo conectar al servidor de tiempo. Usando hora local.");
+                    // SI FALLA LA RED, NO HAY PERMISO DE APERTURA (BLOQUEO DE SEGURIDAD)
+                    console.error("ALERTA DE SEGURIDAD: Intento de acceso sin sincronización de tiempo.");
+                    TimeGuard.isSynced = false;
+                    document.getElementById('time-status').classList.remove('hidden');
+                    document.getElementById('time-status').innerText = "✘ ERROR: SINCRONIZACIÓN DE TIEMPO OBLIGATORIA";
+                    document.getElementById('time-status').style.color = "#ef4444"; 
                 }
                 setInterval(TimeGuard.updateUI, 1000);
                 TimeGuard.updateUI();
             },
 
             getNow: function() {
+                // Si el alumno no tiene internet o intenta hackear el tiempo, devolvemos el año 1970
+                // Esto hará que las fórmulas de tiempo nunca coincidan con el horario de apertura.
+                if (!TimeGuard.isSynced) return new Date(0); 
                 return new Date(new Date().getTime() + TimeGuard.offset);
             },
 
             updateUI: function() {
                 const now = TimeGuard.getNow();
-                document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+                
+                // Actualizar Reloj en Pantalla
+                document.getElementById('live-clock').innerText = TimeGuard.isSynced ? 
+                    now.toLocaleTimeString('en-US', { hour12: false }) : "--:--:--";
                 
                 const h = now.getHours();
                 const m = now.getMinutes();
                 const totalM = h * 60 + m;
 
-                // Lógica MAÑANA
+                // Referencias a tarjetas y botones (Solo funcionan si isSynced es TRUE)
                 const cardM = document.getElementById('card-mañana');
                 const badgeM = document.getElementById('badge-m');
+                const cardT = document.getElementById('card-tarde');
+                const badgeT = document.getElementById('badge-t');
+                const cardN = document.getElementById('card-noche');
+                const badgeN = document.getElementById('badge-n');
+
+                if (!TimeGuard.isSynced) {
+                    // Bloqueo total si no hay internet o servidor caído
+                    [cardM, cardT, cardN].forEach(c => c.classList.add('locked'));
+                    [badgeM, badgeT, badgeN].forEach(b => {
+                        b.innerText = "Protegido";
+                        b.className = "badge-img badge-cerrado";
+                    });
+                    return;
+                }
+
+                // --- LÓGICA MAÑANA ---
                 if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) { 
                     cardM.classList.remove('locked'); 
                     badgeM.innerText = "Abierto"; 
@@ -715,9 +766,7 @@
                     badgeM.className = "badge-img badge-cerrado"; 
                 }
 
-                // Lógica TARDE (Fórmula Dinámica)
-                const cardT = document.getElementById('card-tarde');
-                const badgeT = document.getElementById('badge-t');
+                // --- LÓGICA TARDE ---
                 let inicioTarde = (REGLAS.tarde.hAbre * 60) + REGLAS.tarde.mAbre;
                 let finTarde = (REGLAS.tarde.hCierra * 60) + REGLAS.tarde.mCierra;
 
@@ -731,9 +780,7 @@
                     badgeT.className = "badge-img badge-cerrado"; 
                 }
 
-                // Lógica NOCHE (Fórmula Dinámica Corregida para 00:xx)
-                const cardN = document.getElementById('card-noche');
-                const badgeN = document.getElementById('badge-n');
+                // --- LÓGICA NOCHE ---
                 let inicioNoche = (REGLAS.noche.hAbre * 60) + REGLAS.noche.mAbre;
                 let finNoche = (REGLAS.noche.hCierra * 60) + REGLAS.noche.mCierra;
 
@@ -748,7 +795,6 @@
                 }
             }
         };
-
         /** 
          * CONTROLADOR PRINCIPAL CORE - LÓGICA SIN REDUCIR
          */
@@ -765,24 +811,67 @@
             },
 
             verifyStudent: async function() {
-                const audio = document.getElementById('musica-verificacion');
-                if (audio) { 
-                    audio.play().catch(function(e) { console.log("Audio bloqueado"); }); 
-                }
-
                 const dni = document.getElementById('dniInput').value.trim();
                 const btn = document.getElementById('verifyBtn');
 
                 if(dni.length < 8) {
                     return Swal.fire({ 
-                        icon: 'warning', 
-                        title: 'DNI Inválido', 
-                        text: 'Debe ingresar 8 dígitos', 
-                        background: '#111', 
-                        color: '#fff', 
-                        confirmButtonColor: '#ffc107' 
+                        icon: 'warning', title: 'DNI Inválido', text: 'Debe ingresar 8 dígitos',
+                        background: '#111', color: '#fff', confirmButtonColor: '#ffc107' 
                     });
                 }
+
+                // NUEVA VENTANA DE ESCANEO PROFESIONAL
+                Swal.fire({
+                    title: 'VALIDANDO IDENTIDAD',
+                    html: `
+                        <div style="position:relative; width:100%; height:150px; overflow:hidden; background:#000; border: 1px solid #ffc107; border-radius:10px;">
+                            <div style="position:absolute; width:100%; height:2px; background:#ffc107; box-shadow:0 0 15px #ffc107; animation: scanAnim 1.5s infinite;"></div>
+                            <div style="padding-top:40px;">
+                                <i class="fa-solid fa-id-card-viewfinder" style="font-size:4rem; color:rgba(255,193,7,0.3)"></i>
+                                <p style="color:#aaa; font-size:10px; letter-spacing:2px; margin-top:10px;">SINCRONIZANDO CON BASE DE DATOS NACIONAL</p>
+                            </div>
+                        </div>
+                        <style>
+                            @keyframes scanAnim { 0% { top: 0; } 100% { top: 100%; } }
+                        </style>
+                    `,
+                    background: '#050505',
+                    color: '#fff',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                try {
+                    const res = await fetch(L1_BD + "?dni=" + dni);
+                    const data = await res.json();
+                    
+                    if(data.found) {
+                        Core.alumno = { ...data, dni };
+                        document.getElementById('welcomeName').innerText = data.Estudiante;
+                        document.getElementById('info-fac').innerText = data.Facultad || "UNAC";
+                        document.getElementById('info-dni').innerText = "DNI: " + dni;
+                        
+                        setTimeout(() => {
+                            Swal.close();
+                            Core.hideSections();
+                            document.getElementById('step-selection').classList.remove('hidden-section');
+                            document.getElementById('extra-links-container').style.display = 'none';
+                            Core.actualizarContador();
+                            Core.pollContador = setInterval(Core.actualizarContador, 5000);
+                        }, 1500); // Pequeña pausa estética para el escaneo
+                    } else { 
+                        Swal.fire({
+                            icon: 'error', title: 'Acceso Denegado',
+                            text: 'El documento ingresado no figura en el padrón oficial.',
+                            background: '#111', color: '#fff', confirmButtonColor: '#ffc107'
+                        });
+                    }
+                } catch(e) {
+                    Swal.fire({ icon: 'error', title: 'Error Crítico', text: 'Fallo de conexión con el servidor central.', background: '#111', color: '#fff' });
+                }
+            },
 
                 try {
                     btn.innerText = "CARGANDO..."; 
