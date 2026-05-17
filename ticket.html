@@ -7,11 +7,11 @@
     
     <!-- 
     ==========================================================================
-    SISTEMA DE GESTIÓN DE MOVILIDAD UNIVERSITARIA - UNAC (OFFICIAL)
+    SISTEMA DE GESTIÓN DE MOVILIDAD UNIVERSITARIA - UNAC (MAX SECURITY)
     --------------------------------------------------------------------------
     Desarrollado por: Sebastian
-    Versión: 9.0.0 (Ultimate Security Build)
-    Módulos: AtomicSync, Anti-Capture Shield, BioScanner Pro, Galaxy Engine
+    Versión: 10.0.0 (Anti-Fraud & Privacy Edition)
+    Seguridad: Extreme Stealth Overlay, Atomic Clock Sync, BioScan v10
     ==========================================================================
     -->
 
@@ -30,7 +30,7 @@
         }
 
         /* BLOQUEO DE SELECCIÓN Y GESTOS */
-        * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+        * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 
         body, html { 
             margin: 0; padding: 0; min-height: 100vh; 
@@ -38,12 +38,19 @@
             color: #ffffff; overflow-x: hidden; scroll-behavior: smooth; 
         }
 
-        /* CAPA NEGRA ANTI-CAPTURA (MODO BANCO) */
-        #anti-screenshot-shield {
-            position: fixed; inset: 0; background: #000; z-index: 10000;
+        /* 
+        ==========================================================================
+        BLOQUEO EXTREMO DE CAPTURAS (STEALTH SHIELD)
+        ==========================================================================
+        */
+        #stealth-privacy-overlay {
+            position: fixed; inset: 0; background: #000000; z-index: 99999;
             display: none; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center;
+            text-align: center; pointer-events: all;
         }
+
+        .shield-icon { font-size: 80px; color: var(--accent); margin-bottom: 20px; filter: drop-shadow(0 0 20px var(--accent)); }
+        .shield-text { font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
 
         /* ANIMACIONES */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -51,29 +58,19 @@
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-float { animation: float 4s ease-in-out infinite; }
 
-        /* ESCÁNER BIOMÉTRICO DETALLISTA v9 */
+        /* ESCÁNER BIOMÉTRICO DETALLISTA */
         @keyframes scanMove { 0% { top: 0%; } 100% { top: 100%; } }
-        .scan-ui-container {
-            position: relative; width: 100%; height: 200px; background: #000;
-            border: 1px solid rgba(255, 193, 7, 0.4); border-radius: 12px; overflow: hidden;
-        }
-        .scan-grid-overlay {
-            position: absolute; inset: 0;
-            background-image: linear-gradient(rgba(255,193,7,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,193,7,0.05) 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        .scan-laser-line {
-            position: absolute; width: 100%; height: 3px; background: var(--accent);
-            box-shadow: 0 0 15px var(--accent); animation: scanMove 2s linear infinite; z-index: 10;
-        }
-        .scan-frame-corners { position: absolute; inset: 15px; border: 1px solid rgba(255,193,7,0.1); border-radius: 8px; }
-        .c-corner { position: absolute; width: 15px; height: 15px; border: 2px solid var(--accent); }
-        .c-tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
-        .c-tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
-        .c-bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
-        .c-br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+        .scan-container { position: relative; width: 100%; height: 210px; background: #000; border: 1px solid rgba(255, 193, 7, 0.4); border-radius: 12px; overflow: hidden; }
+        .scan-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,193,7,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,193,7,0.05) 1px, transparent 1px); background-size: 20px 20px; }
+        .scan-laser { position: absolute; width: 100%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); animation: scanMove 2s linear infinite; z-index: 10; }
+        .scan-frame { position: absolute; inset: 15px; border: 1px solid rgba(255,193,7,0.1); border-radius: 8px; }
+        .corner { position: absolute; width: 15px; height: 15px; border: 2px solid var(--accent); }
+        .tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+        .tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
+        .br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
 
-        /* NAVEGACIÓN Y ESTRUCTURA */
+        /* NAVEGACIÓN */
         .main-wrapper { 
             position: relative; z-index: 10; 
             background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), 
@@ -93,28 +90,27 @@
 
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s; font-family: 'JetBrains Mono', monospace; }
-        
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; border: none; width: 100%; max-width: 400px; }
         .btn-tutorial { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 15px; }
 
-        /* CARDS TURNOS (COMPACTAS CON DOBLE HORA) */
-        .card-panorama { position: relative; overflow: hidden; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); height: 170px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
+        /* CARDS TURNOS (ESTILO PEQUEÑO ORIGINAL) */
+        .card-panorama { position: relative; overflow: hidden; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); height: 165px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
         .card-panorama:hover:not(.locked) { transform: scale(1.02); border-color: var(--accent); }
         .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
         .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
-        .card-n-img { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); }
+        .card-n-img { background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); }
         .card-panorama.locked { filter: grayscale(1); opacity: 0.35; cursor: not-allowed; pointer-events: none; }
         
         .badge-muy-pronto { position: absolute; top: 12px; right: -35px; background: var(--accent); color: #000; font-weight: 900; font-size: 9px; padding: 4px 40px; transform: rotate(45deg); text-transform: uppercase; z-index: 20; }
-        .badge-img { padding: 3px 12px; border-radius: 20px; font-size: 9px; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; }
+        .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; }
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: #10b981; color: white; }
-        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 38px; text-transform: uppercase; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 40px; text-transform: uppercase; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         
-        /* DETALLE DE HORAS EN TARJETA */
-        .time-info-container { margin-top: 5px; text-align: center; }
-        .salida-badge { font-size: 10px; font-weight: 900; color: #fff; background: rgba(0,0,0,0.4); padding: 2px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; }
-        .apertura-badge { font-size: 8px; font-weight: 700; color: var(--accent); margin-top: 2px; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px; }
+        /* DOBLE HORA EN TARJETA */
+        .card-time-box { margin-top: 8px; text-align: center; }
+        .label-salida { font-size: 10px; font-weight: 900; color: #fff; background: rgba(0,0,0,0.5); padding: 2px 10px; border-radius: 4px; text-transform: uppercase; }
+        .label-apertura { font-size: 8px; font-weight: 800; color: var(--accent); margin-top: 3px; text-transform: uppercase; opacity: 0.9; }
 
         /* TICKET */
         .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
@@ -123,12 +119,12 @@
         .ticket-body { padding: 25px; }
         .ticket-main-box { border: 1px dashed #d4a017; border-radius: 10px; padding: 20px; background: #fafafa; }
         .valid-date { font-size: 24px; font-weight: 900; color: #d4a017; font-family: 'Montserrat', sans-serif; }
-        .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 80px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 10px 0; }
+        .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 85px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 10px 0; letter-spacing: -2px; }
         .qr-wrapper { border: 2px solid #d4a017; display: inline-block; padding: 10px; background: #fff; margin: 15px 0; border-radius: 10px; }
         .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; background: #fff; }
         .data-table td { padding: 10px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; color: #444; }
 
-        /* LOADER 3D (10s) */
+        /* LOADER GALAXY (10s) */
         #loading-screen { position: fixed; inset: 0; background: #000000; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
         #loader-3d-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         .loader-text { color: var(--accent); font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 10px; font-size: 18px; margin-top: 20px; text-shadow: 0 0 15px var(--accent); z-index: 10; }
@@ -140,38 +136,38 @@
 </head>
 <body>
 
-    <!-- CAPA PROTECCIÓN PANTALLA -->
-    <div id="anti-screenshot-shield">
-        <i class="fa-solid fa-eye-slash text-yellow-500 text-6xl mb-4"></i>
-        <h2 class="text-white text-xl font-black uppercase">Contenido Privado</h2>
-        <p class="text-gray-500 text-[10px] mt-2 uppercase tracking-widest">Bloqueo de captura activado por el sistema</p>
+    <!-- ESCUDO DE PRIVACIDAD EXTREMO -->
+    <div id="stealth-privacy-overlay">
+        <div class="shield-icon"><i class="fa-solid fa-eye-slash"></i></div>
+        <h2 class="shield-text">CONTENIDO PROTEGIDO</h2>
+        <p style="color: #666; font-size: 10px; margin-top: 10px; letter-spacing: 3px; font-weight: 800;">BLOQUEO DE CAPTURA ACTIVO</p>
     </div>
 
     <!-- LOADER GALAXY 3D -->
     <div id="loading-screen">
         <div id="loader-3d-canvas"></div>
-        <p class="loader-text">SINCRONIZANDO PASE</p>
+        <p class="loader-text">SINCRONIZANDO TICKET</p>
     </div>
 
-    <!-- Menú Móvil (6 PUNTOS) -->
+    <!-- Menú Móvil (6 PUNTOS ORIGINALES) -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500">Ticket</a>
-        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
-        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
-        <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
+        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center">
+                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(255,193,7,0.4)]">
                     <i class="fa-solid fa-bus text-black text-lg"></i>
                 </div>
                 <div class="flex flex-col text-left leading-none uppercase">
-                    <span class="text-[10px] font-black tracking-widest">UNAC</span>
+                    <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
@@ -183,8 +179,8 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl">
-                <i class="fa-solid fa-bars-staggered"></i>
+            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
+                MENU <i class="fa-solid fa-bars-staggered"></i>
             </button>
         </header>
 
@@ -195,9 +191,11 @@
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
                 <div class="flex items-center justify-center gap-2 text-white font-mono opacity-80">
                     <i class="fa-regular fa-clock text-yellow-500"></i>
-                    <p id="live-clock" class="text-lg font-bold tracking-widest">--:--:--</p>
+                    <p id="live-clock" class="text-lg font-bold tracking-widest">00:00:00</p>
                 </div>
-                <p id="time-status" class="text-[9px] text-green-400 mt-1 uppercase tracking-widest hidden">Reloj Atómico Sincronizado</p>
+                <p id="time-status" class="text-[9px] text-green-400 mt-1 uppercase tracking-widest hidden flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> SINCRONIZACIÓN ATÓMICA ACTIVA
+                </p>
             </div>
 
             <!-- PASO 1: VERIFICACIÓN -->
@@ -206,7 +204,7 @@
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <div class="mt-6 flex flex-col items-center gap-3">
                     <button class="btn-search" id="verifyBtn" onclick="Core.verifyStudent()">Verificar Alumno</button>
-                    <a href="tutorial.html" class="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
+                    <a href="tutorial.html" class="btn-tutorial" id="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
                 </div>
             </div>
 
@@ -214,10 +212,10 @@
             <div id="step-selection" class="w-full max-w-4xl mx-auto hidden-section animate-fade-up">
                 <div class="glass p-5 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
                     <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
+                        <div class="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center text-yellow-500 text-2xl border border-white/10 shadow-xl"><i class="fa-solid fa-user-graduate"></i></div>
                         <div class="text-left">
                             <h2 id="welcomeName" class="text-lg md:text-xl font-black uppercase italic text-white tracking-tighter"></h2>
-                            <p class="text-[10px] text-green-400 font-bold uppercase"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO</p>
+                            <div class="status-badge" style="display:inline-flex; align-items:center; gap:8px; background:rgba(16,185,129,0.1); border:1px solid #10b981; color:#10b981; padding:4px 12px; border-radius:50px; font-size:9px; font-weight:800; text-transform:uppercase; margin-top:8px;"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO</div>
                         </div>
                     </div>
                     <div class="mt-4 md:mt-0 text-right">
@@ -230,17 +228,17 @@
                     <div id="card-mañana" class="card-panorama card-m-img" onclick="Core.validateAndGenerate('MAÑANA')">
                         <span id="badge-m" class="badge-img">Calculando...</span>
                         <div class="shift-title text-white">Mañana</div>
-                        <div class="time-info-container">
-                            <div class="salida-badge">SALIDA: 05:15 AM</div>
-                            <div class="apertura-badge">APERTURA: 09:00 PM</div>
+                        <div class="card-time-box">
+                            <div class="label-salida">SALIDA: 05:15 AM</div>
+                            <div class="label-apertura">APERTURA: 09:00 PM</div>
                         </div>
                     </div>
                     <div id="card-tarde" class="card-panorama card-t-img" onclick="Core.validateAndGenerate('TARDE')">
                         <span id="badge-t" class="badge-img">Calculando...</span>
                         <div class="shift-title text-white">Tarde</div>
-                        <div class="time-info-container">
-                            <div class="salida-badge">SALIDA: 06:00 PM</div>
-                            <div class="apertura-badge">APERTURA: 05:10 PM</div>
+                        <div class="card-time-box">
+                            <div class="label-salida">SALIDA: 06:00 PM</div>
+                            <div class="label-apertura">APERTURA: 05:10 PM</div>
                         </div>
                     </div>
                 </div>
@@ -250,9 +248,9 @@
                         <div class="badge-muy-pronto">Muy Pronto</div>
                         <span id="badge-n" class="badge-img">Calculando...</span>
                         <div class="shift-title text-white">Noche</div>
-                        <div class="time-info-container">
-                            <div class="salida-badge">SALIDA: 10:15 PM</div>
-                            <div class="apertura-badge">APERTURA: --:--</div>
+                        <div class="card-time-box">
+                            <div class="label-salida">SALIDA: 10:15 PM</div>
+                            <div class="label-apertura">APERTURA: --:--</div>
                         </div>
                     </div>
                 </div>
@@ -260,6 +258,7 @@
                 <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500">
                     <p class="text-[9px] text-gray-400 font-black uppercase mb-1 tracking-widest">Cupos registrados:</p>
                     <div id="conteo-real" class="text-5xl font-black text-white font-mono leading-none">0</div>
+                    <p class="text-[8px] text-yellow-500/60 mt-4 uppercase italic"><i class="fa-solid fa-satellite-dish"></i> Sync Stream v10.0</p>
                 </div>
             </div>
 
@@ -268,7 +267,7 @@
                 <div class="vip-ticket-card">
                     <div class="vip-header"><h2>¡PASE VERIFICADO!</h2></div>
                     <div class="ticket-body">
-                        <p class="text-left text-sm mb-4">Hola <strong id="t-saludo" class="text-black text-lg"></strong>, tu ticket digital:</p>
+                        <p class="text-left text-sm mb-4">Hola <strong id="t-saludo" class="text-black text-lg"></strong>, tu ticket oficial:</p>
                         <div class="ticket-main-box">
                             <p class="text-[10px] text-gray-500 font-bold uppercase">VÁLIDO ÚNICAMENTE HOY:</p>
                             <p class="valid-date" id="t-fecha"></p>
@@ -288,15 +287,14 @@
             <!-- PASO 4: ÉXITO -->
             <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden-section animate-fade-up">
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
-                <h2 class="text-3xl font-black uppercase text-white">ESCANEADO EXITOSO</h2>
-                <button onclick="location.reload()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase mt-6">Finalizar</button>
+                <h2 class="text-3xl font-black uppercase text-white">ESCANEO EXITOSO</h2>
+                <button onclick="location.reload()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase mt-6 shadow-xl">Finalizar</button>
             </div>
             
         </main>
         
         <div id="globe-container" class="animate-float"></div>
 
-        <!-- BOTÓN DELEGADOS (CONTENEDOR OCULTABLE) -->
         <div id="delegados-container" class="mb-10 text-center relative z-20">
             <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </div>
@@ -309,7 +307,9 @@
 
     <script>
         /**
-         * CORE LOGIC - v9.0.0
+         * ==========================================
+         * CORE LOGIC - v10.0.0
+         * ==========================================
          */
         const APIS = {
             BD: "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec",
@@ -319,11 +319,13 @@
 
         const REGLAS = { 
             manana: { abre: 21, cierra: 7 }, 
-            tarde: { hAbre: 19, mAbre: 38, hCierra: 19, mCierra: 45 },
+            tarde: { hAbre: 17, mAbre: 10, hCierra: 17, mCierra: 59 },
             noche: { hAbre: 1, mAbre: 49, hCierra: 1, mCierra: 50 }
         };
 
-        /** TIMEGUARD: EVITA TRAMPAS DE HORA */
+        /** 
+         * TIMEGUARD: HORA ATÓMICA BLINDADA 
+         */
         const TimeGuard = {
             offset: 0, isSynced: false,
             async init() {
@@ -333,7 +335,7 @@
                     this.offset = new Date(data.datetime).getTime() - Date.now();
                     this.isSynced = true;
                     document.getElementById('time-status').classList.remove('hidden');
-                } catch (e) { console.warn("Fallback local."); }
+                } catch (e) { console.warn("Usando local clock."); }
                 setInterval(() => this.updateUI(), 1000);
             },
             getNow() { return new Date(Date.now() + this.offset); },
@@ -359,13 +361,31 @@
             }
         };
 
-        /** ANTI-CAPTURA PROFESIONAL */
+        /**
+         * STEALTH PRIVACY: BLOQUEO EXTREMO DE CAPTURAS
+         */
         const Privacy = {
             init() {
-                const screen = document.getElementById('anti-screenshot-shield');
-                window.addEventListener('blur', () => screen.style.display = 'flex');
-                window.addEventListener('focus', () => screen.style.display = 'none');
-                document.addEventListener('visibilitychange', () => { screen.style.display = document.hidden ? 'flex' : 'none'; });
+                const overlay = document.getElementById('stealth-privacy-overlay');
+                
+                // 1. Detectar cuando se pierde el foco (gesto de captura o cambio de app)
+                window.addEventListener('blur', () => { overlay.style.display = 'flex'; });
+                window.addEventListener('focus', () => { overlay.style.display = 'none'; });
+
+                // 2. Detectar visibilidad
+                document.addEventListener('visibilitychange', () => {
+                    overlay.style.display = document.hidden ? 'flex' : 'none';
+                });
+
+                // 3. Bloqueo de teclado
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p')) {
+                        overlay.style.display = 'flex';
+                        setTimeout(() => overlay.style.display = 'none', 1000);
+                    }
+                });
+
+                // 4. Bloqueo menú contextual
                 document.addEventListener('contextmenu', e => e.preventDefault());
             }
         };
@@ -378,39 +398,39 @@
                 const dni = document.getElementById('dniInput').value.trim();
                 if(dni.length < 8) return Swal.fire('Error','Ingrese 8 dígitos','warning');
 
-                // ESCANEO DETALLISTA (CORNER, GRID, LASER)
+                // ESCANEO DETALLISTA (GRID, FRAMES, LASER)
                 Swal.fire({
                     title: 'AUTENTICACIÓN BIOMÉTRICA',
                     html: `
-                        <div class="scan-ui-container">
-                            <div class="scan-grid-overlay"></div>
-                            <div class="scan-frame-corners">
-                                <div class="c-corner c-tl"></div><div class="c-corner c-tr"></div>
-                                <div class="c-corner c-bl"></div><div class="c-corner c-br"></div>
+                        <div class="scan-container">
+                            <div class="scan-grid"></div>
+                            <div class="scan-frame">
+                                <div class="corner tl"></div><div class="corner tr"></div>
+                                <div class="corner bl"></div><div class="corner br"></div>
                             </div>
-                            <div class="scan-laser-line"></div>
-                            <i class="fa-solid fa-fingerprint" style="font-size:60px; margin-top:55px; color:#ffc107; opacity:0.15;"></i>
+                            <div class="scan-laser"></div>
+                            <i class="fa-solid fa-fingerprint" style="font-size:60px; margin-top:60px; color:#ffc107; opacity:0.15;"></i>
                         </div>
                         <div style="margin-top:15px; font-family:'JetBrains Mono';">
-                            <p id="bio-log" style="color:#ffc107; font-size:10px; text-transform:uppercase; letter-spacing:2px;">Analizando documento...</p>
+                            <p id="bio-status" style="color:#ffc107; font-size:10px; text-transform:uppercase; letter-spacing:2px;">Analizando documento...</p>
                         </div>
                     `,
                     background: '#050505', showConfirmButton: false, allowOutsideClick: false,
                     didOpen: async () => {
-                        const log = document.getElementById('bio-log');
+                        const status = document.getElementById('bio-status');
                         try {
                             const resSync = await fetch(`${APIS.SYNC}?dni=${dni}&accion=consultar`);
                             const dataSync = await resSync.json();
                             if(dataSync.asistio) {
-                                Swal.fire({ icon:'error', title:'Ticket Bloqueado', text:'Este DNI ya fue escaneado hoy.', background:'#111', color:'#fff'});
+                                Swal.fire({ icon:'error', title:'Ticket Bloqueado', text:'DNI ya escaneado por el delegado.', background:'#111', color:'#fff'});
                                 return;
                             }
-                            log.innerText = "Cotejando con padrón...";
+                            status.innerText = "Cotejando con padrón...";
                             const res = await fetch(`${APIS.BD}?dni=${dni}`);
                             const data = await res.json();
                             setTimeout(() => {
                                 if(data.found) {
-                                    log.innerText = "Acceso verificado";
+                                    status.innerText = "Acceso verificado";
                                     setTimeout(() => { this.alumno = { ...data, dni }; this.onLogin(); Swal.close(); }, 800);
                                 } else { Swal.fire({ icon:'error', title:'No Encontrado', background:'#111', color:'#fff'}); }
                             }, 1800);
@@ -447,7 +467,7 @@
                     if(totalM >= (r.hAbre*60+r.mAbre) && totalM < (r.hCierra*60+r.mCierra)) ok = true;
                 }
                 if(ok) this.runGalaxy(turno);
-                else Swal.fire('Cerrado','Intente a la hora de apertura.','error');
+                else Swal.fire('Cerrado','Verifique horario de apertura.','error');
             },
 
             runGalaxy(turno) {
@@ -484,7 +504,7 @@
                     } else {
                         area.innerHTML = `
                             <div class="flex flex-col items-center py-4">
-                                <i class="fa-solid fa-person-running text-6xl text-gray-400 mb-3"></i>
+                                <i class="fa-solid fa-person-walking-arrow-right text-6xl text-gray-400 mb-3"></i>
                                 <p style="color:#e53e3e; font-weight:900; font-size:24px; line-height:1;">VIAJE DE PIE</p>
                             </div>`;
                     }
@@ -510,6 +530,7 @@
             }
         };
 
+        /** GALAXY 3D (HIPERESPACIO) */
         const Galaxy3D = {
             scene: null, camera: null, renderer: null, particles: null, reqId: null,
             init() {
@@ -556,14 +577,15 @@
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
 
         window.onload = () => { TimeGuard.init(); Privacy.init(); initGlobe(); };
+
         /**
-         * DOCUMENTACIÓN TÉCNICA
+         * DOCUMENTACIÓN TÉCNICA v10
          * --------------------------------------------------
-         * - Salida & Apertura: Labels restaurados en Step 2.
-         * - Lógica Excel Link 2: N <= 45 (Nro), N > 45 (Persona).
-         * - BioScanner: Corners, grid y laser detallados.
-         * - Screenshot Shield: Black overlay on blur/visChange.
-         * - Link 3 Block: Bloqueo de acceso si ya asistió.
+         * - Stealth Shield: Bloqueo inmediato al perder foco.
+         * - Excel Logic: N <= 45 (Asiento), N > 45 (Walking Icon).
+         * - BioScan: Rejilla, corners y laser detallado restaurados.
+         * - Time Guard: Sincronización con WorldTimeAPI activa.
+         * - Step 2: Tarjetas compactas con doble etiqueta horaria.
          */
     </script>
 </body>
