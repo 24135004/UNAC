@@ -53,8 +53,12 @@
             border-radius: 20px; font-weight: 900; text-align: center;
             box-shadow: 0 0 50px rgba(16, 185, 129, 0.6); display: none;
             border: 2px solid white; pointer-events: none;
+            width: 80%; max-width: 350px;
         }
-        .notif-error { background: #ef4444 !important; box-shadow: 0 0 50px rgba(239, 68, 68, 0.6) !important; }
+        .notif-error { 
+            background: #ef4444 !important; 
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.8) !important; 
+        }
     </style>
 </head>
 <body>
@@ -139,7 +143,7 @@
             </div>
         </div>
 
-        <!-- BOTONES DE ACCIÓN (LIMPIAR HISTORIAL Y REINICIAR SISTEMA) -->
+        <!-- BOTONES DE ACCIÓN -->
         <div class="grid grid-cols-2 gap-3 mb-10">
             <button onclick="limpiarHistorial()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
                 <i class="fa-solid fa-eraser mr-1"></i> Borrar Historial
@@ -183,7 +187,6 @@
         function iniciarSistema() {
             renderList();
             actualizarTotalGlobal(); 
-            // Sincroniza el contador global cada 15 segundos
             setInterval(actualizarTotalGlobal, 15000); 
 
             html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
@@ -195,21 +198,35 @@
 
             try {
                 let decodedInfo = decodedText;
+                // Si viene en Base64, decodificar
                 if(!decodedText.includes('|')) {
-                    try { decodedInfo = atob(decodedText); } catch(e) {}
+                    try { decodedInfo = atob(decodedText); } catch(e) { console.log("Error decodificación"); }
                 }
 
-                const [dniAlumno, turno, fechaTicket] = decodedInfo.split('|');
-                const fechaHoy = new Date().toLocaleDateString();
+                const dataArray = decodedInfo.split('|');
+                if (dataArray.length < 3) return; // Formato inválido
+
+                const dniAlumno = dataArray[0];
+                const turno = dataArray[1];
+                const fechaTicket = dataArray[2];
+
+                // Normalizar fecha de hoy (DD/MM/YYYY) para comparar con el ticket
+                const hoy = new Date();
+                const dia = String(hoy.getDate()).padStart(2, '0');
+                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                const anio = hoy.getFullYear();
+                const fechaHoyFormateada = `${dia}/${mes}/${anio}`;
 
                 isScanningLocked = true;
                 setTimeout(() => { isScanningLocked = false; }, 3000);
 
-                if (fechaTicket !== fechaHoy) {
+                // VALIDACIÓN 1: FECHA
+                if (fechaTicket !== fechaHoyFormateada) {
                     notificarFlash("TICKET CADUCADO", false);
                     return;
                 }
 
+                // VALIDACIÓN 2: YA ESCANEADO LOCALMENTE
                 if (scannedData.some(item => item.dni === dniAlumno)) {
                     notificarFlash("YA ESCANEADO", false);
                     return;
@@ -219,7 +236,7 @@
                     dni: dniAlumno,
                     turno: turno,
                     hora_scan: new Date().toLocaleTimeString(),
-                    fecha_scan: fechaHoy,
+                    fecha_scan: fechaHoyFormateada,
                     delegado: delegadoActivo
                 };
 
@@ -229,20 +246,19 @@
                 notificarFlash("ESCANEO VERIFICADO", true);
                 renderList();
 
-                // Enviar asistencia en segundo plano
+                // Enviar asistencia a base de datos
                 fetch(`${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`, {
                     mode: 'no-cors'
                 });
 
-                // Intenta sumar al contador global visualmente
                 setTimeout(actualizarTotalGlobal, 1500);
 
             } catch (e) {
+                console.log("Error en procesamiento:", e);
                 isScanningLocked = false;
             }
         }
 
-        // --- NUEVA FUNCIÓN: Obtener total global de la base de datos ---
         async function actualizarTotalGlobal() {
             try {
                 const response = await fetch(`${LINK_MARCAR_ASISTENCIA}?accion=obtener_total`);
@@ -251,7 +267,6 @@
                     document.getElementById('contador-global').innerText = data.total;
                 }
             } catch (e) {
-                // Si la macro aún no devuelve el JSON, mostramos al menos el conteo local como base
                 let currentGlobal = parseInt(document.getElementById('contador-global').innerText) || 0;
                 if(scannedData.length > currentGlobal) {
                     document.getElementById('contador-global').innerText = scannedData.length;
@@ -259,10 +274,8 @@
             }
         }
 
-        // --- NUEVA FUNCIÓN: Limpiar Historial solo local ---
         function limpiarHistorial() {
-            if (!confirm("¿Deseas borrar tu lista de escaneados local de esta pantalla? \n\n(Esto NO borra los registros del Excel general)")) return;
-            
+            if (!confirm("¿Deseas borrar tu lista de escaneados local?\n(No borra el Excel)")) return;
             scannedData = [];
             localStorage.removeItem('scanned_unac');
             renderList();
@@ -285,7 +298,7 @@
 
             flash.style.display = 'block';
             notificarLector(text, exito);
-            setTimeout(() => { flash.style.display = 'none'; }, 2000);
+            setTimeout(() => { flash.style.display = 'none'; }, 2500);
         }
 
         function renderList() {
@@ -336,7 +349,7 @@
                     mode: 'no-cors',
                     body: JSON.stringify({ datos: scannedData })
                 });
-                alert("✅ Sistema Reiniciado. El Excel ahora está limpio.");
+                alert("✅ Sistema Reiniciado.");
                 scannedData = [];
                 localStorage.removeItem('scanned_unac');
                 document.getElementById('contador-global').innerText = "0";
