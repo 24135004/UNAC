@@ -7,10 +7,11 @@
     
     <!-- 
     ==========================================================================
-    SISTEMA DE GESTIÓN DE MOVILIDAD UNIVERSITARIA - UNAC (MAX SECURITY)
+    SISTEMA DE GESTIÓN DE MOVILIDAD UNIVERSITARIA - UNAC (PRO EDITION)
     --------------------------------------------------------------------------
     Desarrollado por: Sebastian
-    Versión: 10.0.1 (Sincronización Blindada)
+    Módulos: AtomicTime Sync, Anti-Screenshot Shield, BioScan Detallista v10
+    Lógica: Link 1 (BD), Link 2 (Colas), Link 3 (Sincro Escaneo)
     ==========================================================================
     -->
 
@@ -27,15 +28,18 @@
         * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; scroll-behavior: smooth; }
 
+        /* ESCUDO DE PRIVACIDAD EXTREMO */
         #stealth-privacy-overlay { position: fixed; inset: 0; background: #000000; z-index: 99999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .shield-icon { font-size: 80px; color: var(--accent); margin-bottom: 20px; filter: drop-shadow(0 0 20px var(--accent)); }
         .shield-text { font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
 
+        /* ANIMACIONES ORIGINALES */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-float { animation: float 4s ease-in-out infinite; }
 
+        /* ESCÁNER BIOMÉTRICO DETALLISTA */
         @keyframes scanMove { 0% { top: 0%; } 100% { top: 100%; } }
         .scan-container { position: relative; width: 100%; height: 210px; background: #000; border: 1px solid rgba(255, 193, 7, 0.4); border-radius: 12px; overflow: hidden; }
         .scan-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,193,7,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,193,7,0.05) 1px, transparent 1px); background-size: 20px 20px; }
@@ -47,6 +51,7 @@
         .bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
         .br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
 
+        /* DISEÑO DE INTERFAZ */
         .main-wrapper { position: relative; z-index: 10; background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; width: 100%; display: flex; flex-direction: column; }
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
@@ -62,6 +67,7 @@
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; border: none; width: 100%; max-width: 400px; }
         .btn-tutorial { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 15px; }
 
+        /* CARDS TURNOS (ESTILO PEQUEÑO ORIGINAL) */
         .card-panorama { position: relative; overflow: hidden; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); height: 165px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
         .card-panorama:hover:not(.locked) { transform: scale(1.02); border-color: var(--accent); }
         .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
@@ -79,6 +85,7 @@
         .label-salida { font-size: 10px; font-weight: 900; color: #fff; background: rgba(0,0,0,0.5); padding: 2px 10px; border-radius: 4px; text-transform: uppercase; }
         .label-apertura { font-size: 8px; font-weight: 800; color: var(--accent); margin-top: 3px; text-transform: uppercase; opacity: 0.9; }
 
+        /* TICKET ORIGINAL */
         .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
         .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 25px 10px; color: #111; }
         .vip-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; }
@@ -90,6 +97,7 @@
         .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; background: #fff; }
         .data-table td { padding: 10px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; color: #444; }
 
+        /* LOADER GALAXY (10s) */
         #loading-screen { position: fixed; inset: 0; background: #000000; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
         #loader-3d-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         .loader-text { color: var(--accent); font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 10px; font-size: 18px; margin-top: 20px; text-shadow: 0 0 15px var(--accent); z-index: 10; }
@@ -164,7 +172,7 @@
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <div class="mt-6 flex flex-col items-center gap-3">
                     <button class="btn-search" id="verifyBtn" onclick="Core.verifyStudent()">Verificar Alumno</button>
-                    <a href="tutorial.html" class="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
+                    <a href="tutorial.html" class="btn-tutorial" id="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
                 </div>
             </div>
 
@@ -217,7 +225,6 @@
                 <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500">
                     <p class="text-[9px] text-gray-400 font-black uppercase mb-1 tracking-widest">Cupos registrados:</p>
                     <div id="conteo-real" class="text-5xl font-black text-white font-mono leading-none">0</div>
-                    <p class="text-[8px] text-yellow-500/60 mt-4 uppercase italic"><i class="fa-solid fa-satellite-dish"></i> Sync Stream v10.0</p>
                 </div>
             </div>
 
@@ -264,8 +271,8 @@
     <script>
         const APIS = {
             BD: "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec",
-            COLA: "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec",
-            SYNC: "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec"
+            COLA: "https://script.google.com/macros/s/AKfycbz1jea2eyWW_5TSvAVMWfMzFZQee0d5kvKT2ln_MI7HwkStRssFlHPAesGJvczRQN1F/exec",
+            SYNC: "https://script.google.com/macros/s/AKfycbxi6jNUH8BpoS9kdReAizN2COuzxA_1MaBQe5LlvlpTUOm4EacksSFAscv8M1nf0ssV/exec"
         };
 
         const REGLAS = { 
