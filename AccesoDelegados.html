@@ -139,7 +139,7 @@
             </div>
         </div>
 
-        <!-- BOTONES DE ACCIÓN (LIMPIAR HISTORIAL Y REINICIAR SISTEMA) -->
+        <!-- BOTONES DE ACCIÓN -->
         <div class="grid grid-cols-2 gap-3 mb-10">
             <button onclick="limpiarHistorial()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
                 <i class="fa-solid fa-eraser mr-1"></i> Borrar Historial
@@ -152,9 +152,9 @@
 
     <script>
         const DELEGADOS = ["71886034", "77570731", "63229248"];
-        const LINK_POST_REINICIO = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec"; 
-        const LINK_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
-        
+        const LINK_MARCAR_ASISTENCIA = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
+        const LINK_REINICIO = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
+
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
         let delegadoActivo = "";
         let html5QrcodeScanner;
@@ -182,98 +182,78 @@
 
         function iniciarSistema() {
             renderList();
-            actualizarTotalGlobal(); 
-            setInterval(actualizarTotalGlobal, 15000); 
+            actualizarTotalGlobal();
+            setInterval(actualizarTotalGlobal, 15000);
 
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
             html5QrcodeScanner.render(onScanSuccess);
         }
 
         async function onScanSuccess(decodedText) {
             if (isScanningLocked) return;
-
+            isScanningLocked = true;
+            
             try {
-                let decodedInfo = decodedText;
-                // Intentar decodificar si es Base64 (formato btoa del alumno)
+                let data = decodedText;
+                // Intento decodificar si es Base64
                 if(!decodedText.includes('|')) {
-                    try { decodedInfo = atob(decodedText); } catch(e) {}
+                    try { data = atob(decodedText); } catch(e) {}
                 }
 
-                const parts = decodedInfo.split('|');
-                if (parts.length < 3) return;
+                const parts = data.split('|');
+                if (parts.length < 3) throw new Error("Formato inválido");
 
                 const dniAlumno = parts[0];
                 const turno = parts[1];
-                const fechaTicket = parts[2]; // Formato DD/MM/YYYY del es-PE
-
-                // Generar fecha de hoy exacta para comparar (DD/MM/YYYY)
-                const hoy = new Date();
-                const dia = String(hoy.getDate()).padStart(2, '0');
-                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-                const anio = hoy.getFullYear();
-                const fechaHoyFormato = `${dia}/${mes}/${anio}`;
-
-                isScanningLocked = true;
-                setTimeout(() => { isScanningLocked = false; }, 3000);
+                const fechaTicket = parts[2];
+                const fechaHoy = new Date().toLocaleDateString('es-PE');
 
                 // 1. VALIDAR FECHA
-                if (fechaTicket !== fechaHoyFormato) {
+                if (fechaTicket !== fechaHoy) {
                     notificarFlash("TICKET CADUCADO", false);
+                    setTimeout(() => { isScanningLocked = false; }, 2000);
                     return;
                 }
 
-                // 2. ENVIAR A LINK 3 Y VALIDAR RESPUESTA DEL SERVIDOR
-                const res = await fetch(`${LINK_SINCRO}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`);
-                const statusResponse = await res.text();
+                // 2. ENVIAR A LINK 3 Y ESPERAR RESPUESTA REAL
+                const response = await fetch(`${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`);
+                const resultText = await response.text();
 
-                if (statusResponse.includes("ESCANEO DENEGADO")) {
+                if (resultText.includes("ESCANEO DENEGADO")) {
                     notificarFlash("YA ESCANEADO", false);
-                    return;
-                }
-
-                if (statusResponse.includes("ESCANEO EXITOSO")) {
+                } else if (resultText.includes("ESCANEO EXITOSO")) {
                     const registro = {
                         dni: dniAlumno,
                         turno: turno,
                         hora_scan: new Date().toLocaleTimeString(),
-                        fecha_scan: fechaHoyFormato,
-                        delegado: delegadoActivo
+                        fecha_scan: fechaHoy
                     };
-
                     scannedData.push(registro);
                     localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
-                    
                     notificarFlash("ESCANEO VERIFICADO", true);
                     renderList();
                     actualizarTotalGlobal();
+                } else {
+                    notificarFlash("ERROR SERVIDOR", false);
                 }
 
             } catch (e) {
-                console.error("Error en el escaneo:", e);
-                isScanningLocked = false;
+                console.error(e);
+                notificarFlash("QR NO VÁLIDO", false);
             }
+
+            setTimeout(() => { isScanningLocked = false; }, 2000);
         }
 
         async function actualizarTotalGlobal() {
             try {
-                const response = await fetch(`${LINK_SINCRO}?accion=consultar&dni=0`); // Consultamos un dummy para gatillar lectura
-                // O si tienes una accion obtener_total mejor usar esa:
-                // const data = await response.json();
-                // document.getElementById('contador-global').innerText = data.total || scannedData.length;
-                
-                // Fallback visual por si Link 3 solo devuelve JSON de asistio
+                const response = await fetch(`${LINK_MARCAR_ASISTENCIA}?accion=consultar&dni=0`);
+                const data = await response.json();
+                // Si tienes una accion especifica para el total usala, si no, aproximamos con el local
                 document.getElementById('contador-global').innerText = scannedData.length;
             } catch (e) {
                 document.getElementById('contador-global').innerText = scannedData.length;
             }
-        }
-
-        function limpiarHistorial() {
-            if (!confirm("¿Deseas borrar tu lista de escaneados local?")) return;
-            scannedData = [];
-            localStorage.removeItem('scanned_unac');
-            renderList();
-            notificarLector("Historial Local Limpio", true);
         }
 
         function notificarFlash(text, exito) {
@@ -292,7 +272,7 @@
 
             flash.style.display = 'block';
             notificarLector(text, exito);
-            setTimeout(() => { flash.style.display = 'none'; }, 2500);
+            setTimeout(() => { flash.style.display = 'none'; }, 2000);
         }
 
         function renderList() {
@@ -331,27 +311,23 @@
             } catch(e){}
         }
 
-        async function enviarYReiniciar() {
-            if (!confirm("Esto guardará los datos finales y BORRARÁ todas las colas del Excel. ¿Estás seguro?")) return;
-            const btn = document.getElementById('btn-reiniciar');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> REINICIANDO...';
-            btn.disabled = true;
-
-            try {
-                await fetch(LINK_POST_REINICIO, {
-                    method: 'POST',
-                    mode: 'no-cors'
-                });
-                alert("✅ Sistema Reiniciado.");
+        function limpiarHistorial() {
+            if (confirm("¿Borrar historial local?")) {
                 scannedData = [];
                 localStorage.removeItem('scanned_unac');
-                document.getElementById('contador-global').innerText = "0";
                 renderList();
-            } catch (e) {
-                alert("Error de conexión al reiniciar.");
             }
-            btn.innerHTML = '<i class="fa-solid fa-rotate mr-1"></i> Reiniciar Sistema';
-            btn.disabled = false;
+        }
+
+        async function enviarYReiniciar() {
+            if (!confirm("Esto borrará todo el registro del servidor. ¿Confirmar?")) return;
+            const btn = document.getElementById('btn-reiniciar');
+            btn.innerHTML = 'REINICIANDO...';
+            try {
+                await fetch(LINK_REINICIO, { method: 'POST', mode: 'no-cors' });
+                localStorage.removeItem('scanned_unac');
+                location.reload();
+            } catch (e) { alert("Error al reiniciar"); }
         }
     </script>
 </body>
