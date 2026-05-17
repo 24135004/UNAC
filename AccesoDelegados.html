@@ -139,7 +139,6 @@
             </div>
         </div>
 
-        <!-- BOTONES DE ACCIÓN (LIMPIAR HISTORIAL Y REINICIAR SISTEMA) -->
         <div class="grid grid-cols-2 gap-3 mb-10">
             <button onclick="limpiarHistorial()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
                 <i class="fa-solid fa-eraser mr-1"></i> Borrar Historial
@@ -185,12 +184,16 @@
             actualizarTotalGlobal();
             setInterval(actualizarTotalGlobal, 15000);
 
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
+            // Optimización de FPS para lectura instantánea
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+                fps: 25, 
+                qrbox: {width: 250, height: 250},
+                aspectRatio: 1.0
+            });
             html5QrcodeScanner.render(onScanSuccess);
         }
 
-        // NORMALIZACIÓN DE FECHA PARA EVITAR ERROR DE CADUCADO
-        function obtenerFechaHoy() {
+        function obtenerFechaNormalizada() {
             const now = new Date();
             const dia = String(now.getDate()).padStart(2, '0');
             const mes = String(now.getMonth() + 1).padStart(2, '0');
@@ -200,32 +203,36 @@
 
         async function onScanSuccess(decodedText) {
             if (isScanningLocked) return;
-            isScanningLocked = true;
+            isScanningLocked = true; // Bloqueo instantáneo de hardware
+
+            // Feedback visual inmediato de "Procesando"
+            document.getElementById('scan-status').innerText = "PROCESANDO...";
+            document.getElementById('scan-status').className = "text-[10px] font-black uppercase text-yellow-500 animate-pulse";
 
             try {
                 let decodedInfo = decodedText;
-                // SOPORTE PARA TICKETS EN BASE64
                 if(!decodedText.includes('|')) {
                     try { decodedInfo = atob(decodedText); } catch(e) { }
                 }
 
                 const parts = decodedInfo.split('|');
-                if (parts.length < 3) throw new Error();
+                if (parts.length < 3) throw new Error("Formato Inválido");
 
                 const dniAlumno = parts[0];
                 const turno = parts[1];
                 const fechaTicket = parts[2];
-                const fechaHoy = obtenerFechaHoy();
+                const fechaHoy = obtenerFechaNormalizada();
 
-                // 1. VALIDACIÓN DE FECHA
+                // 1. VALIDACIÓN DE FECHA (Formato DD/MM/YYYY)
                 if (fechaTicket !== fechaHoy) {
                     notificarFlash("TICKET CADUCADO", false);
                     setTimeout(() => { isScanningLocked = false; }, 2000);
                     return;
                 }
 
-                // 2. VALIDACIÓN CON APP SCRIPT (LINK 3)
+                // 2. VALIDACIÓN CON SERVIDOR (LINK 3)
                 const apiUrl = `${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`;
+                
                 const response = await fetch(apiUrl);
                 const resultText = await response.text();
 
@@ -244,12 +251,16 @@
                     notificarFlash("ESCANEO VERIFICADO", true);
                     renderList();
                     actualizarTotalGlobal();
+                } else {
+                    notificarFlash("ERROR SERVIDOR", false);
                 }
 
             } catch (e) {
                 notificarFlash("QR NO VÁLIDO", false);
             }
-            setTimeout(() => { isScanningLocked = false; }, 3000);
+            
+            // Tiempo de espera para el siguiente escaneo (evita duplicados por lag)
+            setTimeout(() => { isScanningLocked = false; }, 2500);
         }
 
         function notificarFlash(text, exito) {
@@ -270,7 +281,7 @@
 
             flash.style.display = 'block';
             notificarLector(text, exito);
-            setTimeout(() => { flash.style.display = 'none'; }, 2500);
+            setTimeout(() => { flash.style.display = 'none'; }, 2000);
         }
 
         function renderList() {
@@ -304,7 +315,7 @@
                 ? 'https://raw.githubusercontent.com/Anis-Khemira/QR-Code-Scanner/master/audio/beep.mp3' 
                 : 'https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'); 
             audio.volume = 0.5;
-            audio.play();
+            audio.play().catch(e => {});
         }
 
         function limpiarHistorial() {
@@ -317,6 +328,7 @@
 
         async function actualizarTotalGlobal() {
             try {
+                // Sincronización visual con el total local (puedes añadir fetch a Link 3 aquí si tienes la función obtener_total)
                 document.getElementById('contador-global').innerText = scannedData.length;
             } catch (e) { }
         }
