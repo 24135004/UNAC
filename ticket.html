@@ -5,77 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNAC | Pase de Movilidad Oficial</title>
     
-    <!-- 
-    ==========================================================================
-    SISTEMA DE GESTIÓN DE MOVILIDAD UNIVERSITARIA - UNAC (PRO-SECURITY)
-    --------------------------------------------------------------------------
-    Desarrollado por: Sebastian
-    Versión: 7.5.0 (Enterprise Gold Edition)
-    Seguridad: Anti-Screenshot Encryption, Atomic Clock Sync, BioMetric Scan
-    ==========================================================================
-    -->
-
+    <!-- LIBRERÍAS MANTENIDAS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        :root { 
-            --accent: #ffc107; 
-            --dark: #050505; 
-            --safe-area: #00ff41;
-        }
+        :root { --accent: #ffc107; --dark: #050505; }
 
-        /* BLOQUEO DE SELECCIÓN Y MENÚ CONTEXTUAL */
-        * {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-        }
+        /* BLOQUEO TOTAL DE SELECCIÓN */
+        * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
-        body, html { 
-            margin: 0; padding: 0; min-height: 100vh; 
-            background-color: var(--dark); font-family: 'Inter', sans-serif; 
-            color: #ffffff; overflow-x: hidden; scroll-behavior: smooth; 
-        }
-
-        /* CAPA NEGRA ANTI-CAPTURA (BANCO STYLE) */
-        #privacy-overlay {
+        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; scroll-behavior: smooth; }
+        
+        /* CAPA NEGRA ANTI-CAPTURA PROFESIONAL */
+        #black-shield {
             position: fixed; inset: 0; background: #000; z-index: 10000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; color: var(--accent);
+            text-align: center;
         }
 
-        /* ANIMACIONES */
+        /* ANIMACIONES ORIGINALES */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-float { animation: float 4s ease-in-out infinite; }
 
-        /* ESCÁNER BIOMÉTRICO v3 */
-        @keyframes scanMove { 0% { top: 0%; } 100% { top: 100%; } }
-        .biometric-scanner {
-            position: relative; width: 100%; height: 220px; background: #000;
+        /* ESTILO DEL ESCANEO DETALLISTA */
+        @keyframes laserMove { 0% { top: 0%; } 100% { top: 100%; } }
+        .scan-box {
+            position: relative; width: 100%; height: 200px; background: #000;
             border: 1px solid var(--accent); border-radius: 12px; overflow: hidden;
         }
         .scan-laser {
-            position: absolute; width: 100%; height: 4px; 
-            background: var(--accent); box-shadow: 0 0 25px var(--accent);
-            animation: scanMove 2.5s linear infinite; z-index: 10;
+            position: absolute; width: 100%; height: 3px; background: var(--accent);
+            box-shadow: 0 0 20px var(--accent); animation: laserMove 2s linear infinite; z-index: 10;
         }
         .scan-grid {
             position: absolute; inset: 0;
-            background-image: linear-gradient(rgba(255,193,7,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,193,7,0.05) 1px, transparent 1px);
-            background-size: 25px 25px;
+            background-image: linear-gradient(rgba(255, 193, 7, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 193, 7, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        /* UI ELEMENTS */
         .main-wrapper { 
             position: relative; z-index: 10; 
             background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), 
@@ -94,24 +69,25 @@
         #mobile-menu.active { display: flex; }
 
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s; font-family: 'JetBrains Mono', monospace; }
+        input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s; }
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; border: none; width: 100%; max-width: 400px; }
         .btn-tutorial { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 15px; }
 
-        /* CARDS */
+        /* CARDS TURNOS */
         .card-panorama { position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
         .card-panorama:hover:not(.locked) { transform: scale(1.02); border-color: var(--accent); }
         .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
         .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
         .card-n-img { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); }
         .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-        .badge-muy-pronto { position: absolute; top: 15px; right: -30px; background: var(--accent); color: #000; font-weight: 900; font-size: 10px; padding: 5px 40px; transform: rotate(45deg); text-transform: uppercase; }
+        
+        .badge-muy-pronto { position: absolute; top: 15px; right: -30px; background: var(--accent); color: #000; font-weight: 900; font-size: 10px; padding: 5px 40px; transform: rotate(45deg); text-transform: uppercase; z-index: 20; }
         .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: #10b981; color: white; }
         .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
 
-        /* TICKET VIP */
+        /* TICKET ORIGINAL */
         .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
         .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 25px 10px; color: #111; }
         .vip-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; }
@@ -135,32 +111,32 @@
 </head>
 <body>
 
-    <!-- CAPA PRIVACIDAD (ANTI-CAPTURA) -->
-    <div id="privacy-overlay">
-        <i class="fa-solid fa-eye-slash text-6xl mb-4"></i>
-        <p class="text-xl font-black uppercase">Contenido Protegido</p>
-        <p class="text-[10px] mt-2 opacity-50 uppercase tracking-widest">Las capturas de pantalla están prohibidas por seguridad.</p>
+    <!-- ESCUDO DE PRIVACIDAD -->
+    <div id="black-shield">
+        <i class="fa-solid fa-shield-halved text-yellow-500 text-6xl mb-4"></i>
+        <h2 class="text-white text-xl font-black uppercase">Contenido Protegido</h2>
+        <p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Las capturas están prohibidas</p>
     </div>
 
-    <!-- LOADER GALAXY 3D -->
+    <!-- LOADER GALAXY 3D (10s) -->
     <div id="loading-screen">
         <div id="loader-3d-canvas"></div>
-        <div class="loader-text">SINCRONIZANDO TICKET</div>
-        <p style="color:#fff; font-size:9px; letter-spacing:4px; margin-top:10px; opacity:0.5; z-index:10;">ESTABLECIENDO PROTOCOLO DE SEGURIDAD...</p>
+        <p class="loader-text">SINCRONIZANDO GALAXY</p>
     </div>
 
-    <!-- MENÚ MÓVIL (6 ENLACES) -->
+    <!-- Menú Móvil (6 PUNTOS ORIGINALES) -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500 underline decoration-yellow-500">Ticket</a>
-        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
-        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
-        <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
+        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
+        <!-- HEADER ORIGINAL -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(255,193,7,0.4)]">
@@ -193,9 +169,7 @@
                     <i class="fa-regular fa-clock text-yellow-500"></i>
                     <p id="live-clock" class="text-lg font-bold tracking-widest">--:--:--</p>
                 </div>
-                <p id="time-status" class="text-[9px] text-green-400 mt-1 uppercase tracking-widest hidden flex items-center gap-2">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> SINCRONIZACIÓN ATÓMICA ACTIVA
-                </p>
+                <p id="time-status" class="text-[9px] text-green-400 mt-1 uppercase tracking-widest hidden">Sincronización Atómica</p>
             </div>
 
             <!-- PASO 1: VERIFICACIÓN -->
@@ -204,7 +178,7 @@
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <div class="mt-6 flex flex-col items-center gap-3">
                     <button class="btn-search" id="verifyBtn" onclick="Core.verifyStudent()">Verificar Alumno</button>
-                    <a href="tutorial.html" class="btn-tutorial" id="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
+                    <a href="tutorial.html" class="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
                 </div>
             </div>
 
@@ -212,15 +186,15 @@
             <div id="step-selection" class="w-full max-w-5xl mx-auto hidden-section animate-fade-up">
                 <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
                     <div class="flex items-center gap-4">
-                        <div class="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center text-yellow-500 text-3xl border border-white/10 shadow-xl"><i class="fa-solid fa-user-graduate"></i></div>
-                        <div class="text-left leading-tight">
+                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
+                        <div>
                             <h2 id="welcomeName" class="text-xl md:text-2xl font-black uppercase italic text-white tracking-tighter"></h2>
-                            <div class="status-badge" style="display:inline-flex; align-items:center; gap:8px; background:rgba(16, 185, 129, 0.1); border:1px solid #10b981; color:#10b981; padding:4px 12px; border-radius:50px; font-size:10px; font-weight:800; text-transform:uppercase; margin-top:8px;"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO</div>
+                            <div class="status-badge" style="display:inline-flex; align-items:center; gap:8px; background:rgba(16,185,129,0.1); border:1px solid #10b981; color:#10b981; padding:4px 12px; border-radius:50px; font-size:10px; font-weight:800; text-transform:uppercase; margin-top:8px;"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO</div>
                         </div>
                     </div>
                     <div class="mt-4 md:mt-0 text-right">
-                        <p id="info-fac" class="text-[12px] text-yellow-500 font-black uppercase tracking-widest"></p>
-                        <p id="info-dni" class="text-[11px] text-gray-400 font-bold uppercase mt-1 font-mono"></p>
+                        <p id="info-fac" class="text-[10px] text-yellow-500 font-black uppercase tracking-widest"></p>
+                        <p id="info-dni" class="text-[10px] text-gray-400 font-bold uppercase mt-1"></p>
                     </div>
                 </div>
 
@@ -229,17 +203,15 @@
                         <span id="badge-m" class="badge-img">Calculando...</span>
                         <div class="shift-title text-white">Mañana</div>
                         <div class="salida-text text-yellow-500 font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 05:15 AM</div>
-                        <p class="text-[9px] text-white/60 mt-2 uppercase font-bold tracking-widest">Apertura: 09:00 PM</p>
                     </div>
                     <div id="card-tarde" class="card-panorama card-t-img" onclick="Core.validateAndGenerate('TARDE')">
                         <span id="badge-t" class="badge-img">Calculando...</span>
                         <div class="shift-title text-white">Tarde</div>
                         <div class="salida-text text-white font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 06:00 PM</div>
-                        <p class="text-[9px] text-white/60 mt-2 uppercase font-bold tracking-widest">Apertura: 05:10 PM</p>
                     </div>
                 </div>
 
-                <div class="w-full mb-12">
+                <div class="w-full mb-12 text-center">
                     <div id="card-noche" class="card-panorama card-n-img max-w-2xl mx-auto" onclick="Core.validateAndGenerate('NOCHE')">
                         <div class="badge-muy-pronto">Muy Pronto</div>
                         <span id="badge-n" class="badge-img">Calculando...</span>
@@ -250,22 +222,21 @@
 
                 <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500">
                     <p class="text-[9px] text-gray-400 font-black uppercase mb-1 tracking-widest">Cupos registrados:</p>
-                    <div id="conteo-real" class="text-6xl font-black text-white font-mono leading-none">0</div>
-                    <p class="text-[8px] text-yellow-500/60 mt-4 uppercase italic flex items-center justify-center gap-2"><i class="fa-solid fa-satellite-dish"></i> Sync Stream v7.0</p>
+                    <div id="conteo-real" class="text-5xl font-black text-white font-mono">0</div>
                 </div>
             </div>
 
             <!-- PASO 3: TICKET -->
             <div id="step-ticket" class="w-full max-w-2xl mx-auto hidden-section animate-fade-up">
                 <div class="vip-ticket-card">
-                    <div class="vip-header"><h2>BOARDING PASS VIP</h2></div>
+                    <div class="vip-header"><h2>¡PASE VERIFICADO!</h2></div>
                     <div class="ticket-body">
-                        <p class="text-left text-sm mb-4">Hola <strong id="t-saludo" class="text-black text-lg"></strong>, tu ticket oficial:</p>
+                        <p class="text-left text-sm mb-4">Hola <strong id="t-saludo" class="text-black text-lg"></strong>, se te entrega tu ticket digital:</p>
                         <div class="ticket-main-box">
-                            <p class="text-[10px] text-gray-500 font-black uppercase mb-1">VÁLIDO ÚNICAMENTE HOY:</p>
+                            <p class="text-[10px] text-gray-500 font-bold uppercase">VÁLIDO ÚNICAMENTE HOY:</p>
                             <p class="valid-date" id="t-fecha"></p>
                             <div id="asiento-area"></div>
-                            <div class="qr-wrapper shadow-2xl"><div id="qrcode-vip"></div></div>
+                            <div class="qr-wrapper shadow-lg"><div id="qrcode-vip"></div></div>
                         </div>
                         <table class="data-table">
                             <tr><td class="text-gray-400">ESTUDIANTE:</td><td id="t-nom" style="text-align:right"></td></tr>
@@ -278,20 +249,18 @@
             </div>
 
             <!-- PASO 4: ÉXITO -->
-            <div id="step-success" class="glass p-16 w-full max-w-sm mx-auto text-center border-t-8 border-green-500 hidden-section animate-fade-up">
-                <div class="w-24 h-24 bg-green-500 rounded-full mx-auto flex items-center justify-center text-white text-5xl shadow-[0_0_40px_rgba(16,185,129,0.5)] mb-8">
-                    <i class="fa-solid fa-check"></i>
-                </div>
-                <h2 class="text-3xl font-black uppercase text-white mb-2">ESCANEO EXITOSO</h2>
-                <p class="text-xs text-gray-400 mb-10">Su acceso ha sido registrado. Proceda a abordar.</p>
-                <button onclick="location.reload()" class="bg-white text-black font-black px-12 py-5 rounded-2xl text-[12px] uppercase shadow-2xl transition-all hover:scale-105 active:scale-95">Finalizar</button>
+            <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden-section animate-fade-up">
+                <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6"></i>
+                <h2 class="text-3xl font-black uppercase text-white">ESCANEADO EXITOSO</h2>
+                <button onclick="location.reload()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase mt-6">Finalizar</button>
             </div>
             
         </main>
         
         <div id="globe-container" class="animate-float"></div>
 
-        <div id="delegados-container" class="mb-10 text-center relative z-20">
+        <!-- BOTÓN DELEGADOS (CONTROLADO) -->
+        <div id="delegados-cont" class="mb-10 text-center relative z-20">
             <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </div>
 
@@ -303,126 +272,93 @@
 
     <script>
         /**
-         * CORE LOGIC - v7.5.0
-         * HIGH SECURITY PROTOCOLS IMPLEMENTED
+         * ==========================================
+         * CONFIGURACIÓN DE REGLAS FLEXIBLES
+         * ==========================================
          */
-        const APIS = {
-            BD: "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec",
-            COLA: "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec",
-            SYNC: "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec"
-        };
-
         const REGLAS = { 
             manana: { abre: 21, cierra: 7 }, 
             tarde: { hAbre: 17, mAbre: 10, hCierra: 17, mCierra: 59 },
             noche: { hAbre: 1, mAbre: 49, hCierra: 1, mCierra: 50 }
         };
 
-        /** 
+        const APIS = {
+            BD: "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec",
+            COLA: "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec",
+            SYNC: "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec"
+        };
+
+        /**
          * MODIFICACIÓN: EXTREME TIME SYNC (ANTI-TRAMPAS)
          */
         const TimeGuard = {
             offset: 0,
-            isSynced: false,
             async init() {
                 try {
-                    // Sincronización con WorldTimeAPI para anular cambios de hora locales
                     const res = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
-                    if(!res.ok) throw new Error();
                     const data = await res.json();
-                    const serverTime = new Date(data.datetime).getTime();
-                    this.offset = serverTime - Date.now();
-                    this.isSynced = true;
+                    this.offset = new Date(data.datetime).getTime() - Date.now();
                     document.getElementById('time-status').classList.remove('hidden');
-                } catch (e) {
-                    console.error("Critical Security Error: No sync.");
-                    this.isSynced = false;
-                    // Bloqueo estricto: Si no hay sync, el sistema no abre jamás
-                }
+                } catch (e) { console.warn("Usando fallback de tiempo."); }
                 setInterval(() => this.update(), 1000);
             },
-            getNow() { 
-                if(!this.isSynced) return new Date(0); // 1970 (Sistema bloqueado)
-                return new Date(Date.now() + this.offset); 
-            },
+            getNow() { return new Date(Date.now() + this.offset); },
             update() {
                 const now = this.getNow();
-                const clock = document.getElementById('live-clock');
-                if(!this.isSynced) { clock.innerText = "ERROR SYNC"; clock.style.color = "red"; return; }
-                
-                clock.innerText = now.toLocaleTimeString('en-US', { hour12: false });
+                document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
                 const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
 
                 const check = (id, badgeId, cond) => {
-                    const card = document.getElementById(`card-${id}`);
-                    const badge = document.getElementById(badgeId);
+                    const el = document.getElementById(`card-${id}`);
+                    const b = document.getElementById(badgeId);
                     if (cond) {
-                        card.classList.remove('locked');
-                        badge.innerText = "Abierto"; badge.className = "badge-img badge-abierto";
+                        el.classList.remove('locked');
+                        b.innerText = "Abierto"; b.className = "badge-img badge-abierto";
                     } else {
-                        card.classList.add('locked');
-                        badge.innerText = "Cerrado"; badge.className = "badge-img badge-cerrado";
+                        el.classList.add('locked');
+                        b.innerText = "Cerrado"; b.className = "badge-img badge-cerrado";
                     }
                 };
 
                 check('mañana', 'badge-m', (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra));
-                const iniT = REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre;
-                const finT = REGLAS.tarde.hCierra * 60 + REGLAS.tarde.mCierra;
-                check('tarde', 'badge-t', (totalM >= iniT && totalM < finT));
-                const iniN = REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre;
-                const finN = REGLAS.noche.hCierra * 60 + REGLAS.noche.mCierra;
-                check('noche', 'badge-n', (totalM >= iniN && totalM < finN));
+                check('tarde', 'badge-t', (totalM >= (REGLAS.tarde.hAbre*60+REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra*60+REGLAS.tarde.mCierra)));
+                check('noche', 'badge-n', (totalM >= (REGLAS.noche.hAbre*60+REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra*60+REGLAS.noche.mCierra)));
             }
         };
 
         /**
-         * MODIFICACIÓN: EXTREME SCREENSHOT PROTECTION (BANCO STYLE)
+         * MODIFICACIÓN: EXTREME PRIVACY (ANTI-SCREENSHOT)
          */
-        const AntiCapture = {
+        const Privacy = {
             init() {
-                const overlay = document.getElementById('privacy-overlay');
-                
-                // 1. Detección de pérdida de foco (Cambio de app / Menú de captura)
-                window.addEventListener('blur', () => { overlay.style.display = 'flex'; });
-                window.addEventListener('focus', () => { overlay.style.display = 'none'; });
-
-                // 2. Detección de visibilidad (Minimizar)
+                const shield = document.getElementById('black-shield');
+                window.addEventListener('blur', () => shield.style.display = 'flex');
+                window.addEventListener('focus', () => shield.style.display = 'none');
                 document.addEventListener('visibilitychange', () => {
-                    if (document.hidden) overlay.style.display = 'flex';
-                    else overlay.style.display = 'none';
+                    shield.style.display = document.hidden ? 'flex' : 'none';
                 });
-
-                // 3. Bloqueo de teclado (PrintScreen, F12, etc)
-                window.addEventListener('keydown', (e) => {
-                    if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p')) {
-                        overlay.style.display = 'flex';
-                        setTimeout(() => overlay.style.display = 'none', 1000);
-                    }
-                });
-
-                // 4. Bloqueo menú contextual
-                document.addEventListener('contextmenu', e => e.preventDefault());
             }
         };
 
         const Core = {
-            alumno: null, poll: null, sync: null,
+            alumno: null, poll: null,
             hide() { ['step-verify','step-selection','step-ticket','step-success'].forEach(s => document.getElementById(s).classList.add('hidden-section')); },
 
             async verifyStudent() {
                 const dni = document.getElementById('dniInput').value.trim();
-                if(dni.length < 8) return Swal.fire({ icon:'warning', title:'ID Inválido', background:'#111', color:'#fff'});
+                if(dni.length < 8) return Swal.fire('Error','Ingrese 8 dígitos','warning');
 
+                // ESCANEO DETALLISTA
                 Swal.fire({
-                    title: 'AUTENTICANDO...',
-                    html: `<div class="biometric-scanner"><div class="scan-grid"></div><div class="scan-laser"></div><i class="fa-solid fa-fingerprint" style="font-size:60px; margin-top:60px; color:#ffc107; opacity:0.3;"></i></div><p style="color:#ffc107; font-family:'JetBrains Mono'; font-size:10px; margin-top:15px; letter-spacing:2px;">Verificando Padrón UNAC...</p>`,
+                    title: 'ESCANEO BIOMÉTRICO',
+                    html: `<div class="scan-box"><div class="scan-grid"></div><div class="scan-laser"></div><i class="fa-solid fa-fingerprint" style="font-size:60px; margin-top:55px; color:#ffc107; opacity:0.2;"></i></div><p style="color:#ffc107; font-size:10px; margin-top:15px; letter-spacing:2px; font-family:monospace;">COTEJANDO CON PADRÓN...</p>`,
                     background: '#050505', showConfirmButton: false, allowOutsideClick: false,
                     didOpen: async () => {
                         try {
-                            const resSync = await fetch(`${APIS.SYNC}?dni=${dni}&accion=consultar`);
-                            const dataSync = await resSync.json();
-                            if(dataSync.asistio) {
-                                Swal.fire({ icon:'error', title:'Acceso Bloqueado', text:'DNI ya escaneado por el delegado.', background:'#111', color:'#fff'});
+                            const resCheck = await fetch(`${APIS.SYNC}?dni=${dni}&accion=consultar`);
+                            const dataCheck = await resCheck.json();
+                            if(dataCheck.asistio) {
+                                Swal.fire({ icon:'error', title:'Ticket Usado', text:'Ya has sido escaneado hoy.', background:'#111', color:'#fff'});
                                 return;
                             }
 
@@ -434,16 +370,16 @@
                                     this.onLogin();
                                     Swal.close();
                                 } else {
-                                    Swal.fire({ icon:'error', title:'No Padroneado', background:'#111', color:'#fff'});
+                                    Swal.fire({ icon:'error', title:'Denegado', text:'No figura en padrón.', background:'#111', color:'#fff'});
                                 }
-                            }, 2500);
+                            }, 2000);
                         } catch(e) { Swal.fire('Error','Fallo Red','error'); }
                     }
                 });
             },
 
             onLogin() {
-                document.getElementById('delegados-container').style.display = 'none';
+                document.getElementById('delegados-cont').style.display = 'none';
                 document.getElementById('welcomeName').innerText = this.alumno.Estudiante;
                 document.getElementById('info-fac').innerText = this.alumno.Facultad;
                 document.getElementById('info-dni').innerText = "ID: " + this.alumno.dni;
@@ -470,7 +406,7 @@
                     if(totalM >= (r.hAbre*60+r.mAbre) && totalM < (r.hCierra*60+r.mCierra)) ok = true;
                 }
                 if(ok) this.runGalaxy(turno);
-                else Swal.fire('Cerrado','Verifique horario de apertura.','error');
+                else Swal.fire('Cerrado','Intente a la hora de apertura.','error');
             },
 
             runGalaxy(turno) {
@@ -501,15 +437,14 @@
                     const res = await fetch(`${APIS.COLA}?dni=${this.alumno.dni}&accion=solicitar_cola`);
                     const data = await res.json();
                     const n = parseInt(data.orden);
-                    
+
                     if (n <= 45) {
-                        area.innerHTML = `<p style="font-size:10px; color:#666; font-weight:bold; margin-top:10px;">ASIENTO ASIGNADO:</p><div class="asiento-num-big">${n<10?'0'+n:n}</div>`;
+                        area.innerHTML = `<p style="font-size:10px; color:#888; font-weight:bold; margin-top:10px;">ASIENTO ASIGNADO:</p><div class="asiento-num-big">${n<10?'0'+n:n}</div>`;
                     } else {
                         area.innerHTML = `
                             <div class="flex flex-col items-center py-4">
-                                <i class="fa-solid fa-person-walking-arrow-right text-6xl text-gray-400 mb-2"></i>
-                                <p style="color:#e53e3e; font-weight:900; font-size:22px; line-height:1;">VIAJE DE PIE</p>
-                                <p style="font-size:8px; color:#aaa; text-transform:uppercase; margin-top:5px;">CUPO EXCEDE LÍMITE DE 45</p>
+                                <i class="fa-solid fa-person-running text-6xl text-gray-400 mb-3"></i>
+                                <p style="color:#e53e3e; font-weight:900; font-size:24px;">VIAJE DE PIE</p>
                             </div>`;
                     }
                 }
@@ -520,12 +455,12 @@
             },
 
             waitSync() {
-                this.sync = setInterval(async () => {
+                this.syncInt = setInterval(async () => {
                     try {
                         const res = await fetch(`${APIS.SYNC}?dni=${this.alumno.dni}&accion=consultar`);
                         const data = await res.json();
                         if(data.asistio) {
-                            clearInterval(this.sync);
+                            clearInterval(this.syncInt);
                             this.hide();
                             document.getElementById('step-success').classList.remove('hidden-section');
                         }
@@ -554,8 +489,8 @@
                 const anim = () => {
                     this.reqId = requestAnimationFrame(anim);
                     this.particles.rotation.z += 0.005;
-                    const arr = this.particles.geometry.attributes.position.array;
-                    for(let i=0; i<arr.length; i+=3) { arr[i+2] += 0.15; if(arr[i+2] > 5) arr[i+2] = -15; }
+                    const p = this.particles.geometry.attributes.position.array;
+                    for(let i=0; i<p.length; i+=3) { p[i+2] += 0.15; if(p[i+2] > 5) p[i+2] = -15; }
                     this.particles.geometry.attributes.position.needsUpdate = true;
                     this.renderer.render(this.scene, this.camera);
                 };
@@ -581,18 +516,17 @@
 
         window.onload = () => {
             TimeGuard.init();
-            AntiCapture.init();
+            Privacy.init();
             initGlobe();
         };
 
-        /**
-         * SECURITY LOGS & DOCUMENTATION
+        /*
+         * DOCUMENTACIÓN TÉCNICA
          * --------------------------------------------------
-         * - Screenshot blocker: Visibility/Blur detection.
-         * - Server-side Time Offset: Real-time API sync.
-         * - Seat Limit: Queue Logic Link 2 (N <= 45).
-         * - Multi-Access prevention: Link 3 Sync check.
-         * --------------------------------------------------
+         * - Bloqueo Link 3: Consulta diaria obligatoria.
+         * - Lógica Excel Link 2: N <= 45 (Asiento), N > 45 (Icono Persona).
+         * - Anti-Screenshot: Eventos de visibilidad y foco.
+         * - Sincronización Horaria: Offset WorldTimeAPI.
          */
     </script>
 </body>
