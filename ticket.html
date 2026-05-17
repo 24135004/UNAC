@@ -11,579 +11,582 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         :root { --accent: #ffc107; --dark: #050505; }
-        body, html { 
+        
+        html, body { 
+            width: 100%; 
+            height: 100vh;
             margin: 0; 
             padding: 0; 
-            min-height: 100vh; 
             background-color: var(--dark); 
             font-family: 'Inter', sans-serif; 
             color: #ffffff; 
-            overflow-x: hidden; 
+            overflow-x: hidden;
+            scroll-behavior: smooth;
         }
-        
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
-        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
-        .animate-float { animation: float 4s ease-in-out infinite; }
-        .animate-spin { animation: spin 3s linear infinite; }
-        .animate-pulse { animation: pulse 2s ease-in-out infinite; }
 
         .main-wrapper { 
-            position: relative; 
-            z-index: 10; 
-            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
-            background-size: cover; 
-            background-position: center; 
-            background-attachment: fixed; 
-            min-height: 100vh; 
-            width: 100%; 
-            display: flex; 
-            flex-direction: column;
-        }
-
-        header { 
-            width: 100%; 
-            padding: 20px 15px; 
-            z-index: 1000; 
-            margin: 0 auto;
-        }
-
-        @media (min-width: 768px) {
-            header { 
-                max-width: 1200px; 
-                padding: 30px 20px; 
-                margin: 0 auto;
-            }
-        }
-
-        .nav-link { 
-            font-size: 11px; 
-            font-weight: 700; 
-            letter-spacing: 2px; 
-            color: rgba(255, 255, 255, 0.6); 
-            text-transform: uppercase; 
-            position: relative; 
-            transition: 0.3s; 
-        }
-        
-        .nav-link:hover, .active-link { 
-            color: var(--accent); 
-        }
-        
-        .nav-link::after { 
-            content: ''; 
-            position: absolute; 
-            width: 0; 
-            height: 2px; 
-            bottom: -6px; 
-            left: 0; 
-            background: var(--accent); 
-            transition: width 0.3s; 
-        }
-        
-        .nav-link:hover::after, .active-link::after { 
-            width: 100%; 
-        }
-
-        #mobile-menu { 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(5,5,5,0.98); 
-            z-index: 2000; 
-            display: none; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 35px; 
-        }
-        
-        #mobile-menu.active { 
-            display: flex; 
-        }
-
-        .glass { 
-            background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            backdrop-filter: blur(15px); 
-            border-radius: 20px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
-        }
-
-        main { 
-            flex-grow: 1; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 20; 
+            position: relative;
+            z-index: 10;
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
             width: 100%;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        #canvas-container { 
-            width: 100%; 
-            height: 300px; 
-            max-height: 50vh;
-            margin-bottom: 20px;
+        /* HEADER RESPONSIVE */
+        header {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         @media (min-width: 768px) {
-            #canvas-container { 
-                height: 400px; 
-                margin-bottom: 40px;
+            header {
+                padding: 1.875rem 2.5rem;
             }
         }
 
-        .maintenance-card {
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 2.25rem;
+            height: 2.25rem;
+            background: var(--accent);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            line-height: 1;
+        }
+
+        .logo-text-main {
+            font-size: 0.625rem;
+            font-weight: 900;
+            letter-spacing: 0.125rem;
+        }
+
+        .logo-text-sub {
+            font-size: 0.5625rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .nav-desktop {
+            display: none;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .nav-desktop {
+                display: flex;
+            }
+        }
+
+        .nav-link {
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.125rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            position: relative;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .nav-link:hover, .active-link {
+            color: var(--accent);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -6px;
+            left: 0;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after, .active-link::after {
+            width: 100%;
+        }
+
+        .btn-menu {
+            display: block;
+            color: var(--accent);
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        @media (min-width: 768px) {
+            .btn-menu {
+                display: none;
+            }
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            main {
+                padding: 2rem;
+            }
+        }
+
+        #canvas-container {
             width: 100%;
             max-width: 600px;
-            text-align: center;
-            animation: fadeInUp 0.8s ease-out forwards;
+            height: 250px;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (min-width: 768px) {
+            #canvas-container {
+                height: 350px;
+                margin-bottom: 2.5rem;
+            }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .glass {
+                padding: 2.5rem;
+                max-width: 600px;
+            }
+        }
+
+        .maintenance-icon {
+            font-size: 3.5rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            animation: rotateIcon 4s linear infinite;
+            text-shadow: 0 0 20px rgba(255, 193, 7, 0.4);
+        }
+
+        @keyframes rotateIcon {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .maintenance-title {
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
-            font-size: 28px;
+            font-size: 1.75rem;
             text-transform: uppercase;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
+            text-align: center;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
         }
 
         @media (min-width: 768px) {
             .maintenance-title {
-                font-size: 48px;
-                margin-bottom: 15px;
+                font-size: 2.25rem;
             }
         }
 
         .maintenance-subtitle {
-            font-size: 12px;
+            color: var(--accent);
+            font-weight: 900;
+            font-size: 1.75rem;
+            text-align: center;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #888;
-            margin-bottom: 25px;
+            margin-bottom: 1rem;
         }
 
         @media (min-width: 768px) {
             .maintenance-subtitle {
-                font-size: 14px;
-                margin-bottom: 35px;
+                font-size: 2.25rem;
             }
         }
 
+        .status-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .description {
+                font-size: 0.9375rem;
+            }
+        }
+
+        /* COUNTDOWN */
         .countdown-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 25px 0;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
         }
 
-        @media (min-width: 480px) {
+        @media (min-width: 768px) {
             .countdown-container {
                 grid-template-columns: repeat(4, 1fr);
-                gap: 12px;
+                gap: 1rem;
             }
         }
 
-        .countdown-box {
-            background: rgba(255, 193, 7, 0.1);
-            border: 2px solid var(--accent);
+        .countdown-item {
+            background: rgba(255, 193, 7, 0.05);
+            border: 1px solid rgba(255, 193, 7, 0.3);
             border-radius: 12px;
-            padding: 15px 8px;
-            animation: fadeInUp 1s ease-out forwards;
+            padding: 1rem 0.75rem;
+            text-align: center;
         }
 
-        @media (min-width: 480px) {
-            .countdown-box {
-                padding: 20px 10px;
+        @media (min-width: 768px) {
+            .countdown-item {
+                padding: 1.25rem 1rem;
             }
         }
 
         .countdown-number {
             font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
             font-weight: 900;
-            font-size: 24px;
             color: var(--accent);
-            line-height: 1;
+            display: block;
+            margin-bottom: 0.5rem;
         }
 
-        @media (min-width: 480px) {
+        @media (min-width: 768px) {
             .countdown-number {
-                font-size: 32px;
+                font-size: 2rem;
             }
         }
 
         .countdown-label {
-            font-size: 9px;
+            font-size: 0.625rem;
+            color: rgba(255, 255, 255, 0.6);
             text-transform: uppercase;
-            font-weight: 800;
-            color: #888;
-            margin-top: 8px;
-            letter-spacing: 1px;
-        }
-
-        @media (min-width: 480px) {
-            .countdown-label {
-                font-size: 10px;
-                margin-top: 10px;
-            }
-        }
-
-        .info-box {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 4px solid var(--accent);
-            border-radius: 12px;
-            padding: 15px 12px;
-            margin: 20px 0;
-            font-size: 12px;
-            line-height: 1.6;
-            text-align: left;
+            font-weight: 700;
+            letter-spacing: 0.05rem;
         }
 
         @media (min-width: 768px) {
-            .info-box {
-                padding: 20px 15px;
-                margin: 30px 0;
-                font-size: 13px;
+            .countdown-label {
+                font-size: 0.6875rem;
             }
         }
 
-        .info-box strong {
-            color: var(--accent);
-            display: block;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 1px;
-        }
-
-        .status-indicator {
-            display: inline-flex;
+        .sync-status {
+            display: flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid #10b981;
-            color: #10b981;
-            padding: 8px 12px;
-            border-radius: 50px;
-            font-size: 10px;
-            font-weight: 800;
+            justify-content: center;
+            gap: 0.75rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
             text-transform: uppercase;
-            margin-top: 15px;
-            animation: fadeInUp 1.2s ease-out forwards;
+            letter-spacing: 0.05rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
+        .sync-dot {
+            width: 0.5rem;
+            height: 0.5rem;
             background: #10b981;
             border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
+            animation: pulse 2s infinite;
         }
 
-        .tool-icon {
-            font-size: 60px;
-            color: var(--accent);
-            margin-bottom: 15px;
-            animation: spin 3s linear infinite;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
-        @media (min-width: 768px) {
-            .tool-icon {
-                font-size: 80px;
-                margin-bottom: 20px;
-            }
-        }
-
+        /* FOOTER */
         footer {
             width: 100%;
-            padding: 15px;
-            flex-direction: column;
-            align-items: center;
-            border-t: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             background: rgba(0, 0, 0, 0.4);
-            margin-top: auto;
-            z-index: 20;
+            backdrop-filter: blur(10px);
             text-align: center;
+            margin-top: auto;
         }
 
         @media (min-width: 768px) {
             footer {
-                padding: 20px;
+                padding: 2.5rem 2rem;
             }
         }
 
-        footer span {
-            display: block;
-        }
-
-        .footer-title {
-            font-size: 9px;
+        .footer-text {
+            font-size: 0.625rem;
             font-weight: 900;
-            letter-spacing: 6px;
+            letter-spacing: 0.375rem;
             color: var(--accent);
-            margin-bottom: 5px;
+            margin-bottom: 0.5rem;
             text-transform: uppercase;
         }
 
-        .footer-subtitle {
-            font-size: 8px;
+        @media (min-width: 768px) {
+            .footer-text {
+                font-size: 0.6875rem;
+            }
+        }
+
+        .footer-copyright {
+            font-size: 0.5625rem;
             color: #888;
-            letter-spacing: 2px;
+            letter-spacing: 0.0625rem;
             text-transform: uppercase;
             font-style: italic;
+        }
+
+        @media (min-width: 768px) {
+            .footer-copyright {
+                font-size: 0.5625rem;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-up {
+            animation: fadeInUp 0.8s ease-out forwards;
         }
     </style>
 </head>
 <body>
 
-    <div id="mobile-menu">
-        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500 underline">Tickets</a>
-        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
-        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
-        <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
-    </div>
-
     <div class="main-wrapper">
-        <header class="flex justify-between items-center relative z-20 animate-fade-up w-full">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(255,193,7,0.4)]">
+        <header class="animate-fade-up">
+            <div class="logo-container">
+                <div class="logo-icon">
                     <i class="fa-solid fa-bus text-black text-lg"></i>
                 </div>
-                <div class="flex flex-col text-left leading-none uppercase">
-                    <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
-                    <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
+                <div class="logo-text">
+                    <span class="logo-text-main">UNAC</span>
+                    <span class="logo-text-sub">Movilidad</span>
                 </div>
             </div>
-            <nav class="hidden md:flex gap-8 nav-desktop">
+
+            <nav class="nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link">Rutas</a>
-                <a href="ticket.html" class="nav-link active-link">Tickets</a>
+                <a href="ticket.html" class="nav-link active-link">Ticket</a>
                 <a href="registro.html" class="nav-link">Registro</a>
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl">
+
+            <button class="btn-menu" onclick="toggleMenu()">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </header>
 
-        <main>
+        <main class="animate-fade-up">
             <div id="canvas-container"></div>
 
-            <div class="maintenance-card">
-                <div class="glass p-8 md:p-12">
-                    <i class="fa-solid fa-wrench tool-icon"></i>
+            <div class="glass">
+                <div style="text-align: center;">
+                    <i class="fas fa-wrench maintenance-icon"></i>
+                    <h1 class="maintenance-title">Mantenimiento</h1>
+                    <p class="maintenance-subtitle">Programado</p>
+                    <p class="status-text">Sistema en mejora</p>
                     
-                    <h1 class="maintenance-title">
-                        Mantenimiento
-                        <span class="text-yellow-500">Programado</span>
-                    </h1>
-                    <p class="maintenance-subtitle">Sistema en Mejora</p>
-
-                    <p class="text-sm md:text-base leading-relaxed mb-6">
-                        Estamos realizando mejoras importantes en nuestro sistema de movilidad para brindarte una mejor experiencia. Regresaremos en poco tiempo.
+                    <p class="description">
+                        Estamos realizando mejoras importantes en nuestro sistema de movilidad universitaria. 
+                        Pronto estaremos de vuelta con una experiencia mejorada.
                     </p>
 
                     <div class="countdown-container">
-                        <div class="countdown-box">
-                            <div class="countdown-number" id="dias">00</div>
-                            <div class="countdown-label">Días</div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="days">0</span>
+                            <span class="countdown-label">Días</span>
                         </div>
-                        <div class="countdown-box">
-                            <div class="countdown-number" id="horas">00</div>
-                            <div class="countdown-label">Horas</div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="hours">0</span>
+                            <span class="countdown-label">Horas</span>
                         </div>
-                        <div class="countdown-box">
-                            <div class="countdown-number" id="minutos">00</div>
-                            <div class="countdown-label">Minutos</div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="minutes">0</span>
+                            <span class="countdown-label">Minutos</span>
                         </div>
-                        <div class="countdown-box">
-                            <div class="countdown-number" id="segundos">00</div>
-                            <div class="countdown-label">Segundos</div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="seconds">0</span>
+                            <span class="countdown-label">Segundos</span>
                         </div>
                     </div>
 
-                    <div class="info-box">
-                        <strong><i class="fa-solid fa-circle-check mr-2 text-yellow-500"></i> Mejoras Incluidas:</strong>
-                        ✓ Sistema de seguridad mejorado<br>
-                        ✓ Validación de horarios rigurosa<br>
-                        ✓ Prevención de fraudes<br>
-                        ✓ Sincronización en tiempo real<br>
-                        ✓ Interfaz optimizada<br>
-                    </div>
-
-                    <div class="status-indicator">
-                        <div class="status-dot"></div>
-                        <span>Sistema Sincronizado</span>
+                    <div class="sync-status">
+                        <div class="sync-dot"></div>
+                        <span>Sincronización en vivo</span>
                     </div>
                 </div>
             </div>
         </main>
 
-        <footer class="flex">
-            <span class="footer-title">Sistema Creado Por Sebastian</span>
-            <span class="footer-subtitle">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
+        <footer>
+            <p class="footer-text">Sistema creado por Sebastian</p>
+            <p class="footer-copyright">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</p>
         </footer>
     </div>
 
     <script>
-        let scene, camera, renderer, particles, linesMesh;
+        // CANVAS 3D
+        let scene, camera, renderer;
 
-        function initThreeJS() {
+        function initCanvas() {
             const container = document.getElementById('canvas-container');
             if (!container) return;
 
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.z = 30;
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 3;
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearColor(0x000000, 0.1);
             container.appendChild(renderer.domElement);
 
-            // Crear partículas
+            // Partículas
             const particleCount = 1500;
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particleCount * 3);
             const colors = new Float32Array(particleCount * 3);
 
             for (let i = 0; i < particleCount; i++) {
-                positions[i * 3] = (Math.random() - 0.5) * 80;
-                positions[i * 3 + 1] = (Math.random() - 0.5) * 80;
-                positions[i * 3 + 2] = (Math.random() - 0.5) * 80;
+                const i3 = i * 3;
+                positions[i3] = (Math.random() - 0.5) * 6;
+                positions[i3 + 1] = (Math.random() - 0.5) * 6;
+                positions[i3 + 2] = (Math.random() - 0.5) * 6;
 
-                colors[i * 3] = 1;
-                colors[i * 3 + 1] = 0.84;
-                colors[i * 3 + 2] = 0.05;
+                const yellow = new THREE.Color(0xffc107);
+                colors[i3] = yellow.r;
+                colors[i3 + 1] = yellow.g;
+                colors[i3 + 2] = yellow.b;
             }
 
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-            const material = new THREE.PointsMaterial({
-                size: 0.5,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.8
-            });
-
-            particles = new THREE.Points(geometry, material);
-            scene.add(particles);
-
-            // Crear líneas conectoras
-            const lineGeometry = new THREE.BufferGeometry();
-            const linePositions = new Float32Array(particleCount * 6);
-
-            for (let i = 0; i < particleCount; i++) {
-                linePositions[i * 6] = positions[i * 3];
-                linePositions[i * 6 + 1] = positions[i * 3 + 1];
-                linePositions[i * 6 + 2] = positions[i * 3 + 2];
-                linePositions[i * 6 + 3] = (Math.random() - 0.5) * 80;
-                linePositions[i * 6 + 4] = (Math.random() - 0.5) * 80;
-                linePositions[i * 6 + 5] = (Math.random() - 0.5) * 80;
-            }
-
-            lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
-
-            const lineMaterial = new THREE.LineBasicMaterial({
-                color: 0xffc107,
-                transparent: true,
-                opacity: 0.2
-            });
-
-            linesMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
-            scene.add(linesMesh);
+            const material = new THREE.PointsMaterial({ size: 0.02, vertexColors: true, sizeAttenuation: true });
+            const points = new THREE.Points(geometry, material);
+            scene.add(points);
 
             animate();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                points.rotation.x += 0.0005;
+                points.rotation.y += 0.001;
+                renderer.render(scene, camera);
+            }
+
             window.addEventListener('resize', onWindowResize);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            if (particles) {
-                particles.rotation.x += 0.0002;
-                particles.rotation.y += 0.0003;
-            }
-
-            if (linesMesh) {
-                linesMesh.rotation.x -= 0.0001;
-                linesMesh.rotation.y -= 0.0002;
-            }
-
-            renderer.render(scene, camera);
         }
 
         function onWindowResize() {
             const container = document.getElementById('canvas-container');
-            if (!container) return;
-
+            if (!container || !camera || !renderer) return;
             const width = container.clientWidth;
             const height = container.clientHeight;
-
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
             renderer.setSize(width, height);
         }
 
-        // Obtener hora del servidor
-        async function sincronizarHora() {
-            try {
-                const res = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
-                const data = await res.json();
-                return new Date(data.datetime);
-            } catch (e) {
-                return new Date();
-            }
-        }
+        // COUNTDOWN
+        function updateCountdown() {
+            const targetDate = new Date(2026, 4, 24, 0, 0, 0, 0); // 24 mayo 2026 00:00
 
-        // Actualizar countdown
-        async function actualizarCountdown() {
-            const ahora = await sincronizarHora();
-            const mantenimientoFin = new Date('2026-05-24T00:00:00-05:00');
+            setInterval(() => {
+                const now = new Date();
+                const diff = targetDate - now;
 
-            // Si ya pasó el mantenimiento
-            if (ahora >= mantenimientoFin) {
-                window.location.href = 'ticket.html';
-                return;
-            }
+                if (diff <= 0) {
+                    window.location.href = 'ticket.html';
+                    return;
+                }
 
-            const diferencia = mantenimientoFin - ahora;
-            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-            const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
-            const minutos = Math.floor((diferencia / 1000 / 60) % 60);
-            const segundos = Math.floor((diferencia / 1000) % 60);
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-            document.getElementById('dias').innerText = String(dias).padStart(2, '0');
-            document.getElementById('horas').innerText = String(horas).padStart(2, '0');
-            document.getElementById('minutos').innerText = String(minutos).padStart(2, '0');
-            document.getElementById('segundos').innerText = String(segundos).padStart(2, '0');
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            }, 1000);
         }
 
         function toggleMenu() {
-            document.getElementById('mobile-menu').classList.toggle('active');
+            // Placeholder para menú mobile si es necesario
+            alert('Menú en desarrollo');
         }
 
         window.addEventListener('load', () => {
-            initThreeJS();
-            actualizarCountdown();
-            setInterval(actualizarCountdown, 1000);
-        });
-
-        window.addEventListener('resize', () => {
-            onWindowResize();
+            initCanvas();
+            updateCountdown();
         });
     </script>
 </body>
