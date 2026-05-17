@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNAC | Pase de Movilidad Oficial</title>
+    <title>UNAC | Pase de Movilidad Oficial - Mantenimiento</title>
     
     <!-- Librerías Externas -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
     
     <!-- Fuentes e Íconos -->
@@ -21,8 +20,15 @@
         
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+        
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-float { animation: float 4s ease-in-out infinite; }
+
+        @keyframes pulse-ring { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+        .pulse-ring { animation: pulse-ring 2s ease-out infinite; }
+
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spin-slow { animation: spin-slow 3s linear infinite; }
 
         .main-wrapper { 
             position: relative; z-index: 10; 
@@ -32,6 +38,7 @@
         }
 
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
+        
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
@@ -42,118 +49,27 @@
 
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         
-        input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s; }
-        input[type="text"]:focus { box-shadow: 0 0 15px rgba(255,193,7,0.3); background: rgba(0,0,0,0.8); }
-        
-        .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; border: none; width: 100%; max-width: 400px; }
-        .btn-search:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,193,7,0.3); }
-        .btn-search:disabled { opacity: 0.7; cursor: not-allowed; }
+        #canvas-maintenance { width: 100%; height: 100%; position: absolute; inset: 0; }
 
-        .btn-tutorial { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 15px; }
-        .btn-tutorial:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
-
-        .btn-acceso { display: inline-flex; align-items: center; background: #111; border: 1px solid #333; color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; position: relative; z-index: 20; }
-        .btn-acceso:hover { border-color: var(--accent); color: var(--accent); }
-
-        /* CARDS DE TURNOS */
-        .card-panorama { position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
-        .card-panorama:hover:not(.locked) { transform: scale(1.02); border-color: var(--accent); }
-        .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
-        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
-        .card-n-img { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); }
-        
-        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-        
-        .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
-        .badge-cerrado { background: #ef4444; color: white; }
-        .badge-abierto { background: #10b981; color: white; }
-        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-
-        /* TICKET VIP */
-        .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
-        .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 25px 10px; color: #111; }
-        .vip-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: 1px; }
-        .ticket-body { padding: 25px; }
-        .ticket-main-box { border: 1px dashed #d4a017; border-radius: 10px; padding: 20px; background: #fafafa; }
-        .valid-date { font-size: 24px; font-weight: 900; color: #d4a017; font-family: 'Montserrat', sans-serif;}
-        .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 80px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 10px 0; }
-        .qr-wrapper { border: 2px solid #d4a017; display: inline-block; padding: 10px; background: #fff; margin: 15px 0; border-radius: 10px; }
-        .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; background: #fff;}
-        .data-table td { padding: 10px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; color: #444; }
-
-        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
-        
-        #globe-container { width: 100%; height: 350px; pointer-events: none; position: relative; z-index: 0; opacity: 0.8; margin-top: -30px; margin-bottom: 20px; }
-        
-        #loading-screen { position: fixed; inset: 0; background: #050505; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        #loader-3d-canvas { width: 100%; height: 60vh; max-height: 500px; }
-        .loader-text { color: var(--accent); font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; font-size: 14px; margin-top: 20px; animation: pulse 1.5s infinite; text-align: center; z-index: 10; }
-        .loader-subtext { color: #888; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; z-index: 10;}
-        @keyframes pulse { 0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(255,193,7,0.5); } 50% { opacity: 0.5; text-shadow: none; } }
-        
-        .hidden-section { display: none !important; }
-
-        /* PANTALLA DE MANTENIMIENTO */
-        #maintenance-screen {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, #050505 0%, #1a1a1a 50%, #050505 100%);
-            z-index: 99999;
-            display: none;
+        .maintenance-container {
+            position: relative;
+            z-index: 20;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-        }
-
-        #maintenance-screen.active {
-            display: flex;
-        }
-
-        #maintenance-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
-        .maintenance-content {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            max-width: 600px;
-            padding: 40px 20px;
-            background: rgba(5, 5, 5, 0.7);
-            border: 2px solid rgba(255, 193, 7, 0.3);
-            border-radius: 30px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 0 60px rgba(255, 193, 7, 0.2);
-            animation: slideInDown 0.8s ease-out;
-        }
-
-        @keyframes slideInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            flex-grow: 1;
         }
 
         .maintenance-icon {
-            font-size: 80px;
+            font-size: 120px;
             color: var(--accent);
-            margin-bottom: 20px;
-            animation: rotate 3s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 20px rgba(255,193,7,0.4));
         }
 
         .maintenance-title {
@@ -162,193 +78,212 @@
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 3px;
-            margin-bottom: 15px;
-            color: var(--accent);
-            text-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
+            margin-bottom: 10px;
+            line-height: 1;
         }
 
         .maintenance-subtitle {
-            font-size: 14px;
+            font-size: 16px;
             color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 30px;
-            font-weight: 600;
         }
 
-        .maintenance-status {
-            background: rgba(255, 193, 7, 0.1);
+        .countdown-container {
+            glass: true;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 193, 7, 0.3);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .countdown-item {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(255, 193, 7, 0.5);
             border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-            backdrop-filter: blur(10px);
+            padding: 20px 10px;
+            transition: 0.3s;
         }
 
-        .status-label {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            font-weight: 700;
+        .countdown-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(255,193,7,0.3);
         }
 
-        .status-time {
+        .countdown-number {
             font-family: 'Montserrat', sans-serif;
             font-size: 32px;
             font-weight: 900;
             color: var(--accent);
-            text-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
-            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255,193,7,0.5);
         }
 
-        .time-counter {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+        .countdown-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 8px;
+        }
+
+        .maintenance-info {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--accent);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .maintenance-info-title {
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .maintenance-info-item {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            text-align: left;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .maintenance-info-item i {
+            color: var(--accent);
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #10b981;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             margin-top: 20px;
         }
 
-        .time-box {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 193, 7, 0.2);
-            border-radius: 10px;
-            padding: 12px 8px;
-            backdrop-filter: blur(10px);
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
         }
 
-        .time-value {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 24px;
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        footer { 
+            width: 100%; 
+            py: 10; 
+            flex: none;
+            flex-col: true;
+            items-center: true;
+            border-t: true;
+            border-white/5: true;
+            bg: true;
+            black/40: true;
+            relative: true;
+            z: 20;
+            backdrop: true;
+            blur-sm: true;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+            margin-top: auto;
+        }
+
+        .footer-text {
+            text-align: center;
+            font-size: 10px;
             font-weight: 900;
+            tracking-widest: true;
+            text-yellow-500: true;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 6px;
             color: var(--accent);
         }
 
-        .time-label {
+        .footer-copyright {
+            text-align: center;
             font-size: 9px;
-            color: rgba(255, 255, 255, 0.5);
+            text-gray-500: true;
+            tracking-widest: true;
+            uppercase: true;
+            italic: true;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 5px;
-            font-weight: 700;
+            font-style: italic;
+            color: rgba(255,255,255,0.5);
         }
 
-        .maintenance-description {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 3px solid #10b981;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: left;
-            margin-bottom: 20px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.6;
-        }
+        @media (max-width: 768px) {
+            .maintenance-title {
+                font-size: 36px;
+            }
 
-        .maintenance-description strong {
-            color: #10b981;
-        }
+            .maintenance-icon {
+                font-size: 80px;
+                margin-bottom: 20px;
+            }
 
-        .pulse-dot {
-            width: 10px;
-            height: 10px;
-            background: #10b981;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            animation: pulse-dot 2s infinite;
-        }
+            .countdown {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
 
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            50% { opacity: 0.8; box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-        }
+            .countdown-number {
+                font-size: 24px;
+            }
 
-        .floating-particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1;
-        }
+            .countdown-item {
+                padding: 15px 8px;
+            }
 
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 193, 7, 0.6);
-            border-radius: 50%;
-            animation: float-particle 20s infinite;
+            .maintenance-container {
+                padding: 20px 15px;
+            }
         }
     </style>
 </head>
 <body>
-
-    <!-- PANTALLA DE MANTENIMIENTO -->
-    <div id="maintenance-screen">
-        <canvas id="maintenance-canvas"></canvas>
-        
-        <div class="floating-particles" id="floating-particles"></div>
-
-        <div class="maintenance-content">
-            <div class="maintenance-icon">
-                <i class="fa-solid fa-tools"></i>
-            </div>
-
-            <h1 class="maintenance-title">En Mantenimiento</h1>
-            <p class="maintenance-subtitle">Sistema en Actualización</p>
-
-            <div class="maintenance-status">
-                <div class="status-label">Reapertura en:</div>
-                <div class="status-time" id="countdown-main">00:00:00</div>
-                <div class="time-counter">
-                    <div class="time-box">
-                        <div class="time-value" id="days">00</div>
-                        <div class="time-label">Días</div>
-                    </div>
-                    <div class="time-box">
-                        <div class="time-value" id="hours">00</div>
-                        <div class="time-label">Horas</div>
-                    </div>
-                    <div class="time-box">
-                        <div class="time-value" id="minutes">00</div>
-                        <div class="time-label">Minutos</div>
-                    </div>
-                    <div class="time-box">
-                        <div class="time-value" id="seconds">00</div>
-                        <div class="time-label">Segundos</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="maintenance-description">
-                <span class="pulse-dot"></span>
-                <strong>Estado:</strong> Estamos realizando mejoras importantes en el sistema de movilidad universitaria. 
-                <br><br>
-                <strong>Mejoras incluidas:</strong> Optimización de servidores, actualización de seguridad, nuevas funcionalidades y sincronización mejorada.
-                <br><br>
-                <strong>Reapertura:</strong> Domingo 24 de Mayo a las 00:00 horas (Zona Lima)
-            </div>
-
-            <div style="border-top: 1px solid rgba(255, 193, 7, 0.2); padding-top: 15px; margin-top: 15px;">
-                <p style="font-size: 11px; color: rgba(255, 255, 255, 0.5); margin: 0;">
-                    <i class="fa-solid fa-lock text-yellow-500 mr-1"></i> Sistema Protegido
-                </p>
-                <p style="font-size: 10px; color: rgba(255, 255, 255, 0.4); margin: 5px 0 0 0;">© 2026 UNAC - Movilidad Universitaria</p>
-            </div>
-        </div>
-    </div>
-
-    <audio id="musica-verificacion" src="Muhteşem Yüzyıl The Magnificent Century Official Soundtrack Vol. 1 01 Muhteşem Yüzyıl Jenerik HQ.mp3" preload="auto"></audio>
-
-    <div id="loading-screen">
-        <div id="loader-3d-canvas"></div>
-        <div style="position: absolute; bottom: 20%; display: flex; flex-direction: column; align-items: center;">
-            <p class="loader-text">Asegurando Asiento VIP</p>
-            <p class="loader-subtext">Sincronizando con servidor central...</p>
-        </div>
-    </div>
 
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
@@ -360,7 +295,7 @@
         <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
     </div>
 
-    <div class="main-wrapper" id="main-wrapper" style="display: none;">
+    <div class="main-wrapper">
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(255,193,7,0.4)]"><i class="fa-solid fa-bus text-black text-lg"></i></div>
@@ -380,233 +315,81 @@
             <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl"><i class="fa-solid fa-bars"></i></button>
         </header>
 
-        <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center flex-grow z-20 w-full relative">
-            
-            <div id="main-header" class="text-center mb-10 animate-fade-up">
-                <span class="text-yellow-500 text-[10px] font-black uppercase tracking-[5px] mb-2 block">SISTEMA DE GESTIÓN OFICIAL</span>
-                <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
-                <div class="flex items-center justify-center gap-2 text-white font-mono opacity-80">
-                    <i class="fa-regular fa-clock text-yellow-500"></i>
-                    <p id="live-clock" class="text-lg font-bold tracking-widest"></p>
-                </div>
-                <p id="time-status" class="text-[9px] text-green-400 mt-1 uppercase tracking-widest hidden">Reloj Sincronizado Mundialmente</p>
-            </div>
+        <main class="flex-grow flex flex-col justify-center items-center relative z-20 w-full">
+            <canvas id="canvas-maintenance"></canvas>
 
-            <!-- PASO 1: VERIFICACIÓN -->
-            <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
-                <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su DNI para habilitar sistema</p>
-                
-                <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                
-                <div class="mt-6 flex flex-col items-center gap-3">
-                    <button class="btn-search" id="verifyBtn" onclick="Core.verifyStudent()">Verificar Alumno</button>
-                    <a href="tutorial.html" class="btn-tutorial" id="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
+            <div class="maintenance-container animate-fade-up">
+                <div class="maintenance-icon spin-slow">
+                    <i class="fa-solid fa-wrench"></i>
                 </div>
-            </div>
 
-            <!-- PASO 2: SELECCIÓN -->
-            <div id="step-selection" class="w-full max-w-5xl mx-auto hidden-section animate-fade-up">
-                <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
-                        <div>
-                            <h2 id="welcomeName" class="text-xl md:text-2xl font-black uppercase italic leading-none text-white"></h2>
-                            <div class="status-badge"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO - APTO</div>
+                <h1 class="maintenance-title">MANTENIMIENTO</h1>
+                <p class="maintenance-subtitle">Sistema en Actualización</p>
+
+                <div class="countdown-container glass">
+                    <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">Regresa en:</p>
+                    <div class="countdown">
+                        <div class="countdown-item">
+                            <div class="countdown-number" id="days">00</div>
+                            <div class="countdown-label">Días</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-number" id="hours">00</div>
+                            <div class="countdown-label">Horas</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-number" id="minutes">00</div>
+                            <div class="countdown-label">Minutos</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-number" id="seconds">00</div>
+                            <div class="countdown-label">Segundos</div>
                         </div>
                     </div>
-                    <div class="mt-4 md:mt-0 text-right">
-                        <p id="info-fac" class="text-[10px] text-yellow-500 font-black uppercase tracking-widest"></p>
-                        <p id="info-dni" class="text-[10px] text-gray-400 font-bold uppercase mt-1"></p>
+                </div>
+
+                <div class="maintenance-info">
+                    <div class="maintenance-info-title">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        Lo que estamos mejorando:
+                    </div>
+                    <div class="maintenance-info-item">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Optimización de sistema de sincronización</span>
+                    </div>
+                    <div class="maintenance-info-item">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Mejora de seguridad y validaciones de horarios</span>
+                    </div>
+                    <div class="maintenance-info-item">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Refuerzo en prevención de fraudes</span>
+                    </div>
+                    <div class="maintenance-info-item">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Actualización de base de datos central</span>
+                    </div>
+                    <div class="maintenance-info-item">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Mejoras en experiencia de usuario</span>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
-                    <div id="card-mañana" class="card-panorama card-m-img" onclick="Core.validateAndGenerate('MAÑANA')">
-                        <span id="badge-m" class="badge-img">Cerrado</span>
-                        <div class="shift-title text-white">Mañana</div>
-                        <div class="salida-text text-yellow-500 font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 05:15 AM</div>
-                    </div>
-                    <div id="card-tarde" class="card-panorama card-t-img" onclick="Core.validateAndGenerate('TARDE')">
-                        <span id="badge-t" class="badge-img">Cerrado</span>
-                        <div class="shift-title text-white">Tarde</div>
-                        <div class="salida-text text-white font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 06:00 PM</div>
-                    </div>
-                </div>
-
-                <!-- NUEVA TARDE DE NOCHE -->
-                <div class="w-full mb-12">
-                    <div id="card-noche" class="card-panorama card-n-img max-w-2xl mx-auto" onclick="Core.validateAndGenerate('NOCHE')">
-                        <span id="badge-n" class="badge-img">Cerrado</span>
-                        <div class="shift-title text-white">Noche</div>
-                        <div class="salida-text text-white font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 10:15 PM</div>
-                        <div class="mt-4 px-4 py-1 bg-yellow-500 text-black font-black text-[10px] uppercase tracking-widest rounded-full animate-pulse">Muy Pronto</div>
-                    </div>
-                </div>
-
-                <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500">
-                    <p class="text-[9px] text-gray-400 font-black uppercase mb-1 tracking-widest">Cupos registrados (Tarde/Noche):</p>
-                    <div id="conteo-real" class="text-5xl font-black text-white font-mono">0</div>
-                    <p class="text-[8px] text-yellow-500/60 mt-2 uppercase italic flex items-center justify-center gap-1"><i class="fa-solid fa-satellite-dish animate-pulse"></i> Sincronización en vivo</p>
-                </div>
-            </div>
-
-            <!-- PASO 3: TICKET -->
-            <div id="step-ticket" class="w-full max-w-2xl mx-auto hidden-section animate-fade-up">
-                <div class="vip-ticket-card">
-                    <div class="vip-header">
-                        <h2>¡PASE VIP VERIFICADO!</h2>
-                        <p class="text-xs font-bold uppercase tracking-widest mt-1 opacity-80 text-black">Ruta Oficial - Ventanilla</p>
-                    </div>
-                    <div class="ticket-body">
-                        <p class="ticket-greeting text-left text-sm font-bold text-gray-600 mb-4">Hola <strong id="t-saludo" class="text-black text-lg"></strong>, se te hace entrega de tu ticket digital:</p>
-                        <div class="ticket-main-box">
-                            <p class="text-[10px] text-gray-500 font-bold uppercase mb-1 tracking-widest">VÁLIDO ÚNICAMENTE PARA EL DÍA:</p>
-                            <p class="valid-date" id="t-fecha"></p>
-                            <div id="asiento-area">
-                                <p class="text-[12px] font-bold text-gray-600 mt-4 uppercase tracking-widest border-t border-dashed border-yellow-500 pt-4">Tu número de asiento es:</p>
-                                <div class="asiento-num-big drop-shadow-md" id="t-asiento"></div>
-                            </div>
-                            <div class="qr-wrapper shadow-lg"><div id="qrcode-vip"></div></div>
-                        </div>
-                        <table class="data-table">
-                            <tbody>
-                                <tr><td class="text-gray-400">ESTUDIANTE:</td><td id="t-nom" style="text-align:right"></td></tr>
-                                <tr><td class="text-gray-400">FACULTAD:</td><td id="t-fac" style="text-align:right"></td></tr>
-                                <tr><td class="text-gray-400">CÓDIGO:</td><td id="t-cod" style="text-align:right"></td></tr>
-                                <tr><td class="text-gray-400">DNI/CE:</td><td id="t-dni" style="text-align:right"></td></tr>
-                            </tbody>
-                        </table>
-                        <div class="hashtags text-yellow-600 text-[10px] font-black mt-4 tracking-widest">#SIGAMOS_MEJORANDO &nbsp; #UNAC_UNIDO</div>
-                    </div>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    Sincronización en progreso
                 </div>
             </div>
-
-            <!-- PASO 4: ÉXITO -->
-            <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden-section animate-fade-up">
-                <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6 shadow-[0_0_30px_rgba(16,185,129,0.3)] rounded-full"></i>
-                <h2 class="text-3xl font-black uppercase text-white tracking-tighter mb-2">ESCANEO EXITOSO</h2>
-                <p class="text-xs text-gray-400 mb-8">Puede proceder a tomar su asiento.</p>
-                <button onclick="location.reload()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase shadow-xl transition-transform hover:scale-105">Finalizar</button>
-            </div>
-            
         </main>
-        
-        <div id="globe-container" class="animate-float"></div>
 
-        <div id="extra-links-container" class="mb-10 text-center relative z-20">
-            <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
-        </div>
-
-        <footer class="w-full py-10 flex flex-col items-center border-t border-white/5 bg-black/40 mt-auto relative z-20 backdrop-blur-sm">
-            <span class="text-center text-[10px] font-black tracking-[6px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
-            <span class="text-center text-[9px] text-gray-500 tracking-widest uppercase italic">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
+        <footer>
+            <span class="footer-text">SISTEMA CREADO POR SEBASTIAN</span>
+            <span class="footer-copyright">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
         </footer>
     </div>
 
     <script>
-        // VERIFICAR SI ESTÁ EN MANTENIMIENTO
-        function checkMaintenance() {
-            const maintenanceDate = new Date('2026-05-24T00:00:00-05:00'); // Domingo 24 de Mayo 00:00 Lima
-            const now = new Date();
-
-            if (now < maintenanceDate) {
-                document.getElementById('maintenance-screen').classList.add('active');
-                document.getElementById('main-wrapper').style.display = 'none';
-                initMaintenanceScreen();
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-            } else {
-                document.getElementById('maintenance-screen').classList.remove('active');
-                document.getElementById('main-wrapper').style.display = 'flex';
-                TimeGuard.init();
-                initGlobeThree();
-            }
-        }
-
-        function updateCountdown() {
-            const maintenanceDate = new Date('2026-05-24T00:00:00-05:00');
-            const now = new Date();
-            const diff = maintenanceDate - now;
-
-            if (diff <= 0) {
-                document.getElementById('maintenance-screen').classList.remove('active');
-                document.getElementById('main-wrapper').style.display = 'flex';
-                TimeGuard.init();
-                initGlobeThree();
-                return;
-            }
-
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            document.getElementById('days').textContent = String(days).padStart(2, '0');
-            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-
-            const totalHours = days * 24 + hours;
-            const totalMinutes = minutes;
-            const totalSeconds = seconds;
-            document.getElementById('countdown-main').textContent = 
-                String(totalHours).padStart(2, '0') + ':' + 
-                String(totalMinutes).padStart(2, '0') + ':' + 
-                String(totalSeconds).padStart(2, '0');
-        }
-
-        function initMaintenanceScreen() {
-            const canvas = document.getElementById('maintenance-canvas');
-            const ctx = canvas.getContext('2d');
-
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            // Crear partículas flotantes
-            const particlesContainer = document.getElementById('floating-particles');
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 10 + 's';
-                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
-                particlesContainer.appendChild(particle);
-            }
-
-            // Animar líneas en el canvas
-            const animateLines = () => {
-                ctx.fillStyle = 'rgba(5, 5, 5, 0.1)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.strokeStyle = 'rgba(255, 193, 7, 0.1)';
-                ctx.lineWidth = 1;
-
-                for (let i = 0; i < 3; i++) {
-                    const x = (Date.now() / 10 + i * 200) % canvas.width;
-                    ctx.beginPath();
-                    ctx.moveTo(x, 0);
-                    ctx.lineTo(x + 100, canvas.height);
-                    ctx.stroke();
-                }
-
-                requestAnimationFrame(animateLines);
-            };
-
-            animateLines();
-        }
-
-        // RESTO DEL CÓDIGO ORIGINAL
-        const L1_BD = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2_COLA = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
-        const L3_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
-        
-        const REGLAS = { 
-            manana: { abre: 21, cierra: 7 }, 
-            tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 25 },
-            noche: { hAbre: 2, mAbre: 0, hCierra: 2, mCierra: 1 }
-        };
-
+        // TIEMPO DEL SERVIDOR - WORLDTIMEAPI
         const TimeGuard = {
             offset: 0,
             init: async () => {
@@ -616,264 +399,129 @@
                     const realTime = new Date(data.datetime).getTime();
                     const localTime = new Date().getTime();
                     TimeGuard.offset = realTime - localTime;
-                    document.getElementById('time-status').classList.remove('hidden');
                 } catch (e) {
                     console.warn("Usando hora local.");
                 }
-                setInterval(TimeGuard.updateUI, 1000);
-                TimeGuard.updateUI();
+                TimeGuard.updateCountdown();
+                setInterval(TimeGuard.updateCountdown, 1000);
             },
             getNow: () => {
                 return new Date(new Date().getTime() + TimeGuard.offset);
             },
-            updateUI: () => {
+            updateCountdown: () => {
                 const now = TimeGuard.getNow();
-                document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+                const targetDate = new Date(2026, 4, 24, 0, 0, 0); // Domingo 24 de mayo 2026 00:00
+
+                // Si ya pasó la fecha, redirigir al ticket
+                if (now >= targetDate) {
+                    window.location.href = 'ticket.html';
+                    return;
+                }
+
+                const diff = targetDate - now;
                 
-                const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                const cardM = document.getElementById('card-mañana'), badgeM = document.getElementById('badge-m');
-                if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) { 
-                    cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
-                } else { 
-                    cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado"; 
-                }
-
-                const cardT = document.getElementById('card-tarde'), badgeT = document.getElementById('badge-t');
-                if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) { 
-                    cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
-                } else { 
-                    cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado"; 
-                }
-
-                const cardN = document.getElementById('card-noche'), badgeN = document.getElementById('badge-n');
-                if (totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60)) { 
-                    cardN.classList.remove('locked'); badgeN.innerText = "Abierto"; badgeN.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
-                } else { 
-                    cardN.classList.add('locked'); badgeN.innerText = "Cerrado"; badgeN.className = "badge-img badge-cerrado"; 
-                }
+                document.getElementById('days').innerText = String(days).padStart(2, '0');
+                document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
             }
         };
 
-        const Core = {
-            alumno: null, pollContador: null, syncInterval: null,
+        // CANVAS ANIMATION - LÍNEAS FLOTANTES
+        const canvas = document.getElementById('canvas-maintenance');
+        const ctx = canvas.getContext('2d');
+        let animationId;
 
-            hideSections: () => {
-                ['step-verify', 'step-selection', 'step-ticket', 'step-success'].forEach(id => {
-                    document.getElementById(id).classList.add('hidden-section');
-                });
-            },
-
-            verifyStudent: async () => {
-                const audio = document.getElementById('musica-verificacion');
-                if (audio) { audio.play().catch(e => {}); }
-
-                const dni = document.getElementById('dniInput').value.trim();
-                const btn = document.getElementById('verifyBtn');
-
-                if(dni.length < 8) return Swal.fire({ icon: 'warning', title: 'DNI Inválido', text: '8 dígitos', background: '#111', color: '#fff' });
-
-                try {
-                    btn.innerText = "CARGANDO..."; btn.disabled = true;
-                    const res = await fetch(`${L1_BD}?dni=${dni}`);
-                    const data = await res.json();
-
-                    if(data.found) {
-                        Core.alumno = { ...data, dni };
-                        document.getElementById('welcomeName').innerText = data.Estudiante;
-                        document.getElementById('info-fac').innerText = data.Facultad || "UNAC";
-                        document.getElementById('info-dni').innerText = "DNI: " + dni;
-                        
-                        Core.hideSections();
-                        document.getElementById('step-selection').classList.remove('hidden-section');
-                        document.getElementById('extra-links-container').style.display = 'none';
-
-                        Core.actualizarContador();
-                        Core.pollContador = setInterval(Core.actualizarContador, 5000);
-                    } else { 
-                        Swal.fire({ icon: 'error', title: 'No Verificado', background: '#111', color: '#fff' });
-                    }
-                } catch(e) {
-                    Swal.fire({ icon: 'error', title: 'Error', text: 'Conexión fallida', background: '#111', color: '#fff' });
-                } finally {
-                    btn.innerText = "Verificar Alumno"; btn.disabled = false;
-                }
-            },
-
-            actualizarContador: async () => { 
-                try {
-                    const res = await fetch(`${L2_COLA}?accion=consultar_total`);
-                    const data = await res.json();
-                    document.getElementById('conteo-real').innerText = data.total || 0;
-                } catch(e) {}
-            },
-
-            validateAndGenerate: (turno) => {
-                const now = TimeGuard.getNow();
-                const h = now.getHours(), totalM = h * 60 + now.getMinutes();
-                
-                if (turno === 'MAÑANA') {
-                    if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) Core.generarTicket(turno);
-                    else Swal.fire({ icon: 'error', title: 'Fuera de Horario', background: '#111', color: '#fff' });
-                } else if (turno === 'TARDE') {
-                    if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) Core.generarTicket(turno);
-                    else Swal.fire({ icon: 'warning', title: 'Cerrado', background: '#111', color: '#fff' });
-                } else if (turno === 'NOCHE') {
-                    if (totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60)) Core.generarTicket(turno);
-                    else Swal.fire({ icon: 'warning', title: 'Muy Pronto', text: 'El horario de noche aún no inicia.', background: '#111', color: '#fff' });
-                }
-            },
-
-            generarTicket: (turno) => {
-                clearInterval(Core.pollContador);
-                Core.hideSections();
-                
-                if (turno === 'TARDE' || turno === 'NOCHE') {
-                    document.getElementById('loading-screen').style.display = 'flex';
-                    Galaxy3D.init();
-                    setTimeout(() => {
-                        document.getElementById('loading-screen').style.display = 'none';
-                        Galaxy3D.stop();
-                        Core.procesarTicket(turno);
-                    }, 10000);
-                } else {
-                    Core.procesarTicket(turno);
-                }
-            },
-
-            procesarTicket: async (turno) => {
-                const fecha = new Date().toLocaleDateString('es-PE');
-                const qrData = btoa(`${Core.alumno.dni}|${turno}|${fecha}`);
-                
-                document.getElementById('t-saludo').innerText = Core.alumno.Estudiante.split(' ')[0];
-                document.getElementById('t-fecha').innerText = fecha;
-                document.getElementById('t-nom').innerText = Core.alumno.Estudiante;
-                document.getElementById('t-fac').innerText = Core.alumno.Facultad;
-                document.getElementById('t-cod').innerText = Core.alumno.Codigo;
-                document.getElementById('t-dni').innerText = Core.alumno.dni;
-
-                if (turno === 'MAÑANA') {
-                    document.getElementById('asiento-area').classList.add('hidden');
-                    Core.finalizarGeneracion(qrData);
-                } else {
-                    try {
-                        const res = await fetch(`${L2_COLA}?dni=${Core.alumno.dni}&accion=solicitar_cola`);
-                        const data = await res.json();
-                        const nAsiento = parseInt(data.orden);
-                        
-                        if (nAsiento <= 40) {
-                            document.getElementById('asiento-area').classList.remove('hidden');
-                            document.getElementById('t-asiento').innerText = nAsiento < 10 ? `0${nAsiento}` : nAsiento;
-                        } else {
-                            document.getElementById('asiento-area').classList.add('hidden');
-                        }
-                        Core.finalizarGeneracion(qrData);
-                    } catch(e) {
-                        Swal.fire('Error', 'Fallo al solicitar cupo', 'error');
-                        document.getElementById('step-selection').classList.remove('hidden-section');
-                    }
-                }
-            },
-
-            finalizarGeneracion: (qrData) => {
-                document.getElementById('step-ticket').classList.remove('hidden-section');
-                document.getElementById('qrcode-vip').innerHTML = "";
-                new QRCode(document.getElementById("qrcode-vip"), { 
-                    text: qrData, width: 150, height: 150, correctLevel : QRCode.CorrectLevel.H 
-                });
-                Core.esperarSincronizacion();
-            },
-
-            esperarSincronizacion: () => {
-                Core.syncInterval = setInterval(async () => {
-                    try {
-                        const res = await fetch(`${L3_SINCRO}?dni=${Core.alumno.dni}&accion=consultar`);
-                        const data = await res.json();
-                        if(data.asistio === true) { 
-                            clearInterval(Core.syncInterval);
-                            Core.hideSections();
-                            document.getElementById('step-success').classList.remove('hidden-section'); 
-                        }
-                    } catch(e) {}
-                }, 3000);
-            }
-        };
-
-        const Galaxy3D = {
-            scene: null, camera: null, renderer: null, particles: null, reqId: null,
-            init: () => {
-                const container = document.getElementById('loader-3d-canvas');
-                container.innerHTML = "";
-                Galaxy3D.scene = new THREE.Scene();
-                Galaxy3D.camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 100);
-                Galaxy3D.camera.position.set(0, 3, 5);
-                Galaxy3D.camera.lookAt(0, 0, 0);
-                Galaxy3D.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                Galaxy3D.renderer.setSize(container.clientWidth, container.clientHeight);
-                container.appendChild(Galaxy3D.renderer.domElement);
-                const particleCount = 4000;
-                const geometry = new THREE.BufferGeometry();
-                const positions = new Float32Array(particleCount * 3);
-                const colors = new Float32Array(particleCount * 3);
-                const colorBase = new THREE.Color(0xffc107);
-                for(let i=0; i<particleCount; i++) {
-                    const i3 = i * 3;
-                    const radius = Math.random() * 4;
-                    const spinAngle = radius * 1.5;
-                    const branchAngle = ((i % 3) / 3) * Math.PI * 2;
-                    const randomX = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.8;
-                    const randomY = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5;
-                    const randomZ = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.8;
-                    positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-                    positions[i3+1] = randomY;
-                    positions[i3+2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
-                    const mixedColor = colorBase.clone();
-                    mixedColor.lerp(new THREE.Color(0xffffff), 1 - (radius/4));
-                    colors[i3] = mixedColor.r; colors[i3+1] = mixedColor.g; colors[i3+2] = mixedColor.b;
-                }
-                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-                const material = new THREE.PointsMaterial({ size: 0.03, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false });
-                Galaxy3D.particles = new THREE.Points(geometry, material);
-                Galaxy3D.scene.add(Galaxy3D.particles);
-                Galaxy3D.animate();
-            },
-            animate: () => {
-                Galaxy3D.reqId = requestAnimationFrame(Galaxy3D.animate);
-                Galaxy3D.particles.rotation.y += 0.005;
-                Galaxy3D.renderer.render(Galaxy3D.scene, Galaxy3D.camera);
-            },
-            stop: () => { if(Galaxy3D.reqId) cancelAnimationFrame(Galaxy3D.reqId); }
-        };
-
-        let sceneGlobe, cameraGlobe, rendererGlobe, globeMesh;
-        function initGlobeThree() {
-            const container = document.getElementById('globe-container');
-            if(!container) return;
-            sceneGlobe = new THREE.Scene(); 
-            cameraGlobe = new THREE.PerspectiveCamera(45, window.innerWidth / 350, 0.1, 1000);
-            cameraGlobe.position.z = 100; 
-            rendererGlobe = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            rendererGlobe.setSize(window.innerWidth, 350); 
-            container.appendChild(rendererGlobe.domElement);
-            globeMesh = new THREE.Mesh(
-                new THREE.IcosahedronGeometry(30, 4), 
-                new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.1 })
-            );
-            sceneGlobe.add(globeMesh); 
-            function animateGlobe() { 
-                requestAnimationFrame(animateGlobe); 
-                if(globeMesh) globeMesh.rotation.y += 0.002; 
-                rendererGlobe.render(sceneGlobe, cameraGlobe); 
-            }
-            animateGlobe();
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
 
-        function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+                this.opacity = Math.random() * 0.5 + 0.3;
+                this.fadeSpeed = Math.random() * 0.01 + 0.005;
+            }
 
-        window.addEventListener('load', () => {
-            checkMaintenance();
-        });
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.opacity -= this.fadeSpeed;
+
+                if (this.opacity <= 0) {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.opacity = Math.random() * 0.5 + 0.3;
+                }
+
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(255, 193, 7, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        let particles = [];
+        for (let i = 0; i < 50; i++) {
+            particles.push(new Particle());
+        }
+
+        function drawLines() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // Dibujar líneas conectoras
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.strokeStyle = `rgba(255, 193, 7, ${0.1 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            animationId = requestAnimationFrame(drawLines);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        drawLines();
+
+        function toggleMenu() {
+            document.getElementById('mobile-menu').classList.toggle('active');
+        }
+
+        // Iniciar TimeGuard
+        TimeGuard.init();
     </script>
 </body>
 </html>
