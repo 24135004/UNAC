@@ -49,34 +49,26 @@
         .btn-search:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,193,7,0.3); }
         .btn-search:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        .btn-tutorial { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 15px; text-decoration: none; }
+        .btn-tutorial { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 15px; }
         .btn-tutorial:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
 
-        .btn-acceso { display: inline-flex; align-items: center; background: #111; border: 1px solid #333; color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; position: relative; z-index: 20; text-decoration: none; }
+        .btn-acceso { display: inline-flex; align-items: center; background: #111; border: 1px solid #333; color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; position: relative; z-index: 20; }
         .btn-acceso:hover { border-color: var(--accent); color: var(--accent); }
-
-        /* PANTALLA DE ESCANEO */
-        #scan-screen { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.98); z-index: 9998; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        #scan-screen.active { display: flex; }
-        .scan-animation { width: 150px; height: 150px; border: 3px solid var(--accent); border-radius: 20px; position: relative; animation: scanPulse 1.5s infinite; }
-        @keyframes scanPulse { 0%, 100% { box-shadow: 0 0 20px rgba(255,193,7,0.3), inset 0 0 20px rgba(255,193,7,0.1); } 50% { box-shadow: 0 0 40px rgba(255,193,7,0.6), inset 0 0 40px rgba(255,193,7,0.2); } }
-        .scan-line { position: absolute; width: 100%; height: 2px; background: var(--accent); top: 50%; animation: scanLine 1.5s infinite; box-shadow: 0 0 10px var(--accent); }
-        @keyframes scanLine { 0% { top: 20%; } 50% { top: 50%; } 100% { top: 80%; } }
 
         /* CARDS DE TURNOS */
         .card-panorama { position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
-        .card-panorama:hover:not(.locked):not(.used) { transform: scale(1.02); border-color: var(--accent); }
+        .card-panorama:hover:not(.locked) { transform: scale(1.02); border-color: var(--accent); }
         .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
         .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
         .card-n-img { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); }
         
         .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-        .card-panorama.used { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; pointer-events: none; border-color: #ef4444; }
+        .card-panorama.used { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; pointer-events: none; border-color: #888; }
         
         .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: #10b981; color: white; }
-        .badge-usado { background: #666; color: white; }
+        .badge-usado { background: #888; color: white; }
         .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
 
         /* TICKET VIP */
@@ -87,16 +79,25 @@
         .ticket-main-box { border: 1px dashed #d4a017; border-radius: 10px; padding: 20px; background: #fafafa; }
         .valid-date { font-size: 24px; font-weight: 900; color: #d4a017; font-family: 'Montserrat', sans-serif;}
         .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 80px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 10px 0; }
-        .persona-caminando { text-align: center; font-size: 60px; margin: 20px 0; }
         .qr-wrapper { border: 2px solid #d4a017; display: inline-block; padding: 10px; background: #fff; margin: 15px 0; border-radius: 10px; }
-        .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; background: #fff; border-collapse: collapse; }
+        .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; background: #fff; border-collapse: collapse;}
         .data-table td { padding: 10px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; color: #444; }
+        .data-table tr:last-child td { border-bottom: none; }
 
         .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
         
         #globe-container { width: 100%; height: 350px; pointer-events: none; position: relative; z-index: 0; opacity: 0.8; margin-top: -30px; margin-bottom: 20px; }
         
-        #loading-screen { position: fixed; inset: 0; background: #050505; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        /* PANTALLA DE ESCANEO */
+        #scan-screen { position: fixed; inset: 0; background: #050505; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .scanner-content { text-align: center; }
+        .scanner-circle { width: 150px; height: 150px; border: 4px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; animation: scanPulse 1.5s infinite; }
+        @keyframes scanPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,193,7,0.7); } 50% { box-shadow: 0 0 0 30px rgba(255,193,7,0); } }
+        .scanner-circle i { font-size: 60px; color: var(--accent); }
+        .scanner-text { font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; font-size: 20px; margin-bottom: 10px; }
+        .scanner-subtext { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 2px; }
+        
+        #loading-screen { position: fixed; inset: 0; background: #050505; z-index: 9998; display: none; flex-direction: column; align-items: center; justify-content: center; }
         #loader-3d-canvas { width: 100%; height: 60vh; max-height: 500px; }
         .loader-text { color: var(--accent); font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; font-size: 14px; margin-top: 20px; animation: pulse 1.5s infinite; text-align: center; z-index: 10; }
         .loader-subtext { color: #888; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; z-index: 10;}
@@ -107,15 +108,17 @@
 </head>
 <body>
 
-    <audio id="musica-verificacion" src="Muhteşem Yüzyıl The Magnificent Century Official Soundtrack Vol. 1 01 Muhteşem Yüzyıl Jenerik HQ.mp3" preload="auto"></audio>
+    <audio id="musica-verificacion" preload="auto"></audio>
 
-    <!-- PANTALLA DE ESCANEO -->
+    <!-- PANTALLA DE ESCANEO DE DNI -->
     <div id="scan-screen">
-        <div class="scan-animation">
-            <div class="scan-line"></div>
+        <div class="scanner-content">
+            <div class="scanner-circle">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <p class="scanner-text">Verificando DNI</p>
+            <p class="scanner-subtext">Por favor espere...</p>
         </div>
-        <p class="loader-text mt-8">Escaneando DNI</p>
-        <p class="loader-subtext">Verificando en base de datos...</p>
     </div>
 
     <div id="loading-screen">
@@ -127,7 +130,7 @@
     </div>
 
     <div id="mobile-menu">
-        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl" style="border: none; background: none; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
         <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
         <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500 underline">Ticket</a>
@@ -153,7 +156,7 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl" style="border: none; background: none; cursor: pointer;"><i class="fa-solid fa-bars"></i></button>
+            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl"><i class="fa-solid fa-bars"></i></button>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center flex-grow z-20 w-full relative">
@@ -172,11 +175,11 @@
             <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
                 <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su DNI para habilitar sistema</p>
                 
-                <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
+                <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 
                 <div class="mt-6 flex flex-col items-center gap-3">
-                    <button class="btn-search" id="verifyBtn" onclick="Core.verifyStudent()" style="border: none;">Verificar Alumno</button>
-                    <a href="tutorial.html" class="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
+                    <button class="btn-search" id="verifyBtn" onclick="Core.verifyStudent()">Verificar Alumno</button>
+                    <a href="tutorial.html" class="btn-tutorial" id="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
                 </div>
             </div>
 
@@ -209,13 +212,11 @@
                     </div>
                 </div>
 
-                <!-- NUEVA TARDE DE NOCHE -->
                 <div class="w-full mb-12">
                     <div id="card-noche" class="card-panorama card-n-img max-w-2xl mx-auto" onclick="Core.validateAndGenerate('NOCHE')">
                         <span id="badge-n" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Noche</div>
                         <div class="salida-text text-white font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 10:15 PM</div>
-                        <div class="mt-4 px-4 py-1 bg-yellow-500 text-black font-black text-[10px] uppercase tracking-widest rounded-full animate-pulse">Muy Pronto</div>
                     </div>
                 </div>
 
@@ -242,7 +243,7 @@
                                 <p class="text-[12px] font-bold text-gray-600 mt-4 uppercase tracking-widest border-t border-dashed border-yellow-500 pt-4">Tu número de asiento es:</p>
                                 <div class="asiento-num-big drop-shadow-md" id="t-asiento"></div>
                             </div>
-                            <div id="persona-area" class="persona-caminando hidden"></div>
+                            <div id="icon-walking" class="text-6xl mt-4 hidden"><i class="fa-solid fa-person-walking text-gray-400"></i></div>
                             <div class="qr-wrapper shadow-lg"><div id="qrcode-vip"></div></div>
                         </div>
                         <table class="data-table">
@@ -258,12 +259,26 @@
                 </div>
             </div>
 
-            <!-- PASO 4: ÉXITO -->
+            <!-- PASO 4: ESPERANDO ESCANEO (NUEVO) -->
+            <div id="step-waiting-scan" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-blue-500 hidden-section animate-fade-up">
+                <div style="font-size: 60px; margin-bottom: 20px; animation: spin 2s linear infinite;">
+                    <i class="fa-solid fa-qrcode"></i>
+                </div>
+                <h2 class="text-3xl font-black uppercase text-white tracking-tighter mb-2">ESPERANDO ESCANEO</h2>
+                <p class="text-xs text-gray-400 mb-4">Presente su QR al delegado para validar su asistencia</p>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
+                    <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 1s infinite;"></div>
+                    <span class="text-[10px] text-green-400 font-bold uppercase">Escaneando en tiempo real...</span>
+                </div>
+                <p id="waiting-timer" class="text-[9px] text-yellow-500 mt-6 font-bold"></p>
+            </div>
+
+            <!-- PASO 5: ÉXITO -->
             <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden-section animate-fade-up">
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6 shadow-[0_0_30px_rgba(16,185,129,0.3)] rounded-full"></i>
                 <h2 class="text-3xl font-black uppercase text-white tracking-tighter mb-2">REGISTRO VALIDADO</h2>
                 <p class="text-xs text-gray-400 mb-8">Escaneo completado correctamente. Puede proceder a tomar su asiento.</p>
-                <button onclick="location.reload()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase shadow-xl transition-transform hover:scale-105" style="border: none; cursor: pointer;">Finalizar</button>
+                <button onclick="Core.reiniciar()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase shadow-xl transition-transform hover:scale-105">Finalizar</button>
             </div>
             
         </main>
@@ -319,171 +334,82 @@
 
                 // Lógica Mañana
                 const cardM = document.getElementById('card-mañana'), badgeM = document.getElementById('badge-m');
-                if (!Core.alumno || !Core.alumno.usedShifts) return;
-                
-                if (Core.alumno.usedShifts.includes('MAÑANA')) {
-                    cardM.classList.add('used');
-                    badgeM.innerText = "Usado";
-                    badgeM.className = "badge-img badge-usado";
-                } else if (h >= REGLAS.manana.hAbre || h < REGLAS.manana.hCierra) { 
-                    cardM.classList.remove('locked', 'used'); 
-                    badgeM.innerText = "Abierto"; 
-                    badgeM.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
+                if (h >= REGLAS.manana.hAbre || h < REGLAS.manana.hCierra) { 
+                    cardM.classList.remove('locked'); badgeM.innerText = "Abierto"; badgeM.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
-                    cardM.classList.add('locked'); 
-                    cardM.classList.remove('used');
-                    badgeM.innerText = "Cerrado"; 
-                    badgeM.className = "badge-img badge-cerrado"; 
+                    cardM.classList.add('locked'); badgeM.innerText = "Cerrado"; badgeM.className = "badge-img badge-cerrado"; 
                 }
 
                 // Lógica Tarde
                 const cardT = document.getElementById('card-tarde'), badgeT = document.getElementById('badge-t');
-                if (Core.alumno.usedShifts.includes('TARDE')) {
-                    cardT.classList.add('used');
-                    badgeT.innerText = "Usado";
-                    badgeT.className = "badge-img badge-usado";
-                } else if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60 + REGLAS.tarde.mCierra)) { 
-                    cardT.classList.remove('locked', 'used'); 
-                    badgeT.innerText = "Abierto"; 
-                    badgeT.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
+                if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60 + REGLAS.tarde.mCierra)) { 
+                    cardT.classList.remove('locked'); badgeT.innerText = "Abierto"; badgeT.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
-                    cardT.classList.add('locked'); 
-                    cardT.classList.remove('used');
-                    badgeT.innerText = "Cerrado"; 
-                    badgeT.className = "badge-img badge-cerrado"; 
+                    cardT.classList.add('locked'); badgeT.innerText = "Cerrado"; badgeT.className = "badge-img badge-cerrado"; 
                 }
 
                 // Lógica Noche
                 const cardN = document.getElementById('card-noche'), badgeN = document.getElementById('badge-n');
-                if (Core.alumno.usedShifts.includes('NOCHE')) {
-                    cardN.classList.add('used');
-                    badgeN.innerText = "Usado";
-                    badgeN.className = "badge-img badge-usado";
-                } else if (totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60 + REGLAS.noche.mCierra)) { 
-                    cardN.classList.remove('locked', 'used'); 
-                    badgeN.innerText = "Abierto"; 
-                    badgeN.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
+                if (totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60 + REGLAS.noche.mCierra)) { 
+                    cardN.classList.remove('locked'); badgeN.innerText = "Abierto"; badgeN.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
-                    cardN.classList.add('locked'); 
-                    cardN.classList.remove('used');
-                    badgeN.innerText = "Cerrado"; 
-                    badgeN.className = "badge-img badge-cerrado"; 
+                    cardN.classList.add('locked'); badgeN.innerText = "Cerrado"; badgeN.className = "badge-img badge-cerrado"; 
                 }
             }
         };
 
         const Core = {
-            alumno: null, pollContador: null, syncInterval: null,
+            alumno: null, 
+            pollContador: null, 
+            syncInterval: null,
+            scanMonitorInterval: null,
+            maxWaitTime: 180000, // 3 minutos máximo de espera
 
             hideSections: () => {
-                ['step-verify', 'step-selection', 'step-ticket', 'step-success'].forEach(id => {
+                ['step-verify', 'step-selection', 'step-ticket', 'step-waiting-scan', 'step-success'].forEach(id => {
                     document.getElementById(id).classList.add('hidden-section');
                 });
             },
 
             verifyStudent: async () => {
-                const dniInput = document.getElementById('dniInput');
-                const dni = dniInput.value.trim().replace(/[^0-9]/g, '');
-
-                if(dni.length < 8) {
-                    Swal.fire({ 
-                        icon: 'warning', 
-                        title: 'DNI Inválido', 
-                        text: 'Ingrese 8 dígitos', 
-                        background: '#111', 
-                        color: '#fff',
-                        confirmButtonColor: '#ffc107'
-                    });
-                    return;
-                }
-
-                // Mostrar pantalla de escaneo
-                document.getElementById('scan-screen').classList.add('active');
-                const audio = document.getElementById('musica-verificacion');
-                if (audio) { audio.play().catch(e => console.log("Audio no disponible")); }
-
+                const dni = document.getElementById('dniInput').value.trim();
                 const btn = document.getElementById('verifyBtn');
 
+                if(dni.length < 8) return Swal.fire({ icon: 'warning', title: 'DNI Inválido', text: '8 dígitos', background: '#111', color: '#fff' });
+
                 try {
+                    // MOSTRAR PANTALLA DE ESCANEO
+                    document.getElementById('scan-screen').style.display = 'flex';
                     btn.innerText = "CARGANDO..."; 
                     btn.disabled = true;
 
-                    // CONSTRUIR URL CORRECTAMENTE
-                    const url = new URL(L1_BD);
-                    url.searchParams.append('dni', dni);
+                    // ESPERAR 3 SEGUNDOS (simulación de escaneo)
+                    await new Promise(resolve => setTimeout(resolve, 3000));
 
-                    const res = await fetch(url.toString(), {
-                        method: 'GET',
-                        mode: 'no-cors'
-                    });
+                    // VERIFICAR EN L1_BD
+                    const res = await fetch(`${L1_BD}?dni=${dni}`);
+                    const data = await res.json();
 
-                    // Con mode: 'no-cors', no podemos acceder a res.json() directamente
-                    // Usamos un timeout para simular
-                    setTimeout(async () => {
-                        try {
-                            // Intento alternativo con jsonp
-                            const response = await fetch(url.toString());
-                            const data = await response.json();
+                    document.getElementById('scan-screen').style.display = 'none';
 
-                            if(data.found || data.Estudiante) {
-                                Core.alumno = { 
-                                    ...data, 
-                                    dni,
-                                    usedShifts: data.usedShifts || []
-                                };
-                                
-                                document.getElementById('welcomeName').innerText = data.Estudiante || "Estudiante";
-                                document.getElementById('info-fac').innerText = data.Facultad || "UNAC";
-                                document.getElementById('info-dni').innerText = "DNI: " + dni;
-                                
-                                // Ocultar pantalla de escaneo después de 2 segundos
-                                setTimeout(() => {
-                                    document.getElementById('scan-screen').classList.remove('active');
-                                    
-                                    Core.hideSections();
-                                    document.getElementById('step-selection').classList.remove('hidden-section');
-                                    document.getElementById('extra-links-container').style.display = 'none';
+                    if(data.found) {
+                        Core.alumno = { ...data, dni };
+                        document.getElementById('welcomeName').innerText = data.Estudiante;
+                        document.getElementById('info-fac').innerText = data.Facultad || "UNAC";
+                        document.getElementById('info-dni').innerText = "DNI: " + dni;
+                        
+                        Core.hideSections();
+                        document.getElementById('step-selection').classList.remove('hidden-section');
+                        document.getElementById('extra-links-container').style.display = 'none';
 
-                                    TimeGuard.updateUI();
-                                    Core.actualizarContador();
-                                    Core.pollContador = setInterval(Core.actualizarContador, 5000);
-                                }, 2000);
-                            } else { 
-                                document.getElementById('scan-screen').classList.remove('active');
-                                Swal.fire({ 
-                                    icon: 'error', 
-                                    title: 'Alumno No Verificado', 
-                                    text: 'DNI no encontrado en base de datos',
-                                    background: '#111', 
-                                    color: '#fff',
-                                    confirmButtonColor: '#ffc107'
-                                });
-                            }
-                        } catch(parseError) {
-                            console.error("Error parseando respuesta:", parseError);
-                            document.getElementById('scan-screen').classList.remove('active');
-                            Swal.fire({ 
-                                icon: 'error', 
-                                title: 'Error de Conexión', 
-                                text: 'No se pudo conectar con el servidor. Intente nuevamente.',
-                                background: '#111', 
-                                color: '#fff',
-                                confirmButtonColor: '#ffc107'
-                            });
-                        }
-                    }, 3000);
-
+                        Core.actualizarContador();
+                        Core.pollContador = setInterval(Core.actualizarContador, 5000);
+                    } else { 
+                        Swal.fire({ icon: 'error', title: 'No Verificado', background: '#111', color: '#fff' });
+                    }
                 } catch(e) {
-                    document.getElementById('scan-screen').classList.remove('active');
-                    console.error("Error:", e);
-                    Swal.fire({ 
-                        icon: 'error', 
-                        title: 'Error de Conexión', 
-                        text: 'Verifique su conexión a internet',
-                        background: '#111', 
-                        color: '#fff',
-                        confirmButtonColor: '#ffc107'
-                    });
+                    document.getElementById('scan-screen').style.display = 'none';
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Conexión fallida', background: '#111', color: '#fff' });
                 } finally {
                     btn.innerText = "Verificar Alumno"; 
                     btn.disabled = false;
@@ -492,87 +418,39 @@
 
             actualizarContador: async () => { 
                 try {
-                    const url = new URL(L2_COLA);
-                    url.searchParams.append('accion', 'consultar_total');
-                    
-                    const res = await fetch(url.toString());
+                    const res = await fetch(`${L2_COLA}?accion=consultar_total`);
                     const data = await res.json();
                     document.getElementById('conteo-real').innerText = data.total || 0;
-                } catch(e) {
-                    console.log("Error actualizando contador:", e);
-                }
+                } catch(e) {}
             },
 
             validateAndGenerate: (turno) => {
-                if (!Core.alumno) return;
+                const now = TimeGuard.getNow();
+                const h = now.getHours(), totalM = h * 60 + now.getMinutes();
+                
+                let puedeGenerar = false;
 
-                // Verificar si ya fue usado
-                if (Core.alumno.usedShifts && Core.alumno.usedShifts.includes(turno)) {
-                    Swal.fire({ 
-                        icon: 'warning', 
-                        title: 'Turno Ya Utilizado', 
-                        text: `Ya completó el registro para el turno ${turno}`,
-                        background: '#111', 
-                        color: '#fff',
-                        confirmButtonColor: '#ffc107'
-                    });
+                if (turno === 'MAÑANA') {
+                    puedeGenerar = h >= REGLAS.manana.hAbre || h < REGLAS.manana.hCierra;
+                } else if (turno === 'TARDE') {
+                    puedeGenerar = totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60 + REGLAS.tarde.mCierra);
+                } else if (turno === 'NOCHE') {
+                    puedeGenerar = totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60 + REGLAS.noche.mCierra);
+                }
+
+                if(!puedeGenerar) {
+                    Swal.fire({ icon: 'warning', title: 'Fuera de Horario', text: 'No está dentro del horario permitido', background: '#111', color: '#fff' });
                     return;
                 }
 
-                const now = TimeGuard.getNow();
-                const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
-                
-                if (turno === 'MAÑANA') {
-                    if (h >= REGLAS.manana.hAbre || h < REGLAS.manana.hCierra) {
-                        Core.generarTicket(turno);
-                    } else {
-                        Swal.fire({ 
-                            icon: 'error', 
-                            title: 'Fuera de Horario', 
-                            text: `Mañana abre a las ${REGLAS.manana.hAbre}:${REGLAS.manana.mAbre.toString().padStart(2, '0')}`,
-                            background: '#111', 
-                            color: '#fff',
-                            confirmButtonColor: '#ffc107'
-                        });
-                    }
-                } else if (turno === 'TARDE') {
-                    const abre = REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre;
-                    const cierra = REGLAS.tarde.hCierra * 60 + REGLAS.tarde.mCierra;
-                    if (totalM >= abre && totalM < cierra) {
-                        Core.generarTicket(turno);
-                    } else {
-                        Swal.fire({ 
-                            icon: 'warning', 
-                            title: 'Fuera de Horario', 
-                            text: `Tarde abre a las ${REGLAS.tarde.hAbre}:${REGLAS.tarde.mAbre.toString().padStart(2, '0')}`,
-                            background: '#111', 
-                            color: '#fff',
-                            confirmButtonColor: '#ffc107'
-                        });
-                    }
-                } else if (turno === 'NOCHE') {
-                    const abre = REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre;
-                    const cierra = REGLAS.noche.hCierra * 60 + REGLAS.noche.mCierra;
-                    if (totalM >= abre && totalM < cierra) {
-                        Core.generarTicket(turno);
-                    } else {
-                        Swal.fire({ 
-                            icon: 'warning', 
-                            title: 'Horario No Disponible', 
-                            text: `Noche abre a las ${REGLAS.noche.hAbre}:${REGLAS.noche.mAbre.toString().padStart(2, '0')}`,
-                            background: '#111', 
-                            color: '#fff',
-                            confirmButtonColor: '#ffc107'
-                        });
-                    }
-                }
+                Core.generarTicket(turno);
             },
 
             generarTicket: (turno) => {
                 clearInterval(Core.pollContador);
                 Core.hideSections();
                 
-                // TARDE Y NOCHE ACTIVAN LA ANIMACIÓN GALAXY
+                // TARDE Y NOCHE CON ANIMACIÓN GALAXY
                 if (turno === 'TARDE' || turno === 'NOCHE') {
                     document.getElementById('loading-screen').style.display = 'flex';
                     Galaxy3D.init();
@@ -594,46 +472,32 @@
                 document.getElementById('t-fecha').innerText = fecha;
                 document.getElementById('t-nom').innerText = Core.alumno.Estudiante;
                 document.getElementById('t-fac').innerText = Core.alumno.Facultad;
-                document.getElementById('t-cod').innerText = Core.alumno.Codigo || "N/A";
+                document.getElementById('t-cod').innerText = Core.alumno.Codigo;
                 document.getElementById('t-dni').innerText = Core.alumno.dni;
 
                 if (turno === 'MAÑANA') {
                     document.getElementById('asiento-area').classList.add('hidden');
-                    document.getElementById('persona-area').classList.add('hidden');
+                    document.getElementById('icon-walking').classList.add('hidden');
                     Core.finalizarGeneracion(qrData, turno);
                 } else {
-                    // TARDE Y NOCHE SOLICITAN ASIENTO
+                    // TARDE Y NOCHE: OBTENER ASIENTO
                     try {
-                        const url = new URL(L2_COLA);
-                        url.searchParams.append('dni', Core.alumno.dni);
-                        url.searchParams.append('accion', 'solicitar_cola');
-
-                        const res = await fetch(url.toString());
+                        const res = await fetch(`${L2_COLA}?dni=${Core.alumno.dni}&accion=solicitar_cola`);
                         const data = await res.json();
-                        const nAsiento = parseInt(data.orden) || 0;
+                        const nAsiento = parseInt(data.orden);
                         
                         if (nAsiento <= 45) {
-                            // Mostrar número de asiento
                             document.getElementById('asiento-area').classList.remove('hidden');
-                            document.getElementById('persona-area').classList.add('hidden');
+                            document.getElementById('icon-walking').classList.add('hidden');
                             document.getElementById('t-asiento').innerText = nAsiento < 10 ? `0${nAsiento}` : nAsiento;
                         } else {
-                            // Mostrar icono de persona caminando
                             document.getElementById('asiento-area').classList.add('hidden');
-                            document.getElementById('persona-area').classList.remove('hidden');
-                            document.getElementById('persona-area').innerHTML = '<i class="fa-solid fa-person-walking"></i>';
+                            document.getElementById('icon-walking').classList.remove('hidden');
                         }
                         Core.finalizarGeneracion(qrData, turno);
                     } catch(e) {
-                        console.error("Error solicitando asiento:", e);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Fallo al solicitar cupo. Intente nuevamente.',
-                            background: '#111',
-                            color: '#fff',
-                            confirmButtonColor: '#ffc107'
-                        });
+                        Swal.fire('Error', 'Fallo al solicitar cupo', 'error');
+                        Core.hideSections();
                         document.getElementById('step-selection').classList.remove('hidden-section');
                     }
                 }
@@ -643,40 +507,65 @@
                 document.getElementById('step-ticket').classList.remove('hidden-section');
                 document.getElementById('qrcode-vip').innerHTML = "";
                 new QRCode(document.getElementById("qrcode-vip"), { 
-                    text: qrData, width: 150, height: 150, correctLevel: QRCode.CorrectLevel.H 
+                    text: qrData, width: 150, height: 150, correctLevel : QRCode.CorrectLevel.H 
                 });
-                Core.esperarSincronizacion(turno);
+
+                // MOSTRAR TICKET Y LUEGO ESPERAR ESCANEO
+                setTimeout(() => {
+                    Core.esperarEscaneo();
+                }, 2000);
             },
 
-            esperarSincronizacion: (turno) => {
-                Core.syncInterval = setInterval(async () => {
-                    try {
-                        const url = new URL(L3_SINCRO);
-                        url.searchParams.append('dni', Core.alumno.dni);
-                        url.searchParams.append('accion', 'consultar');
+            esperarEscaneo: () => {
+                Core.hideSections();
+                document.getElementById('step-waiting-scan').classList.remove('hidden-section');
+                
+                const startTime = Date.now();
+                const timerEl = document.getElementById('waiting-timer');
+                
+                // ACTUALIZAR TIMER
+                const timerInterval = setInterval(() => {
+                    const elapsed = Date.now() - startTime;
+                    const remaining = Math.max(0, Core.maxWaitTime - elapsed);
+                    const seconds = Math.ceil(remaining / 1000);
+                    timerEl.innerText = `Tiempo restante: ${seconds}s`;
 
-                        const res = await fetch(url.toString());
+                    if(remaining <= 0) {
+                        clearInterval(timerInterval);
+                        clearInterval(Core.scanMonitorInterval);
+                        Swal.fire({ 
+                            icon: 'error', 
+                            title: 'Tiempo Agotado', 
+                            text: 'El escaneo no se completó a tiempo', 
+                            background: '#111', 
+                            color: '#fff',
+                            willClose: () => Core.reiniciar()
+                        });
+                    }
+                }, 1000);
+
+                // MONITOREAR ESCANEO EN L3_SINCRO
+                Core.scanMonitorInterval = setInterval(async () => {
+                    try {
+                        const res = await fetch(`${L3_SINCRO}?dni=${Core.alumno.dni}&accion=consultar`);
                         const data = await res.json();
                         
-                        if(data.asistio === true || data.escaneado === true) { 
-                            clearInterval(Core.syncInterval);
+                        if(data.asistio === true) { 
+                            clearInterval(timerInterval);
+                            clearInterval(Core.scanMonitorInterval);
                             
-                            // Marcar turno como usado
-                            Core.alumno.usedShifts = Core.alumno.usedShifts || [];
-                            Core.alumno.usedShifts.push(turno);
-
+                            // MOSTRAR ÉXITO
                             Core.hideSections();
                             document.getElementById('step-success').classList.remove('hidden-section');
-                            
-                            // Auto regresar al inicio después de 5 segundos
-                            setTimeout(() => {
-                                location.reload();
-                            }, 5000);
                         }
-                    } catch(e) {
-                        console.log("Esperando escaneo...");
-                    }
-                }, 3000);
+                    } catch(e) {}
+                }, 2000); // VERIFICAR CADA 2 SEGUNDOS
+            },
+
+            reiniciar: () => {
+                clearInterval(Core.pollContador);
+                clearInterval(Core.scanMonitorInterval);
+                location.reload();
             }
         };
 
@@ -684,7 +573,6 @@
             scene: null, camera: null, renderer: null, particles: null, reqId: null,
             init: () => {
                 const container = document.getElementById('loader-3d-canvas');
-                if (!container) return;
                 container.innerHTML = "";
                 Galaxy3D.scene = new THREE.Scene();
                 Galaxy3D.camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 100);
@@ -725,12 +613,7 @@
                 Galaxy3D.particles.rotation.y += 0.005;
                 Galaxy3D.renderer.render(Galaxy3D.scene, Galaxy3D.camera);
             },
-            stop: () => { 
-                if(Galaxy3D.reqId) cancelAnimationFrame(Galaxy3D.reqId); 
-                if(Galaxy3D.renderer && Galaxy3D.renderer.domElement) {
-                    Galaxy3D.renderer.domElement.remove();
-                }
-            }
+            stop: () => { if(Galaxy3D.reqId) cancelAnimationFrame(Galaxy3D.reqId); }
         };
 
         let sceneGlobe, cameraGlobe, rendererGlobe, globeMesh;
@@ -756,14 +639,7 @@
             animateGlobe();
         }
 
-        function toggleMenu() { 
-            document.getElementById('mobile-menu').classList.toggle('active'); 
-        }
-
-        // Sanitizar input DNI en tiempo real
-        document.getElementById('dniInput').addEventListener('input', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 8);
-        });
+        function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
 
         window.addEventListener('load', () => {
             TimeGuard.init();
