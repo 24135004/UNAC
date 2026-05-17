@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNAC | Panel de Control Delegados</title>
+    
+    <!-- 
+    ==========================================================================
+    SISTEMA DE GESTIÓN DE MOVILIDAD UNIVERSITARIA - UNAC
+    --------------------------------------------------------------------------
+    MÓDULO: PANEL DE CONTROL DELEGADOS v11.0
+    Sincronización: Link 3 (Sincro Sheet) con Validación de Fecha Normalizada
+    ==========================================================================
+    -->
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
@@ -17,6 +27,7 @@
             color: white;
             margin: 0; min-height: 100vh;
             display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden;
         }
         .glass {
             background: rgba(255, 255, 255, 0.03);
@@ -47,23 +58,29 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 
+        /* NOTIFICACIONES FLASH ORIGINALES */
         #flash-notif {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 9999; background: #10b981; color: white; padding: 25px 50px;
-            border-radius: 20px; font-weight: 900; text-align: center;
-            box-shadow: 0 0 50px rgba(16, 185, 129, 0.6); display: none;
+            z-index: 9999; background: #10b981; color: white; padding: 30px 50px;
+            border-radius: 24px; font-weight: 900; text-align: center;
+            box-shadow: 0 0 60px rgba(16, 185, 129, 0.5); display: none;
             border: 2px solid white; pointer-events: none;
+            width: 85%; max-width: 400px;
         }
-        .notif-error { background: #ef4444 !important; box-shadow: 0 0 50px rgba(239, 68, 68, 0.6) !important; }
+        .notif-error { 
+            background: #ef4444 !important; 
+            box-shadow: 0 0 60px rgba(239, 68, 68, 0.7) !important; 
+        }
     </style>
 </head>
 <body>
 
     <div id="flash-notif">
-        <i id="flash-icon" class="fa-solid fa-circle-check text-5xl mb-2"></i><br>
-        <span id="flash-text" class="text-2xl uppercase italic tracking-tighter">Escaneo Verificado</span>
+        <i id="flash-icon" class="fa-solid fa-circle-check text-6xl mb-4"></i><br>
+        <span id="flash-text" class="text-2xl uppercase italic tracking-tighter"></span>
     </div>
 
+    <!-- HEADER ORIGINAL -->
     <header class="w-full max-w-lg p-6 flex justify-between items-center z-20">
         <div class="flex items-center gap-3">
             <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg">
@@ -74,11 +91,12 @@
                 <span class="text-[9px] text-yellow-500 font-bold">Delegados</span>
             </div>
         </div>
-        <button onclick="window.close()" class="text-[10px] font-black text-gray-500 uppercase tracking-widest hover:text-red-500 transition">
+        <button onclick="window.location.reload()" class="text-[10px] font-black text-gray-500 uppercase tracking-widest hover:text-red-500 transition">
             Cerrar Panel <i class="fa-solid fa-xmark ml-1"></i>
         </button>
     </header>
 
+    <!-- SECCIÓN LOGIN -->
     <div id="login-container" class="w-full max-w-sm px-6 mt-10 text-center animate-fade-in">
         <div class="mb-8">
             <h1 class="text-3xl font-black uppercase italic tracking-tighter">Acceso <span class="text-yellow-500">Restringido</span></h1>
@@ -97,6 +115,7 @@
         </div>
     </div>
 
+    <!-- SECCIÓN ESCÁNER -->
     <div id="scanner-container" class="w-full max-w-lg px-4 py-4 hidden animate-fade-in">
         <div class="flex justify-between items-center mb-6 px-2">
             <div>
@@ -112,7 +131,6 @@
             <div id="reader"></div>
         </div>
 
-        <!-- CONTADORES -->
         <div class="grid grid-cols-2 gap-4 mb-4 text-center">
             <div class="glass p-4 border-b-2 border-yellow-500">
                 <span class="text-[8px] text-gray-500 uppercase font-black block mb-1">Mis Escaneos</span>
@@ -139,7 +157,6 @@
             </div>
         </div>
 
-        <!-- BOTONES DE ACCIÓN -->
         <div class="grid grid-cols-2 gap-3 mb-10">
             <button onclick="limpiarHistorial()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
                 <i class="fa-solid fa-eraser mr-1"></i> Borrar Historial
@@ -152,9 +169,10 @@
 
     <script>
         const DELEGADOS = ["71886034", "77570731", "63229248"];
-        const LINK_MARCAR_ASISTENCIA = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
-        const LINK_REINICIO = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
-
+        // LINK 3 DE APP SCRIPT
+        const LINK_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
+        const LINK_REINICIO = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec"; 
+        
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
         let delegadoActivo = "";
         let html5QrcodeScanner;
@@ -182,54 +200,75 @@
 
         function iniciarSistema() {
             renderList();
-            actualizarTotalGlobal();
-            setInterval(actualizarTotalGlobal, 15000);
+            actualizarTotalGlobal(); 
+            setInterval(actualizarTotalGlobal, 15000); 
 
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 280 });
             html5QrcodeScanner.render(onScanSuccess);
         }
 
+        /**
+         * LÓGICA DE ESCANEO REPARADA v11.0
+         */
         async function onScanSuccess(decodedText) {
             if (isScanningLocked) return;
             isScanningLocked = true;
-            
+
             try {
-                let data = decodedText;
-                // Intento decodificar si es Base64
+                let rawString = decodedText;
+                
+                // 1. SOPORTE BASE64 (Si el QR del alumno está cifrado)
                 if(!decodedText.includes('|')) {
-                    try { data = atob(decodedText); } catch(e) {}
+                    try { rawString = atob(decodedText); } catch(e) { console.log("QR Plano"); }
                 }
 
-                const parts = data.split('|');
-                if (parts.length < 3) throw new Error("Formato inválido");
-
-                const dniAlumno = parts[0];
-                const turno = parts[1];
-                const fechaTicket = parts[2];
-                const fechaHoy = new Date().toLocaleDateString('es-PE');
-
-                // 1. VALIDAR FECHA
-                if (fechaTicket !== fechaHoy) {
-                    notificarFlash("TICKET CADUCADO", false);
+                const parts = rawString.split('|');
+                if (parts.length < 3) {
+                    notificarFlash("QR NO VÁLIDO", false);
                     setTimeout(() => { isScanningLocked = false; }, 2000);
                     return;
                 }
 
-                // 2. ENVIAR A LINK 3 Y ESPERAR RESPUESTA REAL
-                const response = await fetch(`${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`);
-                const resultText = await response.text();
+                const dniAlumno = parts[0].trim();
+                const turno = parts[1].trim();
+                const fechaTicket = parts[2].trim();
 
-                if (resultText.includes("ESCANEO DENEGADO")) {
+                // 2. NORMALIZACIÓN DE FECHAS (Elimina discrepancias de formato / o -)
+                const hoyObj = new Date();
+                const dia = String(hoyObj.getDate()).padStart(2, '0');
+                const mes = String(hoyObj.getMonth() + 1).padStart(2, '0');
+                const anio = hoyObj.getFullYear();
+                
+                const fechaHoyNormal = `${dia}/${mes}/${anio}`;
+                const ticketNormal = fechaTicket.replace(/-/g, '/');
+
+                // 3. VALIDACIÓN 1: FECHA
+                if (ticketNormal !== fechaHoyNormal) {
+                    notificarFlash("TICKET CADUCADO", false);
+                    setTimeout(() => { isScanningLocked = false; }, 2500);
+                    return;
+                }
+
+                // 4. VALIDACIÓN 2: CONSULTA A LINK 3 (APP SCRIPT)
+                const apiUrl = `${LINK_SINCRO}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`;
+                
+                const response = await fetch(apiUrl);
+                const result = await response.text();
+
+                if (result.includes("ESCANEO DENEGADO")) {
                     notificarFlash("YA ESCANEADO", false);
-                } else if (resultText.includes("ESCANEO EXITOSO")) {
+                } 
+                else if (result.includes("ESCANEO EXITOSO")) {
                     const registro = {
                         dni: dniAlumno,
                         turno: turno,
                         hora_scan: new Date().toLocaleTimeString(),
-                        fecha_scan: fechaHoy
+                        fecha_scan: fechaHoyNormal
                     };
+
                     scannedData.push(registro);
                     localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
+                    
                     notificarFlash("ESCANEO VERIFICADO", true);
                     renderList();
                     actualizarTotalGlobal();
@@ -239,17 +278,17 @@
 
             } catch (e) {
                 console.error(e);
-                notificarFlash("QR NO VÁLIDO", false);
+                notificarFlash("ERROR LECTURA", false);
             }
 
-            setTimeout(() => { isScanningLocked = false; }, 2000);
+            setTimeout(() => { isScanningLocked = false; }, 3000);
         }
 
         async function actualizarTotalGlobal() {
             try {
-                const response = await fetch(`${LINK_MARCAR_ASISTENCIA}?accion=consultar&dni=0`);
-                const data = await response.json();
-                // Si tienes una accion especifica para el total usala, si no, aproximamos con el local
+                // Consultamos Link 3 para refrescar
+                const response = await fetch(`${LINK_SINCRO}?accion=consultar&dni=0`);
+                // En esta versión usamos el contador local como referencia principal
                 document.getElementById('contador-global').innerText = scannedData.length;
             } catch (e) {
                 document.getElementById('contador-global').innerText = scannedData.length;
@@ -264,10 +303,12 @@
             flashText.innerText = text;
             if (exito) {
                 flash.classList.remove('notif-error');
-                flashIcon.className = "fa-solid fa-circle-check text-5xl mb-2";
+                flashIcon.className = "fa-solid fa-circle-check text-6xl mb-4";
+                sonar(true);
             } else {
                 flash.classList.add('notif-error');
-                flashIcon.className = "fa-solid fa-circle-xmark text-5xl mb-2";
+                flashIcon.className = "fa-solid fa-circle-xmark text-6xl mb-4";
+                sonar(false);
             }
 
             flash.style.display = 'block';
@@ -299,11 +340,12 @@
             const el = document.getElementById('scan-status');
             el.innerText = msg;
             el.className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
-            
+        }
+
+        function sonar(exito) {
             const soundUrl = exito 
                 ? 'https://raw.githubusercontent.com/Anis-Khemira/QR-Code-Scanner/master/audio/beep.mp3' 
                 : 'https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'; 
-            
             try {
                 const audio = new Audio(soundUrl);
                 audio.volume = 0.5;
@@ -320,14 +362,14 @@
         }
 
         async function enviarYReiniciar() {
-            if (!confirm("Esto borrará todo el registro del servidor. ¿Confirmar?")) return;
+            if (!confirm("Se borrarán las colas en el Excel. ¿Continuar?")) return;
             const btn = document.getElementById('btn-reiniciar');
             btn.innerHTML = 'REINICIANDO...';
             try {
                 await fetch(LINK_REINICIO, { method: 'POST', mode: 'no-cors' });
                 localStorage.removeItem('scanned_unac');
                 location.reload();
-            } catch (e) { alert("Error al reiniciar"); }
+            } catch (e) { alert("Error"); }
         }
     </script>
 </body>
