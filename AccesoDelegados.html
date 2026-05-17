@@ -74,7 +74,7 @@
                 <span class="text-[9px] text-yellow-500 font-bold">Delegados</span>
             </div>
         </div>
-        <button onclick="window.location.reload()" class="text-[10px] font-black text-gray-500 uppercase tracking-widest hover:text-red-500 transition">
+        <button onclick="window.close()" class="text-[10px] font-black text-gray-500 uppercase tracking-widest hover:text-red-500 transition">
             Cerrar Panel <i class="fa-solid fa-xmark ml-1"></i>
         </button>
     </header>
@@ -139,6 +139,7 @@
             </div>
         </div>
 
+        <!-- BOTONES DE ACCIÓN (LIMPIAR HISTORIAL Y REINICIAR SISTEMA) -->
         <div class="grid grid-cols-2 gap-3 mb-10">
             <button onclick="limpiarHistorial()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
                 <i class="fa-solid fa-eraser mr-1"></i> Borrar Historial
@@ -151,9 +152,9 @@
 
     <script>
         const DELEGADOS = ["71886034", "77570731", "63229248"];
-        const LINK_MARCAR_ASISTENCIA = "https://script.google.com/macros/s/AKfycbxi6jNUH8BpoS9kdReAizN2COuzxA_1MaBQe5LlvlpTUOm4EacksSFAscv8M1nf0ssV/exec";
-        const LINK_REINICIO = "https://script.google.com/macros/s/AKfycbz1jea2eyWW_5TSvAVMWfMzFZQee0d5kvKT2ln_MI7HwkStRssFlHPAesGJvczRQN1F/exec";
-
+        const LINK_POST_REINICIO = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec"; 
+        const LINK_MARCAR_ASISTENCIA = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
+        
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
         let delegadoActivo = "";
         let html5QrcodeScanner;
@@ -181,86 +182,91 @@
 
         function iniciarSistema() {
             renderList();
-            actualizarTotalGlobal();
-            setInterval(actualizarTotalGlobal, 15000);
+            actualizarTotalGlobal(); 
+            // Sincroniza el contador global cada 15 segundos
+            setInterval(actualizarTotalGlobal, 15000); 
 
-            // Optimización de FPS para lectura instantánea
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
-                fps: 25, 
-                qrbox: {width: 250, height: 250},
-                aspectRatio: 1.0
-            });
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
             html5QrcodeScanner.render(onScanSuccess);
-        }
-
-        function obtenerFechaNormalizada() {
-            const now = new Date();
-            const dia = String(now.getDate()).padStart(2, '0');
-            const mes = String(now.getMonth() + 1).padStart(2, '0');
-            const anio = now.getFullYear();
-            return `${dia}/${mes}/${anio}`;
         }
 
         async function onScanSuccess(decodedText) {
             if (isScanningLocked) return;
-            isScanningLocked = true; // Bloqueo instantáneo de hardware
-
-            // Feedback visual inmediato de "Procesando"
-            document.getElementById('scan-status').innerText = "PROCESANDO...";
-            document.getElementById('scan-status').className = "text-[10px] font-black uppercase text-yellow-500 animate-pulse";
 
             try {
                 let decodedInfo = decodedText;
                 if(!decodedText.includes('|')) {
-                    try { decodedInfo = atob(decodedText); } catch(e) { }
+                    try { decodedInfo = atob(decodedText); } catch(e) {}
                 }
 
-                const parts = decodedInfo.split('|');
-                if (parts.length < 3) throw new Error("Formato Inválido");
+                const [dniAlumno, turno, fechaTicket] = decodedInfo.split('|');
+                const fechaHoy = new Date().toLocaleDateString();
 
-                const dniAlumno = parts[0];
-                const turno = parts[1];
-                const fechaTicket = parts[2];
-                const fechaHoy = obtenerFechaNormalizada();
+                isScanningLocked = true;
+                setTimeout(() => { isScanningLocked = false; }, 3000);
 
-                // 1. VALIDACIÓN DE FECHA (Formato DD/MM/YYYY)
                 if (fechaTicket !== fechaHoy) {
                     notificarFlash("TICKET CADUCADO", false);
-                    setTimeout(() => { isScanningLocked = false; }, 2000);
                     return;
                 }
 
-                // 2. VALIDACIÓN CON SERVIDOR (LINK 3)
-                const apiUrl = `${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`;
-                
-                const response = await fetch(apiUrl);
-                const resultText = await response.text();
-
-                if (resultText.includes("ESCANEO DENEGADO")) {
+                if (scannedData.some(item => item.dni === dniAlumno)) {
                     notificarFlash("YA ESCANEADO", false);
-                } 
-                else if (resultText.includes("ESCANEO EXITOSO")) {
-                    const registro = {
-                        dni: dniAlumno,
-                        turno: turno,
-                        hora_scan: new Date().toLocaleTimeString(),
-                        fecha_scan: fechaHoy
-                    };
-                    scannedData.push(registro);
-                    localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
-                    notificarFlash("ESCANEO VERIFICADO", true);
-                    renderList();
-                    actualizarTotalGlobal();
-                } else {
-                    notificarFlash("ERROR SERVIDOR", false);
+                    return;
                 }
 
+                const registro = {
+                    dni: dniAlumno,
+                    turno: turno,
+                    hora_scan: new Date().toLocaleTimeString(),
+                    fecha_scan: fechaHoy,
+                    delegado: delegadoActivo
+                };
+
+                scannedData.push(registro);
+                localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
+                
+                notificarFlash("ESCANEO VERIFICADO", true);
+                renderList();
+
+                // Enviar asistencia en segundo plano
+                fetch(`${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`, {
+                    mode: 'no-cors'
+                });
+
+                // Intenta sumar al contador global visualmente
+                setTimeout(actualizarTotalGlobal, 1500);
+
             } catch (e) {
-                notificarFlash("QR NO VÁLIDO", false);
+                isScanningLocked = false;
             }
+        }
+
+        // --- NUEVA FUNCIÓN: Obtener total global de la base de datos ---
+        async function actualizarTotalGlobal() {
+            try {
+                const response = await fetch(`${LINK_MARCAR_ASISTENCIA}?accion=obtener_total`);
+                const data = await response.json();
+                if (data && typeof data.total !== 'undefined') {
+                    document.getElementById('contador-global').innerText = data.total;
+                }
+            } catch (e) {
+                // Si la macro aún no devuelve el JSON, mostramos al menos el conteo local como base
+                let currentGlobal = parseInt(document.getElementById('contador-global').innerText) || 0;
+                if(scannedData.length > currentGlobal) {
+                    document.getElementById('contador-global').innerText = scannedData.length;
+                }
+            }
+        }
+
+        // --- NUEVA FUNCIÓN: Limpiar Historial solo local ---
+        function limpiarHistorial() {
+            if (!confirm("¿Deseas borrar tu lista de escaneados local de esta pantalla? \n\n(Esto NO borra los registros del Excel general)")) return;
             
-            // Tiempo de espera para el siguiente escaneo (evita duplicados por lag)
-            setTimeout(() => { isScanningLocked = false; }, 2500);
+            scannedData = [];
+            localStorage.removeItem('scanned_unac');
+            renderList();
+            notificarLector("Historial Local Limpio", true);
         }
 
         function notificarFlash(text, exito) {
@@ -272,11 +278,9 @@
             if (exito) {
                 flash.classList.remove('notif-error');
                 flashIcon.className = "fa-solid fa-circle-check text-5xl mb-2";
-                sonar(true);
             } else {
                 flash.classList.add('notif-error');
                 flashIcon.className = "fa-solid fa-circle-xmark text-5xl mb-2";
-                sonar(false);
             }
 
             flash.style.display = 'block';
@@ -308,40 +312,40 @@
             const el = document.getElementById('scan-status');
             el.innerText = msg;
             el.className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
-        }
-
-        function sonar(exito) {
-            const audio = new Audio(exito 
+            
+            const soundUrl = exito 
                 ? 'https://raw.githubusercontent.com/Anis-Khemira/QR-Code-Scanner/master/audio/beep.mp3' 
-                : 'https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'); 
-            audio.volume = 0.5;
-            audio.play().catch(e => {});
-        }
-
-        function limpiarHistorial() {
-            if (confirm("¿Borrar historial local?")) {
-                scannedData = [];
-                localStorage.removeItem('scanned_unac');
-                renderList();
-            }
-        }
-
-        async function actualizarTotalGlobal() {
+                : 'https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'; 
+            
             try {
-                // Sincronización visual con el total local (puedes añadir fetch a Link 3 aquí si tienes la función obtener_total)
-                document.getElementById('contador-global').innerText = scannedData.length;
-            } catch (e) { }
+                const audio = new Audio(soundUrl);
+                audio.volume = 0.5;
+                audio.play();
+            } catch(e){}
         }
 
         async function enviarYReiniciar() {
-            if (!confirm("Se borrarán las colas en el Excel. ¿Confirmar?")) return;
+            if (!confirm("Esto guardará los datos finales y BORRARÁ todas las colas del Excel. ¿Estás seguro?")) return;
             const btn = document.getElementById('btn-reiniciar');
-            btn.innerHTML = 'REINICIANDO...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> REINICIANDO...';
+            btn.disabled = true;
+
             try {
-                await fetch(LINK_REINICIO, { method: 'POST', mode: 'no-cors' });
+                await fetch(LINK_POST_REINICIO, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ datos: scannedData })
+                });
+                alert("✅ Sistema Reiniciado. El Excel ahora está limpio.");
+                scannedData = [];
                 localStorage.removeItem('scanned_unac');
-                location.reload();
-            } catch (e) { alert("Error al reiniciar"); }
+                document.getElementById('contador-global').innerText = "0";
+                renderList();
+            } catch (e) {
+                alert("Error de conexión al reiniciar.");
+            }
+            btn.innerHTML = '<i class="fa-solid fa-rotate mr-1"></i> Reiniciar Sistema';
+            btn.disabled = false;
         }
     </script>
 </body>
