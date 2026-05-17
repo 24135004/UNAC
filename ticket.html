@@ -49,26 +49,34 @@
         .btn-search:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,193,7,0.3); }
         .btn-search:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        .btn-tutorial { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 15px; }
+        .btn-tutorial { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 15px; text-decoration: none; }
         .btn-tutorial:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
 
-        .btn-acceso { display: inline-flex; align-items: center; background: #111; border: 1px solid #333; color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; position: relative; z-index: 20; }
+        .btn-acceso { display: inline-flex; align-items: center; background: #111; border: 1px solid #333; color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; position: relative; z-index: 20; text-decoration: none; }
         .btn-acceso:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* PANTALLA DE ESCANEO */
+        #scan-screen { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.98); z-index: 9998; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        #scan-screen.active { display: flex; }
+        .scan-animation { width: 150px; height: 150px; border: 3px solid var(--accent); border-radius: 20px; position: relative; animation: scanPulse 1.5s infinite; }
+        @keyframes scanPulse { 0%, 100% { box-shadow: 0 0 20px rgba(255,193,7,0.3), inset 0 0 20px rgba(255,193,7,0.1); } 50% { box-shadow: 0 0 40px rgba(255,193,7,0.6), inset 0 0 40px rgba(255,193,7,0.2); } }
+        .scan-line { position: absolute; width: 100%; height: 2px; background: var(--accent); top: 50%; animation: scanLine 1.5s infinite; box-shadow: 0 0 10px var(--accent); }
+        @keyframes scanLine { 0% { top: 20%; } 50% { top: 50%; } 100% { top: 80%; } }
 
         /* CARDS DE TURNOS */
         .card-panorama { position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
-        .card-panorama:hover:not(.locked) { transform: scale(1.02); border-color: var(--accent); }
+        .card-panorama:hover:not(.locked):not(.used) { transform: scale(1.02); border-color: var(--accent); }
         .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
         .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
         .card-n-img { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); }
         
         .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-        .card-panorama.used { filter: grayscale(1); opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+        .card-panorama.used { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; pointer-events: none; border-color: #ef4444; }
         
         .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: #10b981; color: white; }
-        .badge-usado { background: #6b7280; color: white; }
+        .badge-usado { background: #666; color: white; }
         .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
 
         /* TICKET VIP */
@@ -79,12 +87,10 @@
         .ticket-main-box { border: 1px dashed #d4a017; border-radius: 10px; padding: 20px; background: #fafafa; }
         .valid-date { font-size: 24px; font-weight: 900; color: #d4a017; font-family: 'Montserrat', sans-serif;}
         .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 80px; font-weight: 900; color: #e53e3e; line-height: 1; margin: 10px 0; }
+        .persona-caminando { text-align: center; font-size: 60px; margin: 20px 0; }
         .qr-wrapper { border: 2px solid #d4a017; display: inline-block; padding: 10px; background: #fff; margin: 15px 0; border-radius: 10px; }
-        .qr-wrapper.sin-asiento { position: relative; }
-        .walking-icon { font-size: 60px; color: #d4a017; margin: 20px 0; }
-        .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; background: #fff; border-collapse: collapse;}
+        .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; background: #fff; border-collapse: collapse; }
         .data-table td { padding: 10px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; color: #444; }
-        .data-table tr:last-child td { border-bottom: none; }
 
         .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
         
@@ -96,26 +102,20 @@
         .loader-subtext { color: #888; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; z-index: 10;}
         @keyframes pulse { 0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(255,193,7,0.5); } 50% { opacity: 0.5; text-shadow: none; } }
         
-        #scan-screen { position: fixed; inset: 0; background: rgba(5,5,5,0.95); z-index: 9998; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .scan-container { display: flex; flex-direction: column; align-items: center; gap: 30px; }
-        .scan-icon { font-size: 80px; color: var(--accent); animation: scanPulse 2s infinite; }
-        @keyframes scanPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } }
-        .scan-text { color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 18px; }
-        .scan-subtext { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        
         .hidden-section { display: none !important; }
     </style>
 </head>
 <body>
 
-    <audio id="musica-verificacion" preload="auto"></audio>
+    <audio id="musica-verificacion" src="Muhteşem Yüzyıl The Magnificent Century Official Soundtrack Vol. 1 01 Muhteşem Yüzyıl Jenerik HQ.mp3" preload="auto"></audio>
 
+    <!-- PANTALLA DE ESCANEO -->
     <div id="scan-screen">
-        <div class="scan-container">
-            <div class="scan-icon"><i class="fa-solid fa-qrcode"></i></div>
-            <p class="scan-text">Escaneando DNI</p>
-            <p class="scan-subtext">Verificando en servidor central...</p>
+        <div class="scan-animation">
+            <div class="scan-line"></div>
         </div>
+        <p class="loader-text mt-8">Escaneando DNI</p>
+        <p class="loader-subtext">Verificando en base de datos...</p>
     </div>
 
     <div id="loading-screen">
@@ -127,7 +127,7 @@
     </div>
 
     <div id="mobile-menu">
-        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl" style="border: none; background: none; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
         <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
         <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500 underline">Ticket</a>
@@ -153,7 +153,7 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl"><i class="fa-solid fa-bars"></i></button>
+            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl" style="border: none; background: none; cursor: pointer;"><i class="fa-solid fa-bars"></i></button>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center flex-grow z-20 w-full relative">
@@ -163,7 +163,7 @@
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
                 <div class="flex items-center justify-center gap-2 text-white font-mono opacity-80">
                     <i class="fa-regular fa-clock text-yellow-500"></i>
-                    <p id="live-clock" class="text-lg font-bold tracking-widest">00:00:00</p>
+                    <p id="live-clock" class="text-lg font-bold tracking-widest"></p>
                 </div>
                 <p id="time-status" class="text-[9px] text-green-400 mt-1 uppercase tracking-widest hidden">Reloj Sincronizado Mundialmente</p>
             </div>
@@ -175,8 +175,8 @@
                 <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
                 
                 <div class="mt-6 flex flex-col items-center gap-3">
-                    <button class="btn-search" id="verifyBtn" onclick="Core.verifyStudent()">Verificar Alumno</button>
-                    <a href="tutorial.html" class="btn-tutorial" id="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
+                    <button class="btn-search" id="verifyBtn" onclick="Core.verifyStudent()" style="border: none;">Verificar Alumno</button>
+                    <a href="tutorial.html" class="btn-tutorial"><i class="fa-solid fa-circle-play mr-2 text-yellow-500 text-lg"></i> Ver Tutorial de Uso</a>
                 </div>
             </div>
 
@@ -242,11 +242,8 @@
                                 <p class="text-[12px] font-bold text-gray-600 mt-4 uppercase tracking-widest border-t border-dashed border-yellow-500 pt-4">Tu número de asiento es:</p>
                                 <div class="asiento-num-big drop-shadow-md" id="t-asiento"></div>
                             </div>
-                            <div id="walking-area" class="hidden">
-                                <div class="walking-icon"><i class="fa-solid fa-person-walking"></i></div>
-                                <p class="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Escanea tu código QR al entrar</p>
-                            </div>
-                            <div class="qr-wrapper"><div id="qrcode-vip"></div></div>
+                            <div id="persona-area" class="persona-caminando hidden"></div>
+                            <div class="qr-wrapper shadow-lg"><div id="qrcode-vip"></div></div>
                         </div>
                         <table class="data-table">
                             <tbody>
@@ -265,8 +262,8 @@
             <div id="step-success" class="glass p-12 w-full max-w-sm mx-auto text-center border-t-4 border-green-500 hidden-section animate-fade-up">
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6 shadow-[0_0_30px_rgba(16,185,129,0.3)] rounded-full"></i>
                 <h2 class="text-3xl font-black uppercase text-white tracking-tighter mb-2">REGISTRO VALIDADO</h2>
-                <p class="text-xs text-gray-400 mb-8">Puede proceder a tomar su asiento.</p>
-                <button onclick="location.reload()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase shadow-xl transition-transform hover:scale-105">Finalizar</button>
+                <p class="text-xs text-gray-400 mb-8">Escaneo completado correctamente. Puede proceder a tomar su asiento.</p>
+                <button onclick="location.reload()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase shadow-xl transition-transform hover:scale-105" style="border: none; cursor: pointer;">Finalizar</button>
             </div>
             
         </main>
@@ -320,70 +317,63 @@
                 
                 const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
 
-                // Lógica Mañana (ESTRICTA)
+                // Lógica Mañana
                 const cardM = document.getElementById('card-mañana'), badgeM = document.getElementById('badge-m');
-                const mañanaAbre = REGLAS.manana.hAbre * 60 + REGLAS.manana.mAbre;
-                const mañanaCierra = REGLAS.manana.hCierra * 60 + REGLAS.manana.mCierra;
+                if (!Core.alumno || !Core.alumno.usedShifts) return;
                 
-                if ((totalM >= mañanaAbre && totalM < 1440) || (totalM < mañanaCierra)) { 
-                    if (!cardM.classList.contains('used')) {
-                        cardM.classList.remove('locked'); 
-                        badgeM.innerText = "Abierto"; 
-                        badgeM.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
-                    }
+                if (Core.alumno.usedShifts.includes('MAÑANA')) {
+                    cardM.classList.add('used');
+                    badgeM.innerText = "Usado";
+                    badgeM.className = "badge-img badge-usado";
+                } else if (h >= REGLAS.manana.hAbre || h < REGLAS.manana.hCierra) { 
+                    cardM.classList.remove('locked', 'used'); 
+                    badgeM.innerText = "Abierto"; 
+                    badgeM.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
-                    if (!cardM.classList.contains('used')) {
-                        cardM.classList.add('locked'); 
-                        badgeM.innerText = "Cerrado"; 
-                        badgeM.className = "badge-img badge-cerrado"; 
-                    }
+                    cardM.classList.add('locked'); 
+                    cardM.classList.remove('used');
+                    badgeM.innerText = "Cerrado"; 
+                    badgeM.className = "badge-img badge-cerrado"; 
                 }
 
-                // Lógica Tarde (ESTRICTA)
+                // Lógica Tarde
                 const cardT = document.getElementById('card-tarde'), badgeT = document.getElementById('badge-t');
-                const tardeAbre = REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre;
-                const tardeCierra = REGLAS.tarde.hCierra * 60 + REGLAS.tarde.mCierra;
-                
-                if (totalM >= tardeAbre && totalM < tardeCierra) { 
-                    if (!cardT.classList.contains('used')) {
-                        cardT.classList.remove('locked'); 
-                        badgeT.innerText = "Abierto"; 
-                        badgeT.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
-                    }
+                if (Core.alumno.usedShifts.includes('TARDE')) {
+                    cardT.classList.add('used');
+                    badgeT.innerText = "Usado";
+                    badgeT.className = "badge-img badge-usado";
+                } else if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60 + REGLAS.tarde.mCierra)) { 
+                    cardT.classList.remove('locked', 'used'); 
+                    badgeT.innerText = "Abierto"; 
+                    badgeT.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
-                    if (!cardT.classList.contains('used')) {
-                        cardT.classList.add('locked'); 
-                        badgeT.innerText = "Cerrado"; 
-                        badgeT.className = "badge-img badge-cerrado"; 
-                    }
+                    cardT.classList.add('locked'); 
+                    cardT.classList.remove('used');
+                    badgeT.innerText = "Cerrado"; 
+                    badgeT.className = "badge-img badge-cerrado"; 
                 }
 
-                // Lógica Noche (ESTRICTA)
+                // Lógica Noche
                 const cardN = document.getElementById('card-noche'), badgeN = document.getElementById('badge-n');
-                const nocheAbre = REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre;
-                const nocheCierra = REGLAS.noche.hCierra * 60 + REGLAS.noche.mCierra;
-                
-                if (totalM >= nocheAbre && totalM < nocheCierra) { 
-                    if (!cardN.classList.contains('used')) {
-                        cardN.classList.remove('locked'); 
-                        badgeN.innerText = "Abierto"; 
-                        badgeN.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
-                    }
+                if (Core.alumno.usedShifts.includes('NOCHE')) {
+                    cardN.classList.add('used');
+                    badgeN.innerText = "Usado";
+                    badgeN.className = "badge-img badge-usado";
+                } else if (totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60 + REGLAS.noche.mCierra)) { 
+                    cardN.classList.remove('locked', 'used'); 
+                    badgeN.innerText = "Abierto"; 
+                    badgeN.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
                 } else { 
-                    if (!cardN.classList.contains('used')) {
-                        cardN.classList.add('locked'); 
-                        badgeN.innerText = "Cerrado"; 
-                        badgeN.className = "badge-img badge-cerrado"; 
-                    }
+                    cardN.classList.add('locked'); 
+                    cardN.classList.remove('used');
+                    badgeN.innerText = "Cerrado"; 
+                    badgeN.className = "badge-img badge-cerrado"; 
                 }
             }
         };
 
         const Core = {
-            alumno: null, 
-            pollContador: null, 
-            syncInterval: null,
-            turnoUsado: null,
+            alumno: null, pollContador: null, syncInterval: null,
 
             hideSections: () => {
                 ['step-verify', 'step-selection', 'step-ticket', 'step-success'].forEach(id => {
@@ -391,89 +381,108 @@
                 });
             },
 
-            showScanScreen: () => {
-                document.getElementById('scan-screen').style.display = 'flex';
-            },
-
-            hideScanScreen: () => {
-                document.getElementById('scan-screen').style.display = 'none';
-            },
-
             verifyStudent: async () => {
-                const dni = document.getElementById('dniInput').value.trim();
-                const btn = document.getElementById('verifyBtn');
+                const dniInput = document.getElementById('dniInput');
+                const dni = dniInput.value.trim().replace(/[^0-9]/g, '');
 
-                if(dni.length !== 8 || isNaN(dni)) {
-                    return Swal.fire({ 
+                if(dni.length < 8) {
+                    Swal.fire({ 
                         icon: 'warning', 
                         title: 'DNI Inválido', 
-                        text: 'Debe ingresar 8 dígitos', 
+                        text: 'Ingrese 8 dígitos', 
                         background: '#111', 
-                        color: '#fff' 
+                        color: '#fff',
+                        confirmButtonColor: '#ffc107'
                     });
+                    return;
                 }
 
+                // Mostrar pantalla de escaneo
+                document.getElementById('scan-screen').classList.add('active');
+                const audio = document.getElementById('musica-verificacion');
+                if (audio) { audio.play().catch(e => console.log("Audio no disponible")); }
+
+                const btn = document.getElementById('verifyBtn');
+
                 try {
-                    Core.showScanScreen();
                     btn.innerText = "CARGANDO..."; 
                     btn.disabled = true;
 
-                    const res = await fetch(`${L1_BD}?dni=${dni}`);
-                    const data = await res.json();
+                    // CONSTRUIR URL CORRECTAMENTE
+                    const url = new URL(L1_BD);
+                    url.searchParams.append('dni', dni);
 
-                    // Esperar 3 segundos para que vea el escaneo
-                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    const res = await fetch(url.toString(), {
+                        method: 'GET',
+                        mode: 'no-cors'
+                    });
 
-                    if(data.found) {
-                        // Verificar si el alumno ya fue escaneado hoy
-                        const resCheck = await fetch(`${L3_SINCRO}?dni=${dni}&accion=verificar_uso_hoy`);
-                        const checkData = await resCheck.json();
+                    // Con mode: 'no-cors', no podemos acceder a res.json() directamente
+                    // Usamos un timeout para simular
+                    setTimeout(async () => {
+                        try {
+                            // Intento alternativo con jsonp
+                            const response = await fetch(url.toString());
+                            const data = await response.json();
 
-                        Core.hideScanScreen();
+                            if(data.found || data.Estudiante) {
+                                Core.alumno = { 
+                                    ...data, 
+                                    dni,
+                                    usedShifts: data.usedShifts || []
+                                };
+                                
+                                document.getElementById('welcomeName').innerText = data.Estudiante || "Estudiante";
+                                document.getElementById('info-fac').innerText = data.Facultad || "UNAC";
+                                document.getElementById('info-dni').innerText = "DNI: " + dni;
+                                
+                                // Ocultar pantalla de escaneo después de 2 segundos
+                                setTimeout(() => {
+                                    document.getElementById('scan-screen').classList.remove('active');
+                                    
+                                    Core.hideSections();
+                                    document.getElementById('step-selection').classList.remove('hidden-section');
+                                    document.getElementById('extra-links-container').style.display = 'none';
 
-                        if(checkData.ya_fue_usado) {
+                                    TimeGuard.updateUI();
+                                    Core.actualizarContador();
+                                    Core.pollContador = setInterval(Core.actualizarContador, 5000);
+                                }, 2000);
+                            } else { 
+                                document.getElementById('scan-screen').classList.remove('active');
+                                Swal.fire({ 
+                                    icon: 'error', 
+                                    title: 'Alumno No Verificado', 
+                                    text: 'DNI no encontrado en base de datos',
+                                    background: '#111', 
+                                    color: '#fff',
+                                    confirmButtonColor: '#ffc107'
+                                });
+                            }
+                        } catch(parseError) {
+                            console.error("Error parseando respuesta:", parseError);
+                            document.getElementById('scan-screen').classList.remove('active');
                             Swal.fire({ 
-                                icon: 'info', 
-                                title: 'Ya Utilizado', 
-                                text: 'Su ticket ya fue escaneado hoy', 
+                                icon: 'error', 
+                                title: 'Error de Conexión', 
+                                text: 'No se pudo conectar con el servidor. Intente nuevamente.',
                                 background: '#111', 
-                                color: '#fff' 
+                                color: '#fff',
+                                confirmButtonColor: '#ffc107'
                             });
-                            btn.innerText = "Verificar Alumno"; 
-                            btn.disabled = false;
-                            return;
                         }
+                    }, 3000);
 
-                        Core.alumno = { ...data, dni };
-                        document.getElementById('welcomeName').innerText = data.Estudiante;
-                        document.getElementById('info-fac').innerText = data.Facultad || "UNAC";
-                        document.getElementById('info-dni').innerText = "DNI: " + dni;
-                        
-                        Core.hideSections();
-                        document.getElementById('step-selection').classList.remove('hidden-section');
-                        document.getElementById('extra-links-container').style.display = 'none';
-
-                        Core.actualizarContador();
-                        Core.pollContador = setInterval(Core.actualizarContador, 5000);
-                    } else { 
-                        Core.hideScanScreen();
-                        Swal.fire({ 
-                            icon: 'error', 
-                            title: 'No Verificado', 
-                            text: 'DNI no encontrado en la base de datos',
-                            background: '#111', 
-                            color: '#fff' 
-                        });
-                    }
                 } catch(e) {
-                    Core.hideScanScreen();
-                    console.error(e);
+                    document.getElementById('scan-screen').classList.remove('active');
+                    console.error("Error:", e);
                     Swal.fire({ 
                         icon: 'error', 
                         title: 'Error de Conexión', 
-                        text: 'No se pudo conectar con el servidor',
+                        text: 'Verifique su conexión a internet',
                         background: '#111', 
-                        color: '#fff' 
+                        color: '#fff',
+                        confirmButtonColor: '#ffc107'
                     });
                 } finally {
                     btn.innerText = "Verificar Alumno"; 
@@ -483,59 +492,79 @@
 
             actualizarContador: async () => { 
                 try {
-                    const res = await fetch(`${L2_COLA}?accion=consultar_total`);
+                    const url = new URL(L2_COLA);
+                    url.searchParams.append('accion', 'consultar_total');
+                    
+                    const res = await fetch(url.toString());
                     const data = await res.json();
                     document.getElementById('conteo-real').innerText = data.total || 0;
                 } catch(e) {
-                    console.warn("No se pudo actualizar contador");
+                    console.log("Error actualizando contador:", e);
                 }
             },
 
             validateAndGenerate: (turno) => {
-                const now = TimeGuard.getNow();
-                const h = now.getHours(), m = now.getMinutes();
-                const totalM = h * 60 + m;
-                
-                let permitido = false;
-                let mensaje = '';
+                if (!Core.alumno) return;
 
-                if (turno === 'MAÑANA') {
-                    const mAbre = REGLAS.manana.hAbre * 60 + REGLAS.manana.mAbre;
-                    const mCierra = REGLAS.manana.hCierra * 60 + REGLAS.manana.mCierra;
-                    if ((totalM >= mAbre && totalM < 1440) || (totalM < mCierra)) {
-                        permitido = true;
-                    } else {
-                        mensaje = 'El horario de mañana aún no está disponible';
-                    }
-                } else if (turno === 'TARDE') {
-                    const tAbre = REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre;
-                    const tCierra = REGLAS.tarde.hCierra * 60 + REGLAS.tarde.mCierra;
-                    if (totalM >= tAbre && totalM < tCierra) {
-                        permitido = true;
-                    } else {
-                        mensaje = 'Fuera del horario permitido para la tarde';
-                    }
-                } else if (turno === 'NOCHE') {
-                    const nAbre = REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre;
-                    const nCierra = REGLAS.noche.hCierra * 60 + REGLAS.noche.mCierra;
-                    if (totalM >= nAbre && totalM < nCierra) {
-                        permitido = true;
-                    } else {
-                        mensaje = 'El horario de noche aún no inicia';
-                    }
-                }
-
-                if (permitido) {
-                    Core.turnoUsado = turno;
-                    Core.generarTicket(turno);
-                } else {
+                // Verificar si ya fue usado
+                if (Core.alumno.usedShifts && Core.alumno.usedShifts.includes(turno)) {
                     Swal.fire({ 
                         icon: 'warning', 
-                        title: 'Fuera de Horario', 
-                        text: mensaje,
+                        title: 'Turno Ya Utilizado', 
+                        text: `Ya completó el registro para el turno ${turno}`,
                         background: '#111', 
-                        color: '#fff' 
+                        color: '#fff',
+                        confirmButtonColor: '#ffc107'
                     });
+                    return;
+                }
+
+                const now = TimeGuard.getNow();
+                const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
+                
+                if (turno === 'MAÑANA') {
+                    if (h >= REGLAS.manana.hAbre || h < REGLAS.manana.hCierra) {
+                        Core.generarTicket(turno);
+                    } else {
+                        Swal.fire({ 
+                            icon: 'error', 
+                            title: 'Fuera de Horario', 
+                            text: `Mañana abre a las ${REGLAS.manana.hAbre}:${REGLAS.manana.mAbre.toString().padStart(2, '0')}`,
+                            background: '#111', 
+                            color: '#fff',
+                            confirmButtonColor: '#ffc107'
+                        });
+                    }
+                } else if (turno === 'TARDE') {
+                    const abre = REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre;
+                    const cierra = REGLAS.tarde.hCierra * 60 + REGLAS.tarde.mCierra;
+                    if (totalM >= abre && totalM < cierra) {
+                        Core.generarTicket(turno);
+                    } else {
+                        Swal.fire({ 
+                            icon: 'warning', 
+                            title: 'Fuera de Horario', 
+                            text: `Tarde abre a las ${REGLAS.tarde.hAbre}:${REGLAS.tarde.mAbre.toString().padStart(2, '0')}`,
+                            background: '#111', 
+                            color: '#fff',
+                            confirmButtonColor: '#ffc107'
+                        });
+                    }
+                } else if (turno === 'NOCHE') {
+                    const abre = REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre;
+                    const cierra = REGLAS.noche.hCierra * 60 + REGLAS.noche.mCierra;
+                    if (totalM >= abre && totalM < cierra) {
+                        Core.generarTicket(turno);
+                    } else {
+                        Swal.fire({ 
+                            icon: 'warning', 
+                            title: 'Horario No Disponible', 
+                            text: `Noche abre a las ${REGLAS.noche.hAbre}:${REGLAS.noche.mAbre.toString().padStart(2, '0')}`,
+                            background: '#111', 
+                            color: '#fff',
+                            confirmButtonColor: '#ffc107'
+                        });
+                    }
                 }
             },
 
@@ -553,121 +582,101 @@
                         Core.procesarTicket(turno);
                     }, 10000);
                 } else {
-                    // MAÑANA NO NECESITA ASIENTO
                     Core.procesarTicket(turno);
                 }
             },
 
             procesarTicket: async (turno) => {
-                try {
-                    const fecha = new Date().toLocaleDateString('es-PE');
-                    
-                    document.getElementById('t-saludo').innerText = Core.alumno.Estudiante.split(' ')[0];
-                    document.getElementById('t-fecha').innerText = fecha;
-                    document.getElementById('t-nom').innerText = Core.alumno.Estudiante;
-                    document.getElementById('t-fac').innerText = Core.alumno.Facultad;
-                    document.getElementById('t-cod').innerText = Core.alumno.Codigo;
-                    document.getElementById('t-dni').innerText = Core.alumno.dni;
+                const fecha = new Date().toLocaleDateString('es-PE');
+                const qrData = btoa(`${Core.alumno.dni}|${turno}|${fecha}`);
+                
+                document.getElementById('t-saludo').innerText = Core.alumno.Estudiante.split(' ')[0];
+                document.getElementById('t-fecha').innerText = fecha;
+                document.getElementById('t-nom').innerText = Core.alumno.Estudiante;
+                document.getElementById('t-fac').innerText = Core.alumno.Facultad;
+                document.getElementById('t-cod').innerText = Core.alumno.Codigo || "N/A";
+                document.getElementById('t-dni').innerText = Core.alumno.dni;
 
-                    let nAsiento = null;
+                if (turno === 'MAÑANA') {
+                    document.getElementById('asiento-area').classList.add('hidden');
+                    document.getElementById('persona-area').classList.add('hidden');
+                    Core.finalizarGeneracion(qrData, turno);
+                } else {
+                    // TARDE Y NOCHE SOLICITAN ASIENTO
+                    try {
+                        const url = new URL(L2_COLA);
+                        url.searchParams.append('dni', Core.alumno.dni);
+                        url.searchParams.append('accion', 'solicitar_cola');
 
-                    if (turno === 'MAÑANA') {
-                        // MAÑANA: SIN ASIENTO, SOLO QR
-                        document.getElementById('asiento-area').classList.add('hidden');
-                        document.getElementById('walking-area').classList.remove('hidden');
-                    } else {
-                        // TARDE Y NOCHE: CON ASIENTO LIMITADO
-                        try {
-                            const res = await fetch(`${L2_COLA}?dni=${Core.alumno.dni}&accion=solicitar_cola`);
-                            const data = await res.json();
-                            nAsiento = parseInt(data.orden);
-                            
-                            if (nAsiento <= 45) {
-                                // Primeros 45 con número
-                                document.getElementById('asiento-area').classList.remove('hidden');
-                                document.getElementById('walking-area').classList.add('hidden');
-                                document.getElementById('t-asiento').innerText = nAsiento < 10 ? `0${nAsiento}` : nAsiento;
-                            } else {
-                                // Mayor a 45: solo icono de caminante
-                                document.getElementById('asiento-area').classList.add('hidden');
-                                document.getElementById('walking-area').classList.remove('hidden');
-                            }
-                        } catch(e) {
-                            console.error("Error al solicitar cola:", e);
+                        const res = await fetch(url.toString());
+                        const data = await res.json();
+                        const nAsiento = parseInt(data.orden) || 0;
+                        
+                        if (nAsiento <= 45) {
+                            // Mostrar número de asiento
+                            document.getElementById('asiento-area').classList.remove('hidden');
+                            document.getElementById('persona-area').classList.add('hidden');
+                            document.getElementById('t-asiento').innerText = nAsiento < 10 ? `0${nAsiento}` : nAsiento;
+                        } else {
+                            // Mostrar icono de persona caminando
                             document.getElementById('asiento-area').classList.add('hidden');
-                            document.getElementById('walking-area').classList.remove('hidden');
+                            document.getElementById('persona-area').classList.remove('hidden');
+                            document.getElementById('persona-area').innerHTML = '<i class="fa-solid fa-person-walking"></i>';
                         }
+                        Core.finalizarGeneracion(qrData, turno);
+                    } catch(e) {
+                        console.error("Error solicitando asiento:", e);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Fallo al solicitar cupo. Intente nuevamente.',
+                            background: '#111',
+                            color: '#fff',
+                            confirmButtonColor: '#ffc107'
+                        });
+                        document.getElementById('step-selection').classList.remove('hidden-section');
                     }
-
-                    // Generar QR con datos
-                    const qrData = btoa(`${Core.alumno.dni}|${turno}|${fecha}|${nAsiento || 'SIN_ASIENTO'}`);
-                    document.getElementById('step-ticket').classList.remove('hidden-section');
-                    document.getElementById('qrcode-vip').innerHTML = "";
-                    new QRCode(document.getElementById("qrcode-vip"), { 
-                        text: qrData, 
-                        width: 150, 
-                        height: 150, 
-                        correctLevel: QRCode.CorrectLevel.H 
-                    });
-
-                    // Esperar escaneo
-                    Core.esperarSincronizacion(turno);
-                } catch(e) {
-                    console.error("Error al procesar ticket:", e);
-                    Swal.fire({ 
-                        icon: 'error', 
-                        title: 'Error', 
-                        text: 'Error al generar ticket',
-                        background: '#111', 
-                        color: '#fff' 
-                    });
-                    document.getElementById('step-selection').classList.remove('hidden-section');
                 }
+            },
+
+            finalizarGeneracion: (qrData, turno) => {
+                document.getElementById('step-ticket').classList.remove('hidden-section');
+                document.getElementById('qrcode-vip').innerHTML = "";
+                new QRCode(document.getElementById("qrcode-vip"), { 
+                    text: qrData, width: 150, height: 150, correctLevel: QRCode.CorrectLevel.H 
+                });
+                Core.esperarSincronizacion(turno);
             },
 
             esperarSincronizacion: (turno) => {
                 Core.syncInterval = setInterval(async () => {
                     try {
-                        const res = await fetch(`${L3_SINCRO}?dni=${Core.alumno.dni}&accion=consultar`);
+                        const url = new URL(L3_SINCRO);
+                        url.searchParams.append('dni', Core.alumno.dni);
+                        url.searchParams.append('accion', 'consultar');
+
+                        const res = await fetch(url.toString());
                         const data = await res.json();
                         
-                        if(data.asistio === true) { 
+                        if(data.asistio === true || data.escaneado === true) { 
                             clearInterval(Core.syncInterval);
                             
-                            // Marcar tarjeta como usada
-                            Core.marcarTurnoUsado(turno);
-                            
+                            // Marcar turno como usado
+                            Core.alumno.usedShifts = Core.alumno.usedShifts || [];
+                            Core.alumno.usedShifts.push(turno);
+
                             Core.hideSections();
                             document.getElementById('step-success').classList.remove('hidden-section');
+                            
+                            // Auto regresar al inicio después de 5 segundos
+                            setTimeout(() => {
+                                location.reload();
+                            }, 5000);
                         }
                     } catch(e) {
-                        console.warn("Error en sincronización:", e);
+                        console.log("Esperando escaneo...");
                     }
                 }, 3000);
-            },
-
-            marcarTurnoUsado: (turno) => {
-                const cardMap = {
-                    'MAÑANA': 'card-mañana',
-                    'TARDE': 'card-tarde',
-                    'NOCHE': 'card-noche'
-                };
-                
-                const badgeMap = {
-                    'MAÑANA': 'badge-m',
-                    'TARDE': 'badge-t',
-                    'NOCHE': 'badge-n'
-                };
-
-                const card = document.getElementById(cardMap[turno]);
-                const badge = document.getElementById(badgeMap[turno]);
-
-                if (card && badge) {
-                    card.classList.add('used');
-                    card.classList.remove('locked');
-                    badge.innerText = "Usado";
-                    badge.className = "badge-img badge-usado";
-                }
             }
         };
 
@@ -675,6 +684,7 @@
             scene: null, camera: null, renderer: null, particles: null, reqId: null,
             init: () => {
                 const container = document.getElementById('loader-3d-canvas');
+                if (!container) return;
                 container.innerHTML = "";
                 Galaxy3D.scene = new THREE.Scene();
                 Galaxy3D.camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 100);
@@ -683,13 +693,11 @@
                 Galaxy3D.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
                 Galaxy3D.renderer.setSize(container.clientWidth, container.clientHeight);
                 container.appendChild(Galaxy3D.renderer.domElement);
-                
                 const particleCount = 4000;
                 const geometry = new THREE.BufferGeometry();
                 const positions = new Float32Array(particleCount * 3);
                 const colors = new Float32Array(particleCount * 3);
                 const colorBase = new THREE.Color(0xffc107);
-                
                 for(let i=0; i<particleCount; i++) {
                     const i3 = i * 3;
                     const radius = Math.random() * 4;
@@ -698,37 +706,30 @@
                     const randomX = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.8;
                     const randomY = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5;
                     const randomZ = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.8;
-                    
                     positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
                     positions[i3+1] = randomY;
                     positions[i3+2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
-                    
                     const mixedColor = colorBase.clone();
                     mixedColor.lerp(new THREE.Color(0xffffff), 1 - (radius/4));
-                    colors[i3] = mixedColor.r; 
-                    colors[i3+1] = mixedColor.g; 
-                    colors[i3+2] = mixedColor.b;
+                    colors[i3] = mixedColor.r; colors[i3+1] = mixedColor.g; colors[i3+2] = mixedColor.b;
                 }
-                
                 geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
                 geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-                const material = new THREE.PointsMaterial({ 
-                    size: 0.03, 
-                    vertexColors: true, 
-                    blending: THREE.AdditiveBlending, 
-                    depthWrite: false 
-                });
+                const material = new THREE.PointsMaterial({ size: 0.03, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false });
                 Galaxy3D.particles = new THREE.Points(geometry, material);
                 Galaxy3D.scene.add(Galaxy3D.particles);
                 Galaxy3D.animate();
             },
             animate: () => {
                 Galaxy3D.reqId = requestAnimationFrame(Galaxy3D.animate);
-                if(Galaxy3D.particles) Galaxy3D.particles.rotation.y += 0.005;
+                Galaxy3D.particles.rotation.y += 0.005;
                 Galaxy3D.renderer.render(Galaxy3D.scene, Galaxy3D.camera);
             },
             stop: () => { 
                 if(Galaxy3D.reqId) cancelAnimationFrame(Galaxy3D.reqId); 
+                if(Galaxy3D.renderer && Galaxy3D.renderer.domElement) {
+                    Galaxy3D.renderer.domElement.remove();
+                }
             }
         };
 
@@ -736,25 +737,17 @@
         function initGlobeThree() {
             const container = document.getElementById('globe-container');
             if(!container) return;
-            
             sceneGlobe = new THREE.Scene(); 
             cameraGlobe = new THREE.PerspectiveCamera(45, window.innerWidth / 350, 0.1, 1000);
             cameraGlobe.position.z = 100; 
             rendererGlobe = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             rendererGlobe.setSize(window.innerWidth, 350); 
             container.appendChild(rendererGlobe.domElement);
-            
             globeMesh = new THREE.Mesh(
                 new THREE.IcosahedronGeometry(30, 4), 
-                new THREE.MeshBasicMaterial({ 
-                    color: 0xffc107, 
-                    wireframe: true, 
-                    transparent: true, 
-                    opacity: 0.1 
-                })
+                new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.1 })
             );
             sceneGlobe.add(globeMesh); 
-            
             function animateGlobe() { 
                 requestAnimationFrame(animateGlobe); 
                 if(globeMesh) globeMesh.rotation.y += 0.002; 
@@ -767,11 +760,9 @@
             document.getElementById('mobile-menu').classList.toggle('active'); 
         }
 
-        // Input DNI: solo números
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('dniInput').addEventListener('input', (e) => {
-                e.target.value = e.target.value.replace(/[^0-9]/g, '');
-            });
+        // Sanitizar input DNI en tiempo real
+        document.getElementById('dniInput').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 8);
         });
 
         window.addEventListener('load', () => {
