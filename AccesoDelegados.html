@@ -112,6 +112,7 @@
             <div id="reader"></div>
         </div>
 
+        <!-- CONTADORES -->
         <div class="grid grid-cols-2 gap-4 mb-4 text-center">
             <div class="glass p-4 border-b-2 border-yellow-500">
                 <span class="text-[8px] text-gray-500 uppercase font-black block mb-1">Mis Escaneos</span>
@@ -138,6 +139,7 @@
             </div>
         </div>
 
+        <!-- BOTONES DE ACCIÓN (LIMPIAR HISTORIAL Y REINICIAR SISTEMA) -->
         <div class="grid grid-cols-2 gap-3 mb-10">
             <button onclick="limpiarHistorial()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
                 <i class="fa-solid fa-eraser mr-1"></i> Borrar Historial
@@ -150,10 +152,9 @@
 
     <script>
         const DELEGADOS = ["71886034", "77570731", "63229248"];
-        // LINK 3 DE APP SCRIPT
-        const LINK_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
-        const LINK_POST_REINICIO = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec"; 
-        
+        const LINK_MARCAR_ASISTENCIA = "https://script.google.com/macros/s/AKfycbxi6jNUH8BpoS9kdReAizN2COuzxA_1MaBQe5LlvlpTUOm4EacksSFAscv8M1nf0ssV/exec";
+        const LINK_REINICIO = "https://script.google.com/macros/s/AKfycbz1jea2eyWW_5TSvAVMWfMzFZQee0d5kvKT2ln_MI7HwkStRssFlHPAesGJvczRQN1F/exec";
+
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
         let delegadoActivo = "";
         let html5QrcodeScanner;
@@ -181,21 +182,20 @@
 
         function iniciarSistema() {
             renderList();
-            actualizarTotalGlobal(); 
-            setInterval(actualizarTotalGlobal, 15000); 
+            actualizarTotalGlobal();
+            setInterval(actualizarTotalGlobal, 15000);
 
             html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
             html5QrcodeScanner.render(onScanSuccess);
         }
 
-        // FUNCIÓN CLAVE: Normaliza la fecha a dd/mm/yyyy para que no falle
-        function obtenerFechaNormalizada(fechaStr) {
-            const partes = fechaStr.replace(/-/g, '/').split('/');
-            if(partes.length !== 3) return null;
-            const d = partes[0].padStart(2, '0');
-            const m = partes[1].padStart(2, '0');
-            const y = partes[2];
-            return `${d}/${m}/${y}`;
+        // NORMALIZACIÓN DE FECHA PARA EVITAR ERROR DE CADUCADO
+        function obtenerFechaHoy() {
+            const now = new Date();
+            const dia = String(now.getDate()).padStart(2, '0');
+            const mes = String(now.getMonth() + 1).padStart(2, '0');
+            const anio = now.getFullYear();
+            return `${dia}/${mes}/${anio}`;
         }
 
         async function onScanSuccess(decodedText) {
@@ -204,35 +204,28 @@
 
             try {
                 let decodedInfo = decodedText;
-                
-                // 1. DECODIFICAR BASE64 (FORMATO TICKET ALUMNO)
+                // SOPORTE PARA TICKETS EN BASE64
                 if(!decodedText.includes('|')) {
                     try { decodedInfo = atob(decodedText); } catch(e) { }
                 }
 
                 const parts = decodedInfo.split('|');
-                if (parts.length < 3) {
-                   throw new Error("QR No Valido");
-                }
+                if (parts.length < 3) throw new Error();
 
                 const dniAlumno = parts[0];
                 const turno = parts[1];
-                const fechaTicket = obtenerFechaNormalizada(parts[2]);
+                const fechaTicket = parts[2];
+                const fechaHoy = obtenerFechaHoy();
 
-                // 2. OBTENER FECHA HOY NORMALIZADA
-                const hoyStr = new Date().toLocaleDateString('es-PE');
-                const fechaHoy = obtenerFechaNormalizada(hoyStr);
-
-                // 3. VALIDACIÓN 1: CADUCIDAD
+                // 1. VALIDACIÓN DE FECHA
                 if (fechaTicket !== fechaHoy) {
                     notificarFlash("TICKET CADUCADO", false);
                     setTimeout(() => { isScanningLocked = false; }, 2000);
                     return;
                 }
 
-                // 4. VALIDACIÓN 2: CONSULTA REAL A LINK 3
-                const apiUrl = `${LINK_SINCRO}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`;
-                
+                // 2. VALIDACIÓN CON APP SCRIPT (LINK 3)
+                const apiUrl = `${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`;
                 const response = await fetch(apiUrl);
                 const resultText = await response.text();
 
@@ -246,31 +239,17 @@
                         hora_scan: new Date().toLocaleTimeString(),
                         fecha_scan: fechaHoy
                     };
-
                     scannedData.push(registro);
                     localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
-                    
                     notificarFlash("ESCANEO VERIFICADO", true);
                     renderList();
                     actualizarTotalGlobal();
-                } else {
-                    notificarFlash("ERROR SERVIDOR", false);
                 }
 
             } catch (e) {
                 notificarFlash("QR NO VÁLIDO", false);
             }
-
             setTimeout(() => { isScanningLocked = false; }, 3000);
-        }
-
-        async function actualizarTotalGlobal() {
-            try {
-                // Sincronizamos el contador global con el largo local para GitHub (Simulado)
-                document.getElementById('contador-global').innerText = scannedData.length;
-            } catch (e) {
-                document.getElementById('contador-global').innerText = scannedData.length;
-            }
         }
 
         function notificarFlash(text, exito) {
@@ -281,17 +260,17 @@
             flashText.innerText = text;
             if (exito) {
                 flash.classList.remove('notif-error');
-                flashIcon.className = "fa-solid fa-circle-check text-6xl mb-4";
+                flashIcon.className = "fa-solid fa-circle-check text-5xl mb-2";
                 sonar(true);
             } else {
                 flash.classList.add('notif-error');
-                flashIcon.className = "fa-solid fa-circle-xmark text-6xl mb-4";
+                flashIcon.className = "fa-solid fa-circle-xmark text-5xl mb-2";
                 sonar(false);
             }
 
             flash.style.display = 'block';
             notificarLector(text, exito);
-            setTimeout(() => { flash.style.display = 'none'; }, 2000);
+            setTimeout(() => { flash.style.display = 'none'; }, 2500);
         }
 
         function renderList() {
@@ -321,14 +300,11 @@
         }
 
         function sonar(exito) {
-            const soundUrl = exito 
+            const audio = new Audio(exito 
                 ? 'https://raw.githubusercontent.com/Anis-Khemira/QR-Code-Scanner/master/audio/beep.mp3' 
-                : 'https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'; 
-            try {
-                const audio = new Audio(soundUrl);
-                audio.volume = 0.5;
-                audio.play();
-            } catch(e){}
+                : 'https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'); 
+            audio.volume = 0.5;
+            audio.play();
         }
 
         function limpiarHistorial() {
@@ -339,12 +315,18 @@
             }
         }
 
+        async function actualizarTotalGlobal() {
+            try {
+                document.getElementById('contador-global').innerText = scannedData.length;
+            } catch (e) { }
+        }
+
         async function enviarYReiniciar() {
-            if (!confirm("Esto borrará todo el registro del servidor. ¿Confirmar?")) return;
+            if (!confirm("Se borrarán las colas en el Excel. ¿Confirmar?")) return;
             const btn = document.getElementById('btn-reiniciar');
             btn.innerHTML = 'REINICIANDO...';
             try {
-                await fetch(LINK_POST_REINICIO, { method: 'POST', mode: 'no-cors' });
+                await fetch(LINK_REINICIO, { method: 'POST', mode: 'no-cors' });
                 localStorage.removeItem('scanned_unac');
                 location.reload();
             } catch (e) { alert("Error al reiniciar"); }
