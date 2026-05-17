@@ -5,70 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNAC | Pase de Movilidad Oficial</title>
     
-    <!-- ==========================================
-         LIBRERÍAS EXTERNAS MANTENIDAS
-         ========================================== -->
+    <!-- Librerías Externas -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
     
-    <!-- FUENTES E ÍCONOS -->
+    <!-- Fuentes e Íconos -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        :root { 
-            --accent: #ffc107; 
-            --dark: #050505; 
-        }
-
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            min-height: 100vh; 
-            background-color: var(--dark); 
-            font-family: 'Inter', sans-serif; 
-            color: #ffffff; 
-            overflow-x: hidden; 
-            scroll-behavior: smooth; 
-        }
+        :root { --accent: #ffc107; --dark: #050505; }
+        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; scroll-behavior: smooth; }
         
-        /* ANIMACIONES ORIGINALES EXTENDIDAS */
-        @keyframes fadeInUp { 
-            from { 
-                opacity: 0; 
-                transform: translateY(20px); 
-            } 
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            } 
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .animate-float { animation: float 4s ease-in-out infinite; }
 
-        .animate-fade-up { 
-            animation: fadeInUp 0.8s ease-out forwards; 
-        }
-
-        @keyframes float { 
-            0%, 100% { 
-                transform: translateY(0px); 
-            } 
-            50% { 
-                transform: translateY(-10px); 
-            } 
-        }
-
-        .animate-float { 
-            animation: float 4s ease-in-out infinite; 
-        }
-
-        /* WRAPPER PRINCIPAL CON FONDO */
         .main-wrapper { 
             position: relative; 
             z-index: 10; 
-            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), 
-                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
             background-size: cover; 
             background-position: center; 
             background-attachment: fixed; 
@@ -78,7 +37,6 @@
             flex-direction: column;
         }
 
-        /* NAVEGACIÓN Y HEADER ESTILO RUTAS */
         header { 
             width: 100%; 
             max-width: 1200px; 
@@ -86,7 +44,7 @@
             z-index: 1000; 
             margin: 0 auto; 
         }
-
+        
         .nav-link { 
             font-size: 11px; 
             font-weight: 700; 
@@ -95,12 +53,13 @@
             text-transform: uppercase; 
             position: relative; 
             transition: 0.3s; 
+            text-decoration: none;
         }
-
+        
         .nav-link:hover, .active-link { 
             color: var(--accent); 
         }
-
+        
         .nav-link::after { 
             content: ''; 
             position: absolute; 
@@ -111,16 +70,15 @@
             background: var(--accent); 
             transition: width 0.3s; 
         }
-
+        
         .nav-link:hover::after, .active-link::after { 
             width: 100%; 
         }
 
-        /* MENU MÓVIL ESTILO RUTAS */
         #mobile-menu { 
             position: fixed; 
             inset: 0; 
-            background: rgba(5,5,5,0.98); 
+            background: rgba(5, 5, 5, 0.98); 
             z-index: 2000; 
             display: none; 
             flex-direction: column; 
@@ -128,18 +86,22 @@
             justify-content: center; 
             gap: 35px; 
         }
-
+        
         #mobile-menu.active { 
             display: flex; 
         }
 
-        /* ESTILOS DE COMPONENTES GLASS */
+        #mobile-menu a {
+            text-decoration: none;
+            color: inherit;
+        }
+
         .glass { 
             background: rgba(255, 255, 255, 0.03); 
             border: 1px solid rgba(255, 255, 255, 0.08); 
             backdrop-filter: blur(15px); 
             border-radius: 20px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); 
         }
         
         input[type="text"] { 
@@ -155,10 +117,10 @@
             outline: none; 
             transition: 0.3s; 
         }
-
+        
         input[type="text"]:focus { 
-            box-shadow: 0 0 15px rgba(255,193,7,0.3); 
-            background: rgba(0,0,0,0.8); 
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.3); 
+            background: rgba(0, 0, 0, 0.8); 
         }
         
         .btn-search { 
@@ -176,12 +138,12 @@
             width: 100%; 
             max-width: 400px; 
         }
-
+        
         .btn-search:hover:not(:disabled) { 
             transform: translateY(-2px); 
-            box-shadow: 0 10px 20px rgba(255,193,7,0.3); 
+            box-shadow: 0 10px 20px rgba(255, 193, 7, 0.3); 
         }
-
+        
         .btn-search:disabled { 
             opacity: 0.7; 
             cursor: not-allowed; 
@@ -193,9 +155,9 @@
             justify-content: center; 
             width: 100%; 
             max-width: 400px; 
-            background: rgba(255,255,255,0.05); 
+            background: rgba(255, 255, 255, 0.05); 
             color: #fff; 
-            border: 1px solid rgba(255,255,255,0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
             padding: 15px 40px; 
             border-radius: 10px; 
             font-weight: 800; 
@@ -204,10 +166,11 @@
             letter-spacing: 1px; 
             transition: 0.3s; 
             margin-top: 15px; 
+            text-decoration: none;
         }
-
+        
         .btn-tutorial:hover { 
-            background: rgba(255,255,255,0.1); 
+            background: rgba(255, 255, 255, 0.1); 
             border-color: #fff; 
         }
 
@@ -226,8 +189,9 @@
             transition: 0.3s; 
             position: relative; 
             z-index: 20; 
+            text-decoration: none;
         }
-
+        
         .btn-acceso:hover { 
             border-color: var(--accent); 
             color: var(--accent); 
@@ -238,7 +202,7 @@
             position: relative; 
             overflow: hidden; 
             border-radius: 30px; 
-            border: 1px solid rgba(255,255,255,0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
             height: 220px; 
             display: flex; 
             flex-direction: column; 
@@ -249,25 +213,22 @@
             transition: 0.4s; 
             cursor: pointer; 
         }
-
+        
         .card-panorama:hover:not(.locked) { 
             transform: scale(1.02); 
             border-color: var(--accent); 
         }
-
+        
         .card-m-img { 
-            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                              url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); 
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); 
         }
-
+        
         .card-t-img { 
-            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                              url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); 
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); 
         }
-
+        
         .card-n-img { 
-            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
-                              url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); 
+            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); 
         }
         
         .card-panorama.locked { 
@@ -285,17 +246,17 @@
             margin-bottom: 10px; 
             text-transform: uppercase; 
         }
-
+        
         .badge-cerrado { 
             background: #ef4444; 
             color: white; 
         }
-
+        
         .badge-abierto { 
             background: #10b981; 
             color: white; 
         }
-
+        
         .shift-title { 
             font-family: 'Montserrat', sans-serif; 
             font-weight: 900; 
@@ -303,10 +264,10 @@
             font-size: 45px; 
             text-transform: uppercase; 
             line-height: 1; 
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); 
         }
 
-        /* TICKET ORIGINAL VIP */
+        /* TICKET VIP */
         .vip-ticket-card { 
             background: #ffffff; 
             color: #333; 
@@ -315,41 +276,43 @@
             max-width: 420px; 
             margin: 0 auto; 
             overflow: hidden; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); 
             text-align: center; 
         }
-
+        
         .vip-header { 
             background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); 
             padding: 25px 10px; 
             color: #111; 
         }
-
+        
         .vip-header h2 { 
             font-family: 'Montserrat', sans-serif; 
             font-weight: 900; 
             font-size: 24px; 
             letter-spacing: 1px; 
+            margin: 0;
         }
-
+        
         .ticket-body { 
             padding: 25px; 
         }
-
+        
         .ticket-main-box { 
             border: 1px dashed #d4a017; 
             border-radius: 10px; 
             padding: 20px; 
             background: #fafafa; 
         }
-
+        
         .valid-date { 
             font-size: 24px; 
             font-weight: 900; 
             color: #d4a017; 
             font-family: 'Montserrat', sans-serif;
+            margin: 0;
         }
-
+        
         .asiento-num-big { 
             font-family: 'Montserrat', sans-serif; 
             font-size: 80px; 
@@ -358,7 +321,7 @@
             line-height: 1; 
             margin: 10px 0; 
         }
-
+        
         .qr-wrapper { 
             border: 2px solid #d4a017; 
             display: inline-block; 
@@ -367,7 +330,7 @@
             margin: 15px 0; 
             border-radius: 10px; 
         }
-
+        
         .data-table { 
             width: 100%; 
             margin-top: 25px; 
@@ -376,14 +339,19 @@
             font-size: 10px; 
             text-align: left; 
             background: #fff;
+            border-collapse: collapse;
         }
-
+        
         .data-table td { 
             padding: 10px 12px; 
             border-bottom: 1px solid #eee; 
             font-weight: 800; 
             text-transform: uppercase; 
             color: #444; 
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
         }
 
         .status-badge { 
@@ -401,7 +369,6 @@
             margin-top: 10px; 
         }
         
-        /* 3D CONTAINERS */
         #globe-container { 
             width: 100%; 
             height: 350px; 
@@ -413,7 +380,6 @@
             margin-bottom: 20px; 
         }
         
-        /* PANTALLA DE CARGA 3D GALAXIA */
         #loading-screen { 
             position: fixed; 
             inset: 0; 
@@ -424,13 +390,13 @@
             align-items: center; 
             justify-content: center; 
         }
-
+        
         #loader-3d-canvas { 
             width: 100%; 
             height: 60vh; 
             max-height: 500px; 
         }
-
+        
         .loader-text { 
             color: var(--accent); 
             font-family: 'Montserrat', sans-serif; 
@@ -442,8 +408,9 @@
             animation: pulse 1.5s infinite; 
             text-align: center; 
             z-index: 10; 
+            margin: 0;
         }
-
+        
         .loader-subtext { 
             color: #888; 
             font-size: 10px; 
@@ -452,50 +419,53 @@
             letter-spacing: 2px; 
             margin-top: 8px; 
             z-index: 10;
+            margin-bottom: 0;
         }
-
+        
         @keyframes pulse { 
-            0%, 100% { opacity: 1; } 
-            50% { opacity: 0.5; } 
+            0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(255, 193, 7, 0.5); } 
+            50% { opacity: 0.5; text-shadow: none; } 
         }
         
         .hidden-section { 
             display: none !important; 
         }
+
+        .ticket-greeting {
+            margin: 0;
+        }
+
+        .hashtags {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
 
-    <!-- AUDIO ORIGINAL -->
-    <audio id="musica-verificacion" src="MUSICA ACA" preload="auto"></audio>
+    <audio id="musica-verificacion" preload="auto"></audio>
 
-    <!-- LOADER 3D GALAXIA COMPLETO -->
     <div id="loading-screen">
         <div id="loader-3d-canvas"></div>
         <div style="position: absolute; bottom: 20%; display: flex; flex-direction: column; align-items: center;">
-            <p class="loader-text">Esperar un momento</p>
+            <p class="loader-text">Asegurando Asiento VIP</p>
             <p class="loader-subtext">Sincronizando con servidor central...</p>
         </div>
     </div>
 
-    <!-- Menú Móvil (ESTILO RUTAS SINCRONIZADO) -->
     <div id="mobile-menu">
-        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Ticket</a>
-        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
-        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
-        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
+        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl bg-transparent border-none cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500 underline">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER ESTILO RUTAS -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(255,193,7,0.4)]">
-                    <i class="fa-solid fa-bus text-black text-lg"></i>
-                </div>
+                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(255,193,7,0.4)]"><i class="fa-solid fa-bus text-black text-lg"></i></div>
                 <div class="flex flex-col text-left leading-none uppercase">
                     <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
@@ -509,9 +479,7 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
-                MENU <i class="fa-solid fa-bars-staggered"></i>
-            </button>
+            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl bg-transparent border-none cursor-pointer"><i class="fa-solid fa-bars"></i></button>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 py-12 flex flex-col items-center flex-grow z-20 w-full relative">
@@ -521,7 +489,7 @@
                 <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
                 <div class="flex items-center justify-center gap-2 text-white font-mono opacity-80">
                     <i class="fa-regular fa-clock text-yellow-500"></i>
-                    <p id="live-clock" class="text-lg font-bold tracking-widest"></p>
+                    <p id="live-clock" class="text-lg font-bold tracking-widest">00:00:00</p>
                 </div>
                 <p id="time-status" class="text-[9px] text-green-400 mt-1 uppercase tracking-widest hidden">Reloj Sincronizado Mundialmente</p>
             </div>
@@ -530,7 +498,7 @@
             <div id="step-verify" class="glass p-10 w-full max-w-xl mx-auto text-center mb-8 border-t-2 border-yellow-500 animate-fade-up">
                 <p class="text-[11px] text-gray-400 uppercase font-bold mb-6 tracking-widest">Ingrese su DNI para habilitar sistema</p>
                 
-                <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="text" id="dniInput" placeholder="DOCUMENTO DNI" maxlength="8">
                 
                 <div class="mt-6 flex flex-col items-center gap-3">
                     <button class="btn-search" id="verifyBtn" onclick="Core.verifyStudent()">Verificar Alumno</button>
@@ -554,23 +522,20 @@
                     </div>
                 </div>
 
-                <!-- GRILLA DE TURNOS -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
                     <div id="card-mañana" class="card-panorama card-m-img" onclick="Core.validateAndGenerate('MAÑANA')">
                         <span id="badge-m" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Mañana</div>
                         <div class="salida-text text-yellow-500 font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 05:15 AM</div>
-                        <p class="text-[9px] text-white/60 mt-2 uppercase font-bold tracking-widest">Apertura: 09:00 PM</p>
                     </div>
                     <div id="card-tarde" class="card-panorama card-t-img" onclick="Core.validateAndGenerate('TARDE')">
                         <span id="badge-t" class="badge-img">Cerrado</span>
                         <div class="shift-title text-white">Tarde</div>
                         <div class="salida-text text-white font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 06:00 PM</div>
-                        <p class="text-[9px] text-white/60 mt-2 uppercase font-bold tracking-widest">Apertura: 05:10 PM</p>
                     </div>
                 </div>
 
-                <!-- NUEVO TURNO NOCHE -->
+                <!-- NUEVA TARDE DE NOCHE -->
                 <div class="w-full mb-12">
                     <div id="card-noche" class="card-panorama card-n-img max-w-2xl mx-auto" onclick="Core.validateAndGenerate('NOCHE')">
                         <span id="badge-n" class="badge-img">Cerrado</span>
@@ -591,7 +556,7 @@
             <div id="step-ticket" class="w-full max-w-2xl mx-auto hidden-section animate-fade-up">
                 <div class="vip-ticket-card">
                     <div class="vip-header">
-                        <h2>¡PASE VERIFICADO!</h2>
+                        <h2>¡PASE VIP VERIFICADO!</h2>
                         <p class="text-xs font-bold uppercase tracking-widest mt-1 opacity-80 text-black">Ruta Oficial - Ventanilla</p>
                     </div>
                     <div class="ticket-body">
@@ -599,21 +564,21 @@
                         <div class="ticket-main-box">
                             <p class="text-[10px] text-gray-500 font-bold uppercase mb-1 tracking-widest">VÁLIDO ÚNICAMENTE PARA EL DÍA:</p>
                             <p class="valid-date" id="t-fecha"></p>
-                            
-                            <!-- ÁREA DINÁMICA DE ASIENTO O VIAJE DE PIE -->
                             <div id="asiento-area">
-                                <!-- Se llena dinámicamente mediante JavaScript -->
+                                <p class="text-[12px] font-bold text-gray-600 mt-4 uppercase tracking-widest border-t border-dashed border-yellow-500 pt-4">Tu número de asiento es:</p>
+                                <div class="asiento-num-big drop-shadow-md" id="t-asiento"></div>
                             </div>
-
                             <div class="qr-wrapper shadow-lg"><div id="qrcode-vip"></div></div>
                         </div>
                         <table class="data-table">
-                            <tr><td class="text-gray-400">ESTUDIANTE:</td><td id="t-nom" style="text-align:right"></td></tr>
-                            <tr><td class="text-gray-400">FACULTAD:</td><td id="t-fac" style="text-align:right"></td></tr>
-                            <tr><td class="text-gray-400">CÓDIGO:</td><td id="t-cod" style="text-align:right"></td></tr>
-                            <tr><td class="text-gray-400">DNI/CE:</td><td id="t-dni" style="text-align:right"></td></tr>
+                            <tbody>
+                                <tr><td class="text-gray-400">ESTUDIANTE:</td><td id="t-nom" style="text-align:right"></td></tr>
+                                <tr><td class="text-gray-400">FACULTAD:</td><td id="t-fac" style="text-align:right"></td></tr>
+                                <tr><td class="text-gray-400">CÓDIGO:</td><td id="t-cod" style="text-align:right"></td></tr>
+                                <tr><td class="text-gray-400">DNI/CE:</td><td id="t-dni" style="text-align:right"></td></tr>
+                            </tbody>
                         </table>
-                        <div class="hashtags text-yellow-600 text-[10px] font-black mt-4 tracking-widest">#SIGAMOS_MEJORANDO &nbsp; #UNAC_UNIDO</div>
+                        <p class="hashtags text-yellow-600 text-[10px] font-black mt-4 tracking-widest">#SIGAMOS_MEJORANDO &nbsp; #UNAC_UNIDO</p>
                     </div>
                 </div>
             </div>
@@ -623,15 +588,13 @@
                 <i class="fa-solid fa-circle-check text-green-500 text-7xl mb-6 shadow-[0_0_30px_rgba(16,185,129,0.3)] rounded-full"></i>
                 <h2 class="text-3xl font-black uppercase text-white tracking-tighter mb-2">ESCANEO EXITOSO</h2>
                 <p class="text-xs text-gray-400 mb-8">Puede proceder a tomar su asiento.</p>
-                <button onclick="location.reload()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase shadow-xl transition-transform hover:scale-105">Finalizar</button>
+                <button onclick="location.reload()" class="bg-white text-black font-black px-10 py-4 rounded-full text-xs uppercase shadow-xl transition-transform hover:scale-105 border-none cursor-pointer">Finalizar</button>
             </div>
             
         </main>
         
-        <!-- GLOBO 3D ORIGINAL -->
         <div id="globe-container" class="animate-float"></div>
 
-        <!-- BOTONES EXTRAS INFERIORES -->
         <div id="extra-links-container" class="mb-10 text-center relative z-20">
             <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </div>
@@ -643,39 +606,21 @@
     </div>
 
     <script>
-        // ==========================================
-        // CONFIGURACIÓN DE APIS ORIGINALES
-        // ==========================================
         const L1_BD = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
         const L2_COLA = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec";
         const L3_SINCRO = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
         
-        // REGLAS DE TIEMPO FLEXIBLES
+        // ACTUALIZACIÓN DE REGLAS PARA INCLUIR NOCHE
         const REGLAS = { 
-            manana: { 
-                abre: 21, 
-                cierra: 7 
-            }, 
-            tarde: { 
-                hAbre: 17, 
-                mAbre: 10, 
-                hCierra: 17, 
-                mCierra: 59
-            },
-            noche: { 
-                hAbre: 1,   // Medianoche
-                mAbre: 49,  
-                hCierra: 1, 
-                mCierra: 50 
-            }
+            manana: { abre: 21, cierra: 7 }, 
+            tarde: { hAbre: 17, mAbre: 10, hCierra: 18, mCierra: 25 },
+            noche: { hAbre: 2, mAbre: 0, hCierra: 2, mCierra: 1 }
         };
 
-        /** 
-         * MÓDULO ANTI-TRAMPAS DE TIEMPO
-         */
         const TimeGuard = {
             offset: 0,
-            init: async function() {
+            
+            init: async () => {
                 try {
                     const res = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
                     const data = await res.json();
@@ -684,17 +629,17 @@
                     TimeGuard.offset = realTime - localTime;
                     document.getElementById('time-status').classList.remove('hidden');
                 } catch (e) {
-                    console.warn("No se pudo conectar al servidor de tiempo. Usando hora local.");
+                    console.warn("Usando hora local.");
                 }
                 setInterval(TimeGuard.updateUI, 1000);
                 TimeGuard.updateUI();
             },
-
-            getNow: function() {
+            
+            getNow: () => {
                 return new Date(new Date().getTime() + TimeGuard.offset);
             },
-
-            updateUI: function() {
+            
+            updateUI: () => {
                 const now = TimeGuard.getNow();
                 document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
                 
@@ -702,7 +647,7 @@
                 const m = now.getMinutes();
                 const totalM = h * 60 + m;
 
-                // Lógica MAÑANA
+                // Lógica Mañana
                 const cardM = document.getElementById('card-mañana');
                 const badgeM = document.getElementById('badge-m');
                 if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) { 
@@ -715,13 +660,10 @@
                     badgeM.className = "badge-img badge-cerrado"; 
                 }
 
-                // Lógica TARDE (Fórmula Dinámica)
+                // Lógica Tarde
                 const cardT = document.getElementById('card-tarde');
                 const badgeT = document.getElementById('badge-t');
-                let inicioTarde = (REGLAS.tarde.hAbre * 60) + REGLAS.tarde.mAbre;
-                let finTarde = (REGLAS.tarde.hCierra * 60) + REGLAS.tarde.mCierra;
-
-                if (totalM >= inicioTarde && totalM < finTarde) { 
+                if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) { 
                     cardT.classList.remove('locked'); 
                     badgeT.innerText = "Abierto"; 
                     badgeT.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
@@ -731,13 +673,10 @@
                     badgeT.className = "badge-img badge-cerrado"; 
                 }
 
-                // Lógica NOCHE (Fórmula Dinámica Corregida para 00:xx)
+                // Lógica Noche
                 const cardN = document.getElementById('card-noche');
                 const badgeN = document.getElementById('badge-n');
-                let inicioNoche = (REGLAS.noche.hAbre * 60) + REGLAS.noche.mAbre;
-                let finNoche = (REGLAS.noche.hCierra * 60) + REGLAS.noche.mCierra;
-
-                if (totalM >= inicioNoche && totalM < finNoche) { 
+                if (totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60)) { 
                     cardN.classList.remove('locked'); 
                     badgeN.innerText = "Abierto"; 
                     badgeN.className = "badge-img badge-abierto shadow-[0_0_10px_rgba(16,185,129,0.5)]"; 
@@ -749,25 +688,21 @@
             }
         };
 
-        /** 
-         * CONTROLADOR PRINCIPAL CORE - LÓGICA SIN REDUCIR
-         */
         const Core = {
-            alumno: null, 
-            pollContador: null, 
+            alumno: null,
+            pollContador: null,
             syncInterval: null,
 
-            hideSections: function() {
-                document.getElementById('step-verify').classList.add('hidden-section');
-                document.getElementById('step-selection').classList.add('hidden-section');
-                document.getElementById('step-ticket').classList.add('hidden-section');
-                document.getElementById('step-success').classList.add('hidden-section');
+            hideSections: () => {
+                ['step-verify', 'step-selection', 'step-ticket', 'step-success'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden-section');
+                });
             },
 
-            verifyStudent: async function() {
+            verifyStudent: async () => {
                 const audio = document.getElementById('musica-verificacion');
                 if (audio) { 
-                    audio.play().catch(function(e) { console.log("Audio bloqueado"); }); 
+                    audio.play().catch(e => console.log("Audio play blocked")); 
                 }
 
                 const dni = document.getElementById('dniInput').value.trim();
@@ -777,18 +712,16 @@
                     return Swal.fire({ 
                         icon: 'warning', 
                         title: 'DNI Inválido', 
-                        text: 'Debe ingresar 8 dígitos', 
+                        text: '8 dígitos', 
                         background: '#111', 
-                        color: '#fff', 
-                        confirmButtonColor: '#ffc107' 
+                        color: '#fff' 
                     });
                 }
 
                 try {
-                    btn.innerText = "CARGANDO..."; 
+                    btn.innerText = "CARGANDO...";
                     btn.disabled = true;
-                    
-                    const res = await fetch(L1_BD + "?dni=" + dni);
+                    const res = await fetch(`${L1_BD}?dni=${dni}`);
                     const data = await res.json();
 
                     if(data.found) {
@@ -804,33 +737,38 @@
                         Core.actualizarContador();
                         Core.pollContador = setInterval(Core.actualizarContador, 5000);
                     } else { 
-                        Swal.fire({
+                        Swal.fire({ 
                             icon: 'error', 
-                            title: 'No Verificado',
-                            text: 'Su DNI no está registrado en el padrón oficial.',
-                            footer: '<a href="registro.html" style="color:#ef4444; font-weight:bold;">Ir a Registro</a>',
+                            title: 'No Verificado', 
                             background: '#111', 
-                            color: '#fff', 
-                            confirmButtonColor: '#ffc107'
+                            color: '#fff' 
                         });
                     }
                 } catch(e) {
-                    Swal.fire({ icon: 'error', title: 'Error', text: 'Fallo de conexión.', background: '#111', color: '#fff' });
+                    Swal.fire({ 
+                        icon: 'error', 
+                        title: 'Error', 
+                        text: 'Conexión fallida', 
+                        background: '#111', 
+                        color: '#fff' 
+                    });
                 } finally {
-                    btn.innerText = "Verificar Alumno"; 
+                    btn.innerText = "Verificar Alumno";
                     btn.disabled = false;
                 }
             },
 
-            actualizarContador: async function() { 
+            actualizarContador: async () => { 
                 try {
-                    const res = await fetch(L2_COLA + "?accion=consultar_total");
+                    const res = await fetch(`${L2_COLA}?accion=consultar_total`);
                     const data = await res.json();
                     document.getElementById('conteo-real').innerText = data.total || 0;
-                } catch(e) {}
+                } catch(e) {
+                    console.log("Error actualizando contador");
+                }
             },
 
-            validateAndGenerate: function(turno) {
+            validateAndGenerate: (turno) => {
                 const now = TimeGuard.getNow();
                 const h = now.getHours();
                 const totalM = h * 60 + now.getMinutes();
@@ -839,45 +777,60 @@
                     if (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra) {
                         Core.generarTicket(turno);
                     } else {
-                        Swal.fire({ icon: 'error', title: 'Fuera de Horario', background: '#111', color: '#fff' });
+                        Swal.fire({ 
+                            icon: 'error', 
+                            title: 'Fuera de Horario', 
+                            background: '#111', 
+                            color: '#fff' 
+                        });
                     }
-                } else if (turno === 'TARDE' || turno === 'NOCHE') {
-                    let r = (turno === 'TARDE') ? REGLAS.tarde : REGLAS.noche;
-                    let inicio = (r.hAbre * 60) + r.mAbre;
-                    let fin = (r.hCierra * 60) + r.mCierra;
-
-                    if (totalM >= inicio && totalM < fin) {
+                } else if (turno === 'TARDE') {
+                    if (totalM >= (REGLAS.tarde.hAbre * 60 + REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra * 60)) {
                         Core.generarTicket(turno);
                     } else {
                         Swal.fire({ 
                             icon: 'warning', 
-                            title: 'Acceso Denegado', 
-                            text: 'El sistema abre exactamente a la hora programada.',
+                            title: 'Cerrado', 
                             background: '#111', 
-                            color: '#fff', 
-                            confirmButtonColor: '#ffc107'
+                            color: '#fff' 
+                        });
+                    }
+                } else if (turno === 'NOCHE') {
+                    if (totalM >= (REGLAS.noche.hAbre * 60 + REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra * 60)) {
+                        Core.generarTicket(turno);
+                    } else {
+                        Swal.fire({ 
+                            icon: 'warning', 
+                            title: 'Muy Pronto', 
+                            text: 'El horario de noche aún no inicia.', 
+                            background: '#111', 
+                            color: '#fff' 
                         });
                     }
                 }
             },
 
-            generarTicket: function(turno) {
+            generarTicket: (turno) => {
                 clearInterval(Core.pollContador);
                 Core.hideSections();
                 
-                document.getElementById('loading-screen').style.display = 'flex';
-                Galaxy3D.init(); 
-                
-                setTimeout(function() {
-                    document.getElementById('loading-screen').style.display = 'none';
-                    Galaxy3D.stop();
+                // TARDE Y NOCHE ACTIVAN LA ANIMACIÓN GALAXY
+                if (turno === 'TARDE' || turno === 'NOCHE') {
+                    document.getElementById('loading-screen').style.display = 'flex';
+                    Galaxy3D.init();
+                    setTimeout(() => {
+                        document.getElementById('loading-screen').style.display = 'none';
+                        Galaxy3D.stop();
+                        Core.procesarTicket(turno);
+                    }, 10000);
+                } else {
                     Core.procesarTicket(turno);
-                }, 10000); // 10 Segundos Épicos
+                }
             },
 
-            procesarTicket: async function(turno) {
+            procesarTicket: async (turno) => {
                 const fecha = new Date().toLocaleDateString('es-PE');
-                const qrData = btoa(Core.alumno.dni + "|" + turno + "|" + fecha);
+                const qrData = btoa(`${Core.alumno.dni}|${turno}|${fecha}`);
                 
                 document.getElementById('t-saludo').innerText = Core.alumno.Estudiante.split(' ')[0];
                 document.getElementById('t-fecha').innerText = fecha;
@@ -886,200 +839,174 @@
                 document.getElementById('t-cod').innerText = Core.alumno.Codigo;
                 document.getElementById('t-dni').innerText = Core.alumno.dni;
 
-                const areaAsiento = document.getElementById('asiento-area');
-                areaAsiento.innerHTML = ""; 
-
-                // TICKET MAÑANA Y NOCHE: SIN ASIENTO
-                if (turno === 'MAÑANA' || turno === 'NOCHE') {
-                    areaAsiento.classList.add('hidden');
+                if (turno === 'MAÑANA') {
+                    document.getElementById('asiento-area').classList.add('hidden');
+                    Core.finalizarGeneracion(qrData);
                 } else {
-                    // TICKET TARDE: CON LÓGICA DE ASIENTO
+                    // TARDE Y NOCHE SOLICITAN ASIENTO
                     try {
-                        const res = await fetch(L2_COLA + "?dni=" + Core.alumno.dni + "&accion=solicitar_cola");
+                        const res = await fetch(`${L2_COLA}?dni=${Core.alumno.dni}&accion=solicitar_cola`);
                         const data = await res.json();
                         const nAsiento = parseInt(data.orden);
                         
-                        areaAsiento.classList.remove('hidden');
-
                         if (nAsiento <= 40) {
-                            areaAsiento.innerHTML = `
-                                <p class="text-[12px] font-bold text-gray-600 mt-4 uppercase tracking-widest border-t border-dashed border-yellow-500 pt-4">Tu número de asiento es:</p>
-                                <div class="asiento-num-big drop-shadow-md">${nAsiento < 10 ? '0'+nAsiento : nAsiento}</div>
-                            `;
+                            document.getElementById('asiento-area').classList.remove('hidden');
+                            document.getElementById('t-asiento').innerText = nAsiento < 10 ? `0${nAsiento}` : nAsiento;
                         } else {
-                            areaAsiento.innerHTML = `
-                                <div class="flex flex-col items-center border-t border-dashed border-yellow-500 pt-6 mt-4">
-                                    <i class="fa-solid fa-walking text-gray-400 text-6xl mb-3"></i>
-                                    <p class="text-red-600 font-black text-2xl uppercase tracking-tighter leading-none">VIAJE DE PIE</p>
-                                    <p class="text-[10px] text-gray-500 font-bold uppercase mt-1">(CUPO EXCEDE LOS 40)</p>
-                                </div>
-                            `;
+                            document.getElementById('asiento-area').classList.add('hidden');
                         }
+                        Core.finalizarGeneracion(qrData);
                     } catch(e) {
                         Swal.fire('Error', 'Fallo al solicitar cupo', 'error');
                         document.getElementById('step-selection').classList.remove('hidden-section');
-                        return;
                     }
                 }
-
-                Core.finalizarGeneracion(qrData);
             },
 
-            finalizarGeneracion: function(qrData) {
+            finalizarGeneracion: (qrData) => {
                 document.getElementById('step-ticket').classList.remove('hidden-section');
                 document.getElementById('qrcode-vip').innerHTML = "";
                 new QRCode(document.getElementById("qrcode-vip"), { 
                     text: qrData, 
                     width: 150, 
                     height: 150, 
-                    correctLevel : QRCode.CorrectLevel.H 
+                    correctLevel: QRCode.CorrectLevel.H 
                 });
                 Core.esperarSincronizacion();
             },
 
-            esperarSincronizacion: function() {
-                Core.syncInterval = setInterval(async function() {
+            esperarSincronizacion: () => {
+                Core.syncInterval = setInterval(async () => {
                     try {
-                        const res = await fetch(L3_SINCRO + "?dni=" + Core.alumno.dni + "&accion=consultar");
+                        const res = await fetch(`${L3_SINCRO}?dni=${Core.alumno.dni}&accion=consultar`);
                         const data = await res.json();
                         if(data.asistio === true) { 
                             clearInterval(Core.syncInterval);
                             Core.hideSections();
                             document.getElementById('step-success').classList.remove('hidden-section'); 
                         }
-                    } catch(e) {}
+                    } catch(e) {
+                        console.log("Error en sincronización");
+                    }
                 }, 3000);
             }
         };
 
-        /** 
-         * LOADER 3D GALAXIA EXTENDIDO (4000 PARTÍCULAS)
-         */
         const Galaxy3D = {
-            scene: null, 
-            camera: null, 
-            renderer: null, 
-            particles: null, 
+            scene: null,
+            camera: null,
+            renderer: null,
+            particles: null,
             reqId: null,
-
-            init: function() {
+            
+            init: () => {
                 const container = document.getElementById('loader-3d-canvas');
                 container.innerHTML = "";
-                
                 Galaxy3D.scene = new THREE.Scene();
                 Galaxy3D.camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 100);
                 Galaxy3D.camera.position.set(0, 3, 5);
                 Galaxy3D.camera.lookAt(0, 0, 0);
-
                 Galaxy3D.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
                 Galaxy3D.renderer.setSize(container.clientWidth, container.clientHeight);
                 container.appendChild(Galaxy3D.renderer.domElement);
-
+                
                 const particleCount = 4000;
                 const geometry = new THREE.BufferGeometry();
                 const positions = new Float32Array(particleCount * 3);
                 const colors = new Float32Array(particleCount * 3);
-                const colorBase = new THREE.Color(0xffc107); 
-
-                for(let i=0; i<particleCount; i++) {
+                const colorBase = new THREE.Color(0xffc107);
+                
+                for(let i = 0; i < particleCount; i++) {
                     const i3 = i * 3;
                     const radius = Math.random() * 4;
                     const spinAngle = radius * 1.5;
-                    const branchAngle = ((i % 3) / 3) * Math.PI * 2; 
-                    
+                    const branchAngle = ((i % 3) / 3) * Math.PI * 2;
                     const randomX = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.8;
                     const randomY = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5;
                     const randomZ = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.8;
-
                     positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-                    positions[i3+1] = randomY;
-                    positions[i3+2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
-
+                    positions[i3 + 1] = randomY;
+                    positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
                     const mixedColor = colorBase.clone();
-                    mixedColor.lerp(new THREE.Color(0xffffff), 1 - (radius/4));
+                    mixedColor.lerp(new THREE.Color(0xffffff), 1 - (radius / 4));
                     colors[i3] = mixedColor.r;
-                    colors[i3+1] = mixedColor.g;
-                    colors[i3+2] = mixedColor.b;
+                    colors[i3 + 1] = mixedColor.g;
+                    colors[i3 + 2] = mixedColor.b;
                 }
-
+                
                 geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
                 geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-                const material = new THREE.PointsMaterial({
+                const material = new THREE.PointsMaterial({ 
                     size: 0.03, 
                     vertexColors: true, 
                     blending: THREE.AdditiveBlending, 
-                    depthWrite: false
+                    depthWrite: false 
                 });
-
                 Galaxy3D.particles = new THREE.Points(geometry, material);
                 Galaxy3D.scene.add(Galaxy3D.particles);
-
                 Galaxy3D.animate();
             },
-
-            animate: function() {
+            
+            animate: () => {
                 Galaxy3D.reqId = requestAnimationFrame(Galaxy3D.animate);
-                Galaxy3D.particles.rotation.y += 0.005; 
+                Galaxy3D.particles.rotation.y += 0.005;
                 Galaxy3D.renderer.render(Galaxy3D.scene, Galaxy3D.camera);
             },
-
-            stop: function() {
-                if(Galaxy3D.reqId) { 
-                    cancelAnimationFrame(Galaxy3D.reqId); 
+            
+            stop: () => {
+                if(Galaxy3D.reqId) {
+                    cancelAnimationFrame(Galaxy3D.reqId);
                 }
             }
         };
 
-        /**
-         * GLOBO 3D ORIGINAL DEL FONDO
-         */
         let sceneGlobe, cameraGlobe, rendererGlobe, globeMesh;
+        
         function initGlobeThree() {
             const container = document.getElementById('globe-container');
             if(!container) return;
-
+            
             sceneGlobe = new THREE.Scene(); 
             cameraGlobe = new THREE.PerspectiveCamera(45, window.innerWidth / 350, 0.1, 1000);
-            cameraGlobe.position.set(0, 0, 100); 
-
+            cameraGlobe.position.z = 100; 
             rendererGlobe = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             rendererGlobe.setSize(window.innerWidth, 350); 
             container.appendChild(rendererGlobe.domElement);
             
             globeMesh = new THREE.Mesh(
                 new THREE.IcosahedronGeometry(30, 4), 
-                new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.1 })
+                new THREE.MeshBasicMaterial({ 
+                    color: 0xffc107, 
+                    wireframe: true, 
+                    transparent: true, 
+                    opacity: 0.1 
+                })
             );
             sceneGlobe.add(globeMesh); 
             
             function animateGlobe() { 
                 requestAnimationFrame(animateGlobe); 
-                if(globeMesh) { 
-                    globeMesh.rotation.y += 0.002; 
+                if(globeMesh) {
+                    globeMesh.rotation.y += 0.002;
                 }
                 rendererGlobe.render(sceneGlobe, cameraGlobe); 
             }
             animateGlobe();
-
-            window.addEventListener('resize', function() {
-                if(!cameraGlobe) return;
-                cameraGlobe.aspect = window.innerWidth / 350;
-                cameraGlobe.updateProjectionMatrix();
-                rendererGlobe.setSize(window.innerWidth, 350);
-            });
         }
 
-        // FUNCIÓN MENÚ MÓVIL
         function toggleMenu() { 
             document.getElementById('mobile-menu').classList.toggle('active'); 
         }
 
-        // CARGA INICIAL
-        window.onload = function() {
+        window.addEventListener('load', () => {
             TimeGuard.init();
             initGlobeThree();
-        };
+        });
+
+        // Sanitize input to only allow numbers
+        document.getElementById('dniInput').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
     </script>
 </body>
 </html>
