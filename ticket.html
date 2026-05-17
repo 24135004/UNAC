@@ -5,52 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNAC | Pase de Movilidad Oficial</title>
     
-    <!-- LIBRERÍAS MANTENIDAS -->
+    <!-- 
+    ==========================================================================
+    SISTEMA DE GESTIÓN DE MOVILIDAD UNIVERSITARIA - UNAC (OFFICIAL)
+    --------------------------------------------------------------------------
+    Desarrollado por: Sebastian
+    Versión: 9.0.0 (Ultimate Security Build)
+    Módulos: AtomicSync, Anti-Capture Shield, BioScanner Pro, Galaxy Engine
+    ==========================================================================
+    -->
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        :root { --accent: #ffc107; --dark: #050505; }
+        :root { 
+            --accent: #ffc107; 
+            --dark: #050505; 
+        }
 
-        /* BLOQUEO TOTAL DE SELECCIÓN */
+        /* BLOQUEO DE SELECCIÓN Y GESTOS */
         * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
-        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; scroll-behavior: smooth; }
-        
-        /* CAPA NEGRA ANTI-CAPTURA PROFESIONAL */
-        #black-shield {
+        body, html { 
+            margin: 0; padding: 0; min-height: 100vh; 
+            background-color: var(--dark); font-family: 'Inter', sans-serif; 
+            color: #ffffff; overflow-x: hidden; scroll-behavior: smooth; 
+        }
+
+        /* CAPA NEGRA ANTI-CAPTURA (MODO BANCO) */
+        #anti-screenshot-shield {
             position: fixed; inset: 0; background: #000; z-index: 10000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
             text-align: center;
         }
 
-        /* ANIMACIONES ORIGINALES */
+        /* ANIMACIONES */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-float { animation: float 4s ease-in-out infinite; }
 
-        /* ESTILO DEL ESCANEO DETALLISTA */
-        @keyframes laserMove { 0% { top: 0%; } 100% { top: 100%; } }
-        .scan-box {
+        /* ESCÁNER BIOMÉTRICO DETALLISTA v9 */
+        @keyframes scanMove { 0% { top: 0%; } 100% { top: 100%; } }
+        .scan-ui-container {
             position: relative; width: 100%; height: 200px; background: #000;
-            border: 1px solid var(--accent); border-radius: 12px; overflow: hidden;
+            border: 1px solid rgba(255, 193, 7, 0.4); border-radius: 12px; overflow: hidden;
         }
-        .scan-laser {
-            position: absolute; width: 100%; height: 3px; background: var(--accent);
-            box-shadow: 0 0 20px var(--accent); animation: laserMove 2s linear infinite; z-index: 10;
-        }
-        .scan-grid {
+        .scan-grid-overlay {
             position: absolute; inset: 0;
-            background-image: linear-gradient(rgba(255, 193, 7, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 193, 7, 0.05) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(255,193,7,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,193,7,0.05) 1px, transparent 1px);
             background-size: 20px 20px;
         }
+        .scan-laser-line {
+            position: absolute; width: 100%; height: 3px; background: var(--accent);
+            box-shadow: 0 0 15px var(--accent); animation: scanMove 2s linear infinite; z-index: 10;
+        }
+        .scan-frame-corners { position: absolute; inset: 15px; border: 1px solid rgba(255,193,7,0.1); border-radius: 8px; }
+        .c-corner { position: absolute; width: 15px; height: 15px; border: 2px solid var(--accent); }
+        .c-tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+        .c-tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
+        .c-bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
+        .c-br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
 
+        /* NAVEGACIÓN Y ESTRUCTURA */
         .main-wrapper { 
             position: relative; z-index: 10; 
             background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), 
@@ -69,25 +92,31 @@
         #mobile-menu.active { display: flex; }
 
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s; }
+        input[type="text"] { width: 100%; max-width: 400px; padding: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent); color: #fff; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s; font-family: 'JetBrains Mono', monospace; }
+        
         .btn-search { background: var(--accent); color: #000; padding: 15px 40px; border-radius: 10px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; border: none; width: 100%; max-width: 400px; }
         .btn-tutorial { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 15px 40px; border-radius: 10px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 15px; }
 
-        /* CARDS TURNOS */
-        .card-panorama { position: relative; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
+        /* CARDS TURNOS (COMPACTAS CON DOBLE HORA) */
+        .card-panorama { position: relative; overflow: hidden; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); height: 170px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; }
         .card-panorama:hover:not(.locked) { transform: scale(1.02); border-color: var(--accent); }
-        .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
-        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
+        .card-m-img { background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800'); }
+        .card-t-img { background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800'); }
         .card-n-img { background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800'); }
-        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        .card-panorama.locked { filter: grayscale(1); opacity: 0.35; cursor: not-allowed; pointer-events: none; }
         
-        .badge-muy-pronto { position: absolute; top: 15px; right: -30px; background: var(--accent); color: #000; font-weight: 900; font-size: 10px; padding: 5px 40px; transform: rotate(45deg); text-transform: uppercase; z-index: 20; }
-        .badge-img { padding: 4px 15px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
+        .badge-muy-pronto { position: absolute; top: 12px; right: -35px; background: var(--accent); color: #000; font-weight: 900; font-size: 9px; padding: 4px 40px; transform: rotate(45deg); text-transform: uppercase; z-index: 20; }
+        .badge-img { padding: 3px 12px; border-radius: 20px; font-size: 9px; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; }
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: #10b981; color: white; }
-        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; line-height: 1; }
+        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 38px; text-transform: uppercase; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        
+        /* DETALLE DE HORAS EN TARJETA */
+        .time-info-container { margin-top: 5px; text-align: center; }
+        .salida-badge { font-size: 10px; font-weight: 900; color: #fff; background: rgba(0,0,0,0.4); padding: 2px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .apertura-badge { font-size: 8px; font-weight: 700; color: var(--accent); margin-top: 2px; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px; }
 
-        /* TICKET ORIGINAL */
+        /* TICKET */
         .vip-ticket-card { background: #ffffff; color: #333; border-radius: 15px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
         .vip-header { background: linear-gradient(to right, #d4a017, #f7d358, #d4a017); padding: 25px 10px; color: #111; }
         .vip-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; }
@@ -99,9 +128,9 @@
         .data-table { width: 100%; margin-top: 25px; border: 1px solid #eee; border-radius: 8px; font-size: 10px; text-align: left; background: #fff; }
         .data-table td { padding: 10px 12px; border-bottom: 1px solid #eee; font-weight: 800; text-transform: uppercase; color: #444; }
 
-        /* LOADER GALAXY */
+        /* LOADER 3D (10s) */
         #loading-screen { position: fixed; inset: 0; background: #000000; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        #loader-3d-canvas { width: 100%; height: 100%; position: absolute; }
+        #loader-3d-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         .loader-text { color: var(--accent); font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 10px; font-size: 18px; margin-top: 20px; text-shadow: 0 0 15px var(--accent); z-index: 10; }
         
         .hidden-section { display: none !important; }
@@ -111,39 +140,38 @@
 </head>
 <body>
 
-    <!-- ESCUDO DE PRIVACIDAD -->
-    <div id="black-shield">
-        <i class="fa-solid fa-shield-halved text-yellow-500 text-6xl mb-4"></i>
-        <h2 class="text-white text-xl font-black uppercase">Contenido Protegido</h2>
-        <p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Las capturas están prohibidas</p>
+    <!-- CAPA PROTECCIÓN PANTALLA -->
+    <div id="anti-screenshot-shield">
+        <i class="fa-solid fa-eye-slash text-yellow-500 text-6xl mb-4"></i>
+        <h2 class="text-white text-xl font-black uppercase">Contenido Privado</h2>
+        <p class="text-gray-500 text-[10px] mt-2 uppercase tracking-widest">Bloqueo de captura activado por el sistema</p>
     </div>
 
-    <!-- LOADER GALAXY 3D (10s) -->
+    <!-- LOADER GALAXY 3D -->
     <div id="loading-screen">
         <div id="loader-3d-canvas"></div>
-        <p class="loader-text">SINCRONIZANDO GALAXY</p>
+        <p class="loader-text">SINCRONIZANDO PASE</p>
     </div>
 
-    <!-- Menú Móvil (6 PUNTOS ORIGINALES) -->
+    <!-- Menú Móvil (6 PUNTOS) -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline decoration-yellow-500">Ticket</a>
-        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
-        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
-        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
+        <a href="index.html" class="text-xl font-black uppercase text-white">Inicio</a>
+        <a href="rutas.html" class="text-xl font-black uppercase text-white">Rutas</a>
+        <a href="ticket.html" class="text-xl font-black uppercase text-yellow-500">Ticket</a>
+        <a href="registro.html" class="text-xl font-black uppercase text-white">Registro</a>
+        <a href="noticias.html" class="text-xl font-black uppercase text-white">Noticias</a>
+        <a href="contacto.html" class="text-xl font-black uppercase text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
-        <!-- HEADER ORIGINAL -->
         <header class="flex justify-between items-center relative z-20 animate-fade-up">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-[0_0_15px_rgba(255,193,7,0.4)]">
+                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center">
                     <i class="fa-solid fa-bus text-black text-lg"></i>
                 </div>
                 <div class="flex flex-col text-left leading-none uppercase">
-                    <span class="text-[10px] font-black tracking-widest leading-none">UNAC</span>
+                    <span class="text-[10px] font-black tracking-widest">UNAC</span>
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
@@ -155,8 +183,8 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
-                MENU <i class="fa-solid fa-bars-staggered"></i>
+            <button onclick="toggleMenu()" class="md:hidden text-yellow-500 text-2xl">
+                <i class="fa-solid fa-bars-staggered"></i>
             </button>
         </header>
 
@@ -169,7 +197,7 @@
                     <i class="fa-regular fa-clock text-yellow-500"></i>
                     <p id="live-clock" class="text-lg font-bold tracking-widest">--:--:--</p>
                 </div>
-                <p id="time-status" class="text-[9px] text-green-400 mt-1 uppercase tracking-widest hidden">Sincronización Atómica</p>
+                <p id="time-status" class="text-[9px] text-green-400 mt-1 uppercase tracking-widest hidden">Reloj Atómico Sincronizado</p>
             </div>
 
             <!-- PASO 1: VERIFICACIÓN -->
@@ -183,46 +211,55 @@
             </div>
 
             <!-- PASO 2: SELECCIÓN -->
-            <div id="step-selection" class="w-full max-w-5xl mx-auto hidden-section animate-fade-up">
-                <div class="glass p-6 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
+            <div id="step-selection" class="w-full max-w-4xl mx-auto hidden-section animate-fade-up">
+                <div class="glass p-5 mb-8 flex flex-col md:flex-row justify-between items-center border-l-4 border-yellow-500">
                     <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
-                        <div>
-                            <h2 id="welcomeName" class="text-xl md:text-2xl font-black uppercase italic text-white tracking-tighter"></h2>
-                            <div class="status-badge" style="display:inline-flex; align-items:center; gap:8px; background:rgba(16,185,129,0.1); border:1px solid #10b981; color:#10b981; padding:4px 12px; border-radius:50px; font-size:10px; font-weight:800; text-transform:uppercase; margin-top:8px;"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO</div>
+                        <div class="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center text-yellow-500 text-2xl border border-white/10"><i class="fa-solid fa-user-graduate"></i></div>
+                        <div class="text-left">
+                            <h2 id="welcomeName" class="text-lg md:text-xl font-black uppercase italic text-white tracking-tighter"></h2>
+                            <p class="text-[10px] text-green-400 font-bold uppercase"><i class="fa-solid fa-circle-check"></i> ALUMNO HABILITADO</p>
                         </div>
                     </div>
                     <div class="mt-4 md:mt-0 text-right">
-                        <p id="info-fac" class="text-[10px] text-yellow-500 font-black uppercase tracking-widest"></p>
-                        <p id="info-dni" class="text-[10px] text-gray-400 font-bold uppercase mt-1"></p>
+                        <p id="info-fac" class="text-[11px] text-yellow-500 font-black uppercase"></p>
+                        <p id="info-dni" class="text-[10px] text-gray-400 font-bold uppercase"></p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center">
                     <div id="card-mañana" class="card-panorama card-m-img" onclick="Core.validateAndGenerate('MAÑANA')">
                         <span id="badge-m" class="badge-img">Calculando...</span>
                         <div class="shift-title text-white">Mañana</div>
-                        <div class="salida-text text-yellow-500 font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 05:15 AM</div>
+                        <div class="time-info-container">
+                            <div class="salida-badge">SALIDA: 05:15 AM</div>
+                            <div class="apertura-badge">APERTURA: 09:00 PM</div>
+                        </div>
                     </div>
                     <div id="card-tarde" class="card-panorama card-t-img" onclick="Core.validateAndGenerate('TARDE')">
                         <span id="badge-t" class="badge-img">Calculando...</span>
                         <div class="shift-title text-white">Tarde</div>
-                        <div class="salida-text text-white font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 06:00 PM</div>
+                        <div class="time-info-container">
+                            <div class="salida-badge">SALIDA: 06:00 PM</div>
+                            <div class="apertura-badge">APERTURA: 05:10 PM</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="w-full mb-12 text-center">
-                    <div id="card-noche" class="card-panorama card-n-img max-w-2xl mx-auto" onclick="Core.validateAndGenerate('NOCHE')">
+                <div class="w-full mb-10 text-center">
+                    <div id="card-noche" class="card-panorama card-n-img max-w-md mx-auto" onclick="Core.validateAndGenerate('NOCHE')">
                         <div class="badge-muy-pronto">Muy Pronto</div>
                         <span id="badge-n" class="badge-img">Calculando...</span>
                         <div class="shift-title text-white">Noche</div>
-                        <div class="salida-text text-white font-black tracking-wider mt-2 bg-black/50 px-4 py-1 rounded">SALIDA: 10:15 PM</div>
+                        <div class="time-info-container">
+                            <div class="salida-badge">SALIDA: 10:15 PM</div>
+                            <div class="apertura-badge">APERTURA: --:--</div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="glass p-6 w-full max-w-xs mx-auto text-center border-b-2 border-yellow-500">
                     <p class="text-[9px] text-gray-400 font-black uppercase mb-1 tracking-widest">Cupos registrados:</p>
-                    <div id="conteo-real" class="text-5xl font-black text-white font-mono">0</div>
+                    <div id="conteo-real" class="text-5xl font-black text-white font-mono leading-none">0</div>
                 </div>
             </div>
 
@@ -231,7 +268,7 @@
                 <div class="vip-ticket-card">
                     <div class="vip-header"><h2>¡PASE VERIFICADO!</h2></div>
                     <div class="ticket-body">
-                        <p class="text-left text-sm mb-4">Hola <strong id="t-saludo" class="text-black text-lg"></strong>, se te entrega tu ticket digital:</p>
+                        <p class="text-left text-sm mb-4">Hola <strong id="t-saludo" class="text-black text-lg"></strong>, tu ticket digital:</p>
                         <div class="ticket-main-box">
                             <p class="text-[10px] text-gray-500 font-bold uppercase">VÁLIDO ÚNICAMENTE HOY:</p>
                             <p class="valid-date" id="t-fecha"></p>
@@ -259,8 +296,8 @@
         
         <div id="globe-container" class="animate-float"></div>
 
-        <!-- BOTÓN DELEGADOS (CONTROLADO) -->
-        <div id="delegados-cont" class="mb-10 text-center relative z-20">
+        <!-- BOTÓN DELEGADOS (CONTENEDOR OCULTABLE) -->
+        <div id="delegados-container" class="mb-10 text-center relative z-20">
             <a href="AccesoDelegados.html" target="_blank" class="btn-acceso animate-fade-up"><i class="fa-solid fa-user-shield mr-2"></i> Acceso Delegados</a>
         </div>
 
@@ -272,38 +309,35 @@
 
     <script>
         /**
-         * ==========================================
-         * CONFIGURACIÓN DE REGLAS FLEXIBLES
-         * ==========================================
+         * CORE LOGIC - v9.0.0
          */
-        const REGLAS = { 
-            manana: { abre: 21, cierra: 7 }, 
-            tarde: { hAbre: 17, mAbre: 10, hCierra: 17, mCierra: 59 },
-            noche: { hAbre: 1, mAbre: 49, hCierra: 1, mCierra: 50 }
-        };
-
         const APIS = {
             BD: "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec",
             COLA: "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec",
             SYNC: "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec"
         };
 
-        /**
-         * MODIFICACIÓN: EXTREME TIME SYNC (ANTI-TRAMPAS)
-         */
+        const REGLAS = { 
+            manana: { abre: 21, cierra: 7 }, 
+            tarde: { hAbre: 19, mAbre: 38, hCierra: 19, mCierra: 45 },
+            noche: { hAbre: 1, mAbre: 49, hCierra: 1, mCierra: 50 }
+        };
+
+        /** TIMEGUARD: EVITA TRAMPAS DE HORA */
         const TimeGuard = {
-            offset: 0,
+            offset: 0, isSynced: false,
             async init() {
                 try {
                     const res = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
                     const data = await res.json();
                     this.offset = new Date(data.datetime).getTime() - Date.now();
+                    this.isSynced = true;
                     document.getElementById('time-status').classList.remove('hidden');
-                } catch (e) { console.warn("Usando fallback de tiempo."); }
-                setInterval(() => this.update(), 1000);
+                } catch (e) { console.warn("Fallback local."); }
+                setInterval(() => this.updateUI(), 1000);
             },
             getNow() { return new Date(Date.now() + this.offset); },
-            update() {
+            updateUI() {
                 const now = this.getNow();
                 document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
                 const h = now.getHours(), m = now.getMinutes(), totalM = h * 60 + m;
@@ -313,30 +347,26 @@
                     const b = document.getElementById(badgeId);
                     if (cond) {
                         el.classList.remove('locked');
-                        b.innerText = "Abierto"; b.className = "badge-img badge-abierto";
+                        b.innerText = "Abierto"; b.className = "badge-img badge-abierto shadow-[0_0_10px_#10b981]";
                     } else {
                         el.classList.add('locked');
                         b.innerText = "Cerrado"; b.className = "badge-img badge-cerrado";
                     }
                 };
-
                 check('mañana', 'badge-m', (h >= REGLAS.manana.abre || h < REGLAS.manana.cierra));
                 check('tarde', 'badge-t', (totalM >= (REGLAS.tarde.hAbre*60+REGLAS.tarde.mAbre) && totalM < (REGLAS.tarde.hCierra*60+REGLAS.tarde.mCierra)));
                 check('noche', 'badge-n', (totalM >= (REGLAS.noche.hAbre*60+REGLAS.noche.mAbre) && totalM < (REGLAS.noche.hCierra*60+REGLAS.noche.mCierra)));
             }
         };
 
-        /**
-         * MODIFICACIÓN: EXTREME PRIVACY (ANTI-SCREENSHOT)
-         */
+        /** ANTI-CAPTURA PROFESIONAL */
         const Privacy = {
             init() {
-                const shield = document.getElementById('black-shield');
-                window.addEventListener('blur', () => shield.style.display = 'flex');
-                window.addEventListener('focus', () => shield.style.display = 'none');
-                document.addEventListener('visibilitychange', () => {
-                    shield.style.display = document.hidden ? 'flex' : 'none';
-                });
+                const screen = document.getElementById('anti-screenshot-shield');
+                window.addEventListener('blur', () => screen.style.display = 'flex');
+                window.addEventListener('focus', () => screen.style.display = 'none');
+                document.addEventListener('visibilitychange', () => { screen.style.display = document.hidden ? 'flex' : 'none'; });
+                document.addEventListener('contextmenu', e => e.preventDefault());
             }
         };
 
@@ -348,38 +378,49 @@
                 const dni = document.getElementById('dniInput').value.trim();
                 if(dni.length < 8) return Swal.fire('Error','Ingrese 8 dígitos','warning');
 
-                // ESCANEO DETALLISTA
+                // ESCANEO DETALLISTA (CORNER, GRID, LASER)
                 Swal.fire({
-                    title: 'ESCANEO BIOMÉTRICO',
-                    html: `<div class="scan-box"><div class="scan-grid"></div><div class="scan-laser"></div><i class="fa-solid fa-fingerprint" style="font-size:60px; margin-top:55px; color:#ffc107; opacity:0.2;"></i></div><p style="color:#ffc107; font-size:10px; margin-top:15px; letter-spacing:2px; font-family:monospace;">COTEJANDO CON PADRÓN...</p>`,
+                    title: 'AUTENTICACIÓN BIOMÉTRICA',
+                    html: `
+                        <div class="scan-ui-container">
+                            <div class="scan-grid-overlay"></div>
+                            <div class="scan-frame-corners">
+                                <div class="c-corner c-tl"></div><div class="c-corner c-tr"></div>
+                                <div class="c-corner c-bl"></div><div class="c-corner c-br"></div>
+                            </div>
+                            <div class="scan-laser-line"></div>
+                            <i class="fa-solid fa-fingerprint" style="font-size:60px; margin-top:55px; color:#ffc107; opacity:0.15;"></i>
+                        </div>
+                        <div style="margin-top:15px; font-family:'JetBrains Mono';">
+                            <p id="bio-log" style="color:#ffc107; font-size:10px; text-transform:uppercase; letter-spacing:2px;">Analizando documento...</p>
+                        </div>
+                    `,
                     background: '#050505', showConfirmButton: false, allowOutsideClick: false,
                     didOpen: async () => {
+                        const log = document.getElementById('bio-log');
                         try {
-                            const resCheck = await fetch(`${APIS.SYNC}?dni=${dni}&accion=consultar`);
-                            const dataCheck = await resCheck.json();
-                            if(dataCheck.asistio) {
-                                Swal.fire({ icon:'error', title:'Ticket Usado', text:'Ya has sido escaneado hoy.', background:'#111', color:'#fff'});
+                            const resSync = await fetch(`${APIS.SYNC}?dni=${dni}&accion=consultar`);
+                            const dataSync = await resSync.json();
+                            if(dataSync.asistio) {
+                                Swal.fire({ icon:'error', title:'Ticket Bloqueado', text:'Este DNI ya fue escaneado hoy.', background:'#111', color:'#fff'});
                                 return;
                             }
-
+                            log.innerText = "Cotejando con padrón...";
                             const res = await fetch(`${APIS.BD}?dni=${dni}`);
                             const data = await res.json();
                             setTimeout(() => {
                                 if(data.found) {
-                                    this.alumno = { ...data, dni };
-                                    this.onLogin();
-                                    Swal.close();
-                                } else {
-                                    Swal.fire({ icon:'error', title:'Denegado', text:'No figura en padrón.', background:'#111', color:'#fff'});
-                                }
-                            }, 2000);
-                        } catch(e) { Swal.fire('Error','Fallo Red','error'); }
+                                    log.innerText = "Acceso verificado";
+                                    setTimeout(() => { this.alumno = { ...data, dni }; this.onLogin(); Swal.close(); }, 800);
+                                } else { Swal.fire({ icon:'error', title:'No Encontrado', background:'#111', color:'#fff'}); }
+                            }, 1800);
+                        } catch(e) { Swal.fire('Error','Fallo Servidor','error'); }
                     }
                 });
             },
 
             onLogin() {
-                document.getElementById('delegados-cont').style.display = 'none';
+                document.getElementById('delegados-container').style.display = 'none';
                 document.getElementById('welcomeName').innerText = this.alumno.Estudiante;
                 document.getElementById('info-fac').innerText = this.alumno.Facultad;
                 document.getElementById('info-dni').innerText = "ID: " + this.alumno.dni;
@@ -439,12 +480,12 @@
                     const n = parseInt(data.orden);
 
                     if (n <= 45) {
-                        area.innerHTML = `<p style="font-size:10px; color:#888; font-weight:bold; margin-top:10px;">ASIENTO ASIGNADO:</p><div class="asiento-num-big">${n<10?'0'+n:n}</div>`;
+                        area.innerHTML = `<p style="font-size:10px; color:#888; font-weight:bold; margin-top:10px;">ASIENTO:</p><div class="asiento-num-big">${n<10?'0'+n:n}</div>`;
                     } else {
                         area.innerHTML = `
                             <div class="flex flex-col items-center py-4">
                                 <i class="fa-solid fa-person-running text-6xl text-gray-400 mb-3"></i>
-                                <p style="color:#e53e3e; font-weight:900; font-size:24px;">VIAJE DE PIE</p>
+                                <p style="color:#e53e3e; font-weight:900; font-size:24px; line-height:1;">VIAJE DE PIE</p>
                             </div>`;
                     }
                 }
@@ -514,19 +555,15 @@
 
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
 
-        window.onload = () => {
-            TimeGuard.init();
-            Privacy.init();
-            initGlobe();
-        };
-
-        /*
+        window.onload = () => { TimeGuard.init(); Privacy.init(); initGlobe(); };
+        /**
          * DOCUMENTACIÓN TÉCNICA
          * --------------------------------------------------
-         * - Bloqueo Link 3: Consulta diaria obligatoria.
-         * - Lógica Excel Link 2: N <= 45 (Asiento), N > 45 (Icono Persona).
-         * - Anti-Screenshot: Eventos de visibilidad y foco.
-         * - Sincronización Horaria: Offset WorldTimeAPI.
+         * - Salida & Apertura: Labels restaurados en Step 2.
+         * - Lógica Excel Link 2: N <= 45 (Nro), N > 45 (Persona).
+         * - BioScanner: Corners, grid y laser detallados.
+         * - Screenshot Shield: Black overlay on blur/visChange.
+         * - Link 3 Block: Bloqueo de acceso si ya asistió.
          */
     </script>
 </body>
