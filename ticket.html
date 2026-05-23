@@ -40,7 +40,7 @@
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: #10b981; color: white; box-shadow: 0 0 15px #10b981; }
 
-        /* TURNO NOCHE ESTILO PLOMO CON BOTON ILUMINADO */
+        /* TURNO NOCHE PLOMO + MUY PRONTO ILUMINADO */
         .card-noche-lead { background-color: var(--lead) !important; background-blend-mode: multiply; border: 1px solid #4a5568 !important; }
         .btn-muy-pronto { background: var(--accent); color: #000; padding: 8px 25px; border-radius: 50px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; animation: blinkGlow 1.5s infinite; box-shadow: 0 0 15px var(--accent); }
         @keyframes blinkGlow { 0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 20px var(--accent); } 50% { opacity: 0.5; transform: scale(1.05); box-shadow: 0 0 5px var(--accent); } }
@@ -49,7 +49,6 @@
         .ticket-tech { background: #ffffff; color: #111; border-radius: 25px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.8); }
         .tech-header { background: #000; color: #fff; padding: 25px 20px; text-align: center; border-bottom: 5px solid var(--accent); }
         .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 100px; font-weight: 900; color: #e11d48; line-height: 1; }
-        .standing-icon { font-size: 80px; color: #4a5568; margin-bottom: 10px; }
 
         /* ANIMACIONES */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -60,6 +59,10 @@
         .main-wrapper { background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); background-size: cover; background-attachment: fixed; min-height: 100vh; display: flex; flex-direction: column; }
         .hidden-section { display: none !important; }
         #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: 30px; }
+
+        /* BOTON ACCESO DELEGADOS */
+        .btn-delegados { display: inline-flex; align-items: center; background: #111; border: 1px solid #333; color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 10px; font-weight: 800; text-transform: uppercase; transition: 0.3s; position: relative; z-index: 20; }
+        .btn-delegados:hover { border-color: var(--accent); color: var(--accent); }
     </style>
 </head>
 <body>
@@ -113,7 +116,7 @@
                 </div>
             </div>
 
-            <!-- PASO 2: PANEL ALUMNO -->
+            <!-- PASO 2: PANEL RESERVAS -->
             <div id="step-2" class="hidden-section animate-fade-up">
                 <div class="bg-white/5 border border-white/10 p-8 rounded-3xl mb-8 border-l-4 border-yellow-500">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-6">
@@ -166,7 +169,7 @@
                     </div>
                     <div class="p-8 text-center bg-white text-black">
                         <p id="t-fecha" class="text-lg font-black text-yellow-600 mb-4"></p>
-                        <div id="seat-area" class="min-h-[170px] flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl mb-6"></div>
+                        <div id="seat-area" class="min-h-[170px] flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl mb-6 text-center"></div>
                         <div class="flex justify-center mb-6"><div id="qrcode-vip"></div></div>
                         <div class="text-left text-[9px] font-black uppercase space-y-1 border-t pt-4">
                             <p>ESTUDIANTE: <span id="t-nom" class="text-gray-500"></span></p>
@@ -179,6 +182,13 @@
         </main>
 
         <div id="globe-container" class="animate-float"></div>
+
+        <!-- BOTON DELEGADOS (SOLO AL INICIO) -->
+        <div id="extra-btn" class="text-center z-20 mb-8">
+            <a href="AccesoDelegados.html" target="_blank" class="btn-delegados">
+                <i class="fa-solid fa-user-shield mr-2 text-yellow-500"></i> Acceso Delegados
+            </a>
+        </div>
 
         <footer class="p-10 text-center z-20 border-t border-white/5 bg-black/30">
             <p class="text-[10px] tracking-[6px] text-yellow-500 font-black uppercase mb-2">SISTEMA CREADO POR SEBASTIAN</p>
@@ -193,7 +203,7 @@
 
         const REGLAS = {
             manana: { h1: 21, m1: 0, h2: 7, m2: 0 },
-            tarde: { h1: 17, m1: 10, h2: 17, m2: 59 },
+            tarde: { h1: 18, m1: 45, h2: 18, m2: 50 },
             noche: { h1: 1, m1: 49, h2: 1, m2: 55 }
         };
 
@@ -206,7 +216,7 @@
                     const r = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
                     const d = await r.json();
                     this.serverOffset = new Date(d.datetime).getTime() - Date.now();
-                } catch(e) { console.warn("Anti-hack desconectado. Usando hora local."); }
+                } catch(e) { console.warn("Anti-hack activado con hora local."); }
                 setInterval(() => this.updateStatus(), 1000);
                 this.initThree(); 
             },
@@ -228,7 +238,7 @@
 
             startScan: async function() {
                 const dni = document.getElementById('dniInput').value.trim();
-                if(dni.length !== 8) return Swal.fire('DNI Inválido', 'Ingrese 8 dígitos', 'warning');
+                if(dni.length !== 8) return Swal.fire('DNI Inválido', 'Ingrese 8 dígitos.', 'error');
                 
                 document.getElementById('scanning-overlay').style.display = 'flex';
                 document.getElementById('progress-bar').style.width = '30%';
@@ -245,23 +255,22 @@
                         setTimeout(() => {
                             document.getElementById('scanning-overlay').style.display = 'none';
                             document.getElementById('step-1').classList.add('hidden-section');
+                            document.getElementById('extra-btn').classList.add('hidden-section');
                             document.getElementById('step-2').classList.remove('hidden-section');
                             document.getElementById('userName').innerText = resBD.Estudiante;
                             document.getElementById('userFac').innerText = resBD.Facultad;
                             document.getElementById('userCod').innerText = resBD.Codigo;
                             document.getElementById('userDni').innerText = dni;
                             if(this.alumno.asistio) {
-                                ['overlay-m','overlay-t','overlay-n'].forEach(id => {
-                                    const el = document.getElementById(id);
-                                    if(el) el.classList.remove('hidden-section');
-                                });
+                                ['overlay-m','overlay-t','overlay-n'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).classList.remove('hidden-section'); });
                                 ['card-m','card-t','card-n'].forEach(id => document.getElementById(id).classList.add('scanned'));
+                                Swal.fire('Acceso Ya Escaneado', 'Hoy ya registraste tu ingreso.', 'info');
                             }
                         }, 1500);
                     } else throw "X";
                 } catch(e) {
                     document.getElementById('scanning-overlay').style.display = 'none';
-                    Swal.fire('No Encontrado', 'Verifique su registro.', 'error');
+                    Swal.fire('No Encontrado', 'Verifique su DNI.', 'error');
                 }
             },
 
@@ -285,14 +294,13 @@
                 document.getElementById('t-dni').innerText = this.alumno.dni;
 
                 if(turno === 'MAÑANA') {
-                    area.innerHTML = `<i class="fa-solid fa-bus text-7xl text-yellow-500"></i><p class="font-black mt-2">INGRESO LIBRE</p>`;
+                    area.innerHTML = `<i class="fa-solid fa-bus text-7xl text-yellow-500 mb-2"></i><p class="font-black">INGRESO LIBRE</p>`;
                 } else {
-                    // TURNO TARDE O NOCHE: REGLA DE LOS 45
                     try {
                         const res = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`).then(r => r.json());
                         const n = parseInt(res.orden);
                         if(n <= 45) {
-                            area.innerHTML = `<p class="text-[10px] font-black text-gray-400">ASIENTO ASIGNADO:</p><div class="asiento-num-big">${n}</div>`;
+                            area.innerHTML = `<p class="text-[10px] font-black text-gray-400 uppercase">ASIENTO ASIGNADO:</p><div class="asiento-num-big">${n}</div>`;
                         } else {
                             area.innerHTML = `<i class="fa-solid fa-person-walking text-7xl text-gray-400 mb-2"></i><p class="font-black text-red-600 uppercase text-xl">VIAJE DE PIE</p>`;
                         }
@@ -312,7 +320,7 @@
                     const r = await fetch(`${L3}?dni=${this.alumno.dni}&accion=consultar`).then(r => r.json());
                     if(r.asistio) {
                         clearInterval(check);
-                        Swal.fire({ icon: 'success', title: 'ESCANEO EXITOSO', timer: 3000 }).then(() => location.reload());
+                        Swal.fire({ icon: 'success', title: 'ESCANEADO EXITOSO', timer: 3000 }).then(() => location.reload());
                     }
                 }, 3000);
             },
