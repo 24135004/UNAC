@@ -17,12 +17,12 @@
         :root { --accent: #ffc107; --dark: #050505; --lead: #2d3748; --success: #10b981; }
         body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
         
-        /* EFECTO DE TRANSICIÓN SUAVE ENTRE PASOS */
-        .step-container { 
-            animation: fadeIn 0.6s ease-out forwards; 
+        /* TRANSICIONES SUAVES (CORRECCIÓN DE "ANIMACIÓN DIRECTA") */
+        .step-container {
+            animation: slideUpFade 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -40,12 +40,14 @@
         .bottom-right { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
         @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
 
+        /* HEADER */
         header { width: 100%; max-width: 1200px; padding: 25px; z-index: 1000; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
         .nav-link:hover::after, .active-link::after { width: 100%; }
 
+        /* CARDS TURNO PROFESIONALES */
         .card-panorama { position: relative; overflow: hidden; border-radius: 35px; border: 1px solid rgba(255,255,255,0.1); height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.5s; cursor: pointer; width: 100%; }
         .card-panorama.locked { filter: grayscale(1); opacity: 0.4; pointer-events: none !important; }
         .card-panorama.scanned { pointer-events: none; border-color: var(--success); }
@@ -55,16 +57,19 @@
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: var(--success); color: white; box-shadow: 0 0 15px var(--success); }
 
+        /* TURNO NOCHE PLOMO + ILUMINADO */
         .card-noche-lead { background-color: var(--lead) !important; background-blend-mode: multiply; border: 1px solid #4a5568 !important; }
         .btn-muy-pronto { background: var(--accent); color: #000; padding: 8px 25px; border-radius: 50px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; animation: blinkGlow 1.5s infinite; }
         @keyframes blinkGlow { 0%, 100% { opacity: 1; box-shadow: 0 0 20px var(--accent); transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.05); } }
 
+        /* TICKET VIP TECNOLÓGICO MEJORADO */
         .ticket-tech { background: #ffffff; color: #111; border-radius: 30px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; position: relative; box-shadow: 0 40px 80px rgba(0,0,0,0.9); border-top: 8px solid var(--accent); }
         .tech-header { background: #000; color: #fff; padding: 25px 20px; text-align: center; }
         .tech-header h2 { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; font-style: italic; }
         .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 110px; font-weight: 900; color: #e11d48; line-height: 0.9; margin: 15px 0; }
         .tech-info-box { background: #f3f4f6; border-radius: 15px; padding: 15px; margin: 15px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
 
+        /* GLOBO Y FOOTER */
         #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: 30px; }
         .main-wrapper { background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.6) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); background-size: cover; background-attachment: fixed; min-height: 100vh; display: flex; flex-direction: column; position: relative; z-index: 10; }
         .hidden-section { display: none !important; }
@@ -92,11 +97,11 @@
             <div class="hud-line"></div>
             <div class="absolute inset-0 flex flex-col items-center justify-center">
                 <i class="fa-solid fa-fingerprint text-7xl text-yellow-500/50"></i>
-                <p class="font-mono text-[10px] mt-6 tracking-[5px] text-yellow-500 uppercase">Sincronizando Tiempo Real...</p>
+                <p class="font-mono text-[10px] mt-6 tracking-[5px] text-yellow-500 uppercase text-center px-4" id="sync-msg">Sincronizando Reloj Atómico...</p>
             </div>
         </div>
         <div class="mt-8 text-center relative z-20">
-            <p id="loader-msg" class="text-white font-black uppercase text-xs tracking-widest italic">Sincronización con time.is/Peru</p>
+            <p id="loader-msg" class="text-white font-black uppercase text-xs tracking-widest italic">Verificando Alumno</p>
             <div class="w-48 h-1 bg-white/10 mt-2 mx-auto overflow-hidden rounded-full"><div id="progress-bar" class="h-full bg-yellow-500 w-0 transition-all duration-300"></div></div>
         </div>
     </div>
@@ -137,7 +142,7 @@
                 <p class="text-xs text-gray-400 mt-3 mb-8 max-w-md mx-auto font-semibold uppercase tracking-wider">Sistema de Movilidad UNAC - Ciclo 2026-A</p>
                 <div class="max-w-sm mx-auto space-y-3">
                     <input type="text" id="dniInput" class="w-full bg-black/50 border border-yellow-500 p-5 rounded-xl text-center text-xl font-bold outline-none" placeholder="DOCUMENTO DNI" maxlength="8">
-                    <button onclick="Core.startScan()" class="w-full bg-yellow-500 text-black p-5 rounded-xl font-black uppercase shadow-lg shadow-yellow-500/20 active:scale-95 transition">Verificar Alumno</button>
+                    <button id="btn-verify" onclick="Core.startScan()" class="w-full bg-yellow-500 text-black p-5 rounded-xl font-black uppercase shadow-lg shadow-yellow-500/20 active:scale-95 transition opacity-50 cursor-wait" disabled>Conectando...</button>
                     <div class="grid grid-cols-1 gap-2 pt-4">
                         <a href="lista.html" class="flex items-center justify-center w-full bg-white/5 border border-white/10 p-4 rounded-xl text-xs font-black uppercase text-white hover:bg-white/10 transition"><i class="fa-solid fa-list-ul mr-2 text-yellow-500"></i> Lista de Pasajeros</a>
                         <a href="tutorial.html" class="flex items-center justify-center w-full bg-white/5 border border-white/10 p-4 rounded-xl text-xs font-black uppercase text-white hover:bg-white/10 transition"><i class="fa-solid fa-circle-play mr-2 text-yellow-500"></i> Tutorial</a>
@@ -225,10 +230,10 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE REGLAS (EDITABLES)
+        // CONFIGURACIÓN DE REGLAS (ORIGINALES)
         const REGLAS = {
             MAÑANA: { hAbre: 21, mAbre: 0, hCierra: 7, mCierra: 0, salida: "05:15 AM" },
-            TARDE: { hAbre: 21, mAbre: 55, hCierra: 21, mCierra: 59, salida: "06:00 PM" },
+            TARDE: { hAbre: 22, mAbre: 03, hCierra: 22, mCierra: 59, salida: "06:00 PM" },
             NOCHE: { hAbre: 1, mAbre: 49, hCierra: 1, mCierra: 55, salida: "10:15 PM" }
         };
 
@@ -238,35 +243,40 @@
 
         const Core = {
             alumno: null,
-            // VARIABLES PARA RELOJ ANTI-HACK
-            serverStartTime: null, 
+            // SISTEMA ANTI-HACK DE TIEMPO
+            syncStartTime: null, 
             perfStartTime: null,
 
             init: async function() {
                 Galaxy3D.init();
-                await this.syncTime(); // Sincronización Real Blindada
+                await this.syncTime(); // Sincronización Blindada
                 setInterval(() => this.updateStatus(), 1000);
                 this.initThree(); 
             },
 
-            // ANTI-HACK: Obtiene la hora real de Lima y usa el contador interno del procesador
+            // Sincroniza con el servidor una sola vez. No confía en el reloj del dispositivo.
             syncTime: async function() {
                 try {
                     const r = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
                     const d = await r.json();
-                    this.serverStartTime = new Date(d.datetime).getTime();
-                    this.perfStartTime = performance.now(); // Contador interno (No se puede trucar)
+                    this.syncStartTime = new Date(d.datetime).getTime();
+                    this.perfStartTime = performance.now(); // Contador de milisegundos desde carga de página (no alterable)
+                    
+                    const btn = document.getElementById('btn-verify');
+                    btn.disabled = false;
+                    btn.innerText = "VERIFICAR ALUMNO";
+                    btn.classList.remove('opacity-50', 'cursor-wait');
                 } catch(e) { 
-                    console.error("Fallo de red. Reintentando...");
+                    document.getElementById('sync-msg').innerText = "Fallo de conexión. Reintentando...";
                     setTimeout(() => this.syncTime(), 5000);
                 }
             },
 
-            // Calcula la hora actual real basada en el tiempo transcurrido desde la carga
+            // Calcula la hora actual real basada en el tiempo transcurrido desde la sincronización
             getNow: function() {
-                if(!this.serverStartTime) return new Date(); // Fallback si no ha cargado
+                if(!this.syncStartTime) return new Date(); // Fallback temporal
                 const elapsed = performance.now() - this.perfStartTime;
-                return new Date(this.serverStartTime + elapsed);
+                return new Date(this.syncStartTime + elapsed);
             },
 
             updateStatus: function() {
@@ -312,28 +322,28 @@
                                 ['card-m','card-t','card-n'].forEach(id => document.getElementById(id).classList.add('scanned'));
                                 Swal.fire('Acceso Ya Escaneado', 'Hoy ya registraste tu ingreso.', 'info');
                             }
-                        }, 1500);
+                        }, 1000);
                     } else throw "X";
                 } catch(e) {
                     document.getElementById('scanning-overlay').style.display = 'none';
-                    Swal.fire({ title: 'No Registrado', text: 'Usted no figura en el sistema oficial. Debe registrarse primero.', icon: 'error', confirmButtonText: 'Ir a Registro', confirmButtonColor: '#ffc107', background: '#111', color: '#fff' }).then((result) => { if(result.isConfirmed) window.location.href = 'registro.html'; });
+                    Swal.fire({ title: 'No Registrado', text: 'Usted no figura en el sistema oficial.', icon: 'error', confirmButtonText: 'Ir a Registro', confirmButtonColor: '#ffc107' }).then((result) => { if(result.isConfirmed) window.location.href = 'registro.html'; });
                 }
             },
 
             requestTicket: function(turno) {
-                // DOBLE VALIDACIÓN ANTI-HACK CON HORA REAL
+                // DOBLE VALIDACIÓN ANTI-HACK UTILIZANDO getNow()
                 const now = this.getNow(), h = now.getHours(), m = now.getMinutes(), t = h * 60 + m;
                 const r = REGLAS[turno];
                 let allowed = (turno === 'MAÑANA') ? (h >= r.hAbre || h < r.hCierra) : (t >= (r.hAbre*60+r.mAbre) && t <= (r.hCierra*60+r.mCierra));
                 
-                if(!allowed) return Swal.fire('Error de Acceso', 'El turno está fuera de horario según el servidor de tiempo.', 'error');
+                if(!allowed) return Swal.fire('Acceso Denegado', 'El horario para este turno no es válido según el tiempo oficial del servidor.', 'error');
                 if(this.alumno.asistio) return;
 
                 document.getElementById('loader-msg').innerText = "GENERANDO TICKET VIP...";
                 document.getElementById('scanning-overlay').style.display = 'flex';
                 let p = 0;
                 const itv = setInterval(() => {
-                    p += 1; document.getElementById('progress-bar').style.width = p + '%';
+                    p += 2; document.getElementById('progress-bar').style.width = p + '%';
                     if(p >= 100) { clearInterval(itv); this.processTicket(turno); }
                 }, 10); 
             },
@@ -371,7 +381,7 @@
                     const r = await fetch(`${L3}?dni=${this.alumno.dni}&accion=consultar`).then(r => r.json());
                     if(r.asistio) {
                         clearInterval(check);
-                        Swal.fire({ icon: 'success', title: 'ESCANEADO EXITOSO', timer: 3000 }).then(() => location.reload());
+                        Swal.fire({ icon: 'success', title: 'VALIDADO CORRECTAMENTE', timer: 3000 }).then(() => location.reload());
                     }
                 }, 3000);
             },
