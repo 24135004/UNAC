@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
+    <!-- LIBRERÍAS DE FIREBASE (COMPAT MODE) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <style>
         :root { --accent: #ffc107; --dark: #050505; }
         body { 
@@ -55,6 +59,9 @@
             border: 2px solid white; pointer-events: none;
         }
         .notif-error { background: #ef4444 !important; box-shadow: 0 0 50px rgba(239, 68, 68, 0.6) !important; }
+        
+        /* Estilo para botón activo */
+        .btn-active { background: #10b981 !important; color: white !important; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
     </style>
 </head>
 <body>
@@ -108,6 +115,13 @@
             </button>
         </div>
 
+        <!-- NUEVO BOTÓN: ACTIVAR TICKET (SINCRONIZADO CON FIREBASE) -->
+        <div class="mb-4">
+            <button id="btn-activar-ticket" onclick="toggleTicketStatus()" class="w-full bg-white/5 border border-dashed border-white/20 py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all duration-300">
+                <i class="fa-solid fa-power-off mr-2"></i> Activar Generación de Tickets
+            </button>
+        </div>
+
         <div class="glass p-4 mb-6">
             <div id="reader"></div>
         </div>
@@ -139,7 +153,6 @@
             </div>
         </div>
 
-        <!-- BOTONES DE ACCIÓN (LIMPIAR HISTORIAL Y REINICIAR SISTEMA) -->
         <div class="grid grid-cols-2 gap-3 mb-10">
             <button onclick="limpiarHistorial()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
                 <i class="fa-solid fa-eraser mr-1"></i> Borrar Historial
@@ -151,14 +164,60 @@
     </div>
 
     <script>
+        // ---------------------------------------------------------
+        // CONFIGURACIÓN FIREBASE (REEMPLAZA CON TUS DATOS)
+        // ---------------------------------------------------------
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_ID",
+            appId: "TU_APP_ID"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let ticketActivoGlobal = false;
+
+        // ---------------------------------------------------------
+
         const DELEGADOS = ["71886034", "77570731", "63229248"];
-        const LINK_POST_REINICIO = "https://script.google.com/macros/s/AKfycbzkpIKDK23AKlNFBzVVk8xDJKCNC57W8th_PhUKdkJcONLRfe05_2GyRtrYCW3IwboN/exec"; 
-        const LINK_MARCAR_ASISTENCIA = "https://script.google.com/macros/s/AKfycbyYs2foPa0BB-LJVNPwg3f-dYODNEriBg9-pwxQ6k-LGy3kqVUgCkFA0dgajSZ0CMeZ/exec";
+        const LINK_POST_REINICIO = "TU_URL_APPSCRIPT_REINICIO"; 
+        const LINK_MARCAR_ASISTENCIA = "TU_URL_APPSCRIPT_ASISTENCIA";
         
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
         let delegadoActivo = "";
         let html5QrcodeScanner;
         let isScanningLocked = false;
+
+        // Escuchar cambios de Firebase en tiempo real para el botón
+        db.ref('sistema/ticket_activo').on('value', (snapshot) => {
+            ticketActivoGlobal = snapshot.val() || false;
+            actualizarEstadoBotonUI();
+        });
+
+        function actualizarEstadoBotonUI() {
+            const btn = document.getElementById('btn-activar-ticket');
+            if (ticketActivoGlobal) {
+                btn.classList.add('btn-active');
+                btn.innerHTML = '<i class="fa-solid fa-check-circle mr-2"></i> TICKETS ACTIVADOS';
+            } else {
+                btn.classList.remove('btn-active');
+                btn.innerHTML = '<i class="fa-solid fa-power-off mr-2"></i> ACTIVAR GENERACIÓN DE TICKETS';
+            }
+        }
+
+        function toggleTicketStatus() {
+            const nuevoEstado = !ticketActivoGlobal;
+            db.ref('sistema/ticket_activo').set(nuevoEstado)
+            .then(() => {
+                notificarLector(nuevoEstado ? "Tickets Habilitados" : "Tickets Deshabilitados", true);
+            });
+        }
+
+        // --- Funciones originales del sistema ---
 
         function intentarLogin() {
             const dni = document.getElementById('userDni').value;
@@ -183,7 +242,6 @@
         function iniciarSistema() {
             renderList();
             actualizarTotalGlobal(); 
-            // Sincroniza el contador global cada 15 segundos
             setInterval(actualizarTotalGlobal, 15000); 
 
             html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
@@ -229,12 +287,10 @@
                 notificarFlash("ESCANEO VERIFICADO", true);
                 renderList();
 
-                // Enviar asistencia en segundo plano
                 fetch(`${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`, {
                     mode: 'no-cors'
                 });
 
-                // Intenta sumar al contador global visualmente
                 setTimeout(actualizarTotalGlobal, 1500);
 
             } catch (e) {
@@ -242,7 +298,6 @@
             }
         }
 
-        // --- NUEVA FUNCIÓN: Obtener total global de la base de datos ---
         async function actualizarTotalGlobal() {
             try {
                 const response = await fetch(`${LINK_MARCAR_ASISTENCIA}?accion=obtener_total`);
@@ -251,7 +306,6 @@
                     document.getElementById('contador-global').innerText = data.total;
                 }
             } catch (e) {
-                // Si la macro aún no devuelve el JSON, mostramos al menos el conteo local como base
                 let currentGlobal = parseInt(document.getElementById('contador-global').innerText) || 0;
                 if(scannedData.length > currentGlobal) {
                     document.getElementById('contador-global').innerText = scannedData.length;
@@ -259,10 +313,8 @@
             }
         }
 
-        // --- NUEVA FUNCIÓN: Limpiar Historial solo local ---
         function limpiarHistorial() {
-            if (!confirm("¿Deseas borrar tu lista de escaneados local de esta pantalla? \n\n(Esto NO borra los registros del Excel general)")) return;
-            
+            if (!confirm("¿Deseas borrar tu lista de escaneados local?")) return;
             scannedData = [];
             localStorage.removeItem('scanned_unac');
             renderList();
@@ -325,7 +377,7 @@
         }
 
         async function enviarYReiniciar() {
-            if (!confirm("Esto guardará los datos finales y BORRARÁ todas las colas del Excel. ¿Estás seguro?")) return;
+            if (!confirm("Esto guardará los datos finales y BORRARÁ todas las colas. ¿Estás seguro?")) return;
             const btn = document.getElementById('btn-reiniciar');
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> REINICIANDO...';
             btn.disabled = true;
@@ -336,13 +388,15 @@
                     mode: 'no-cors',
                     body: JSON.stringify({ datos: scannedData })
                 });
-                alert("✅ Sistema Reiniciado. El Excel ahora está limpio.");
+                alert("✅ Sistema Reiniciado.");
                 scannedData = [];
                 localStorage.removeItem('scanned_unac');
                 document.getElementById('contador-global').innerText = "0";
                 renderList();
+                // Al reiniciar sistema, también desactivamos el ticket por seguridad
+                db.ref('sistema/ticket_activo').set(false);
             } catch (e) {
-                alert("Error de conexión al reiniciar.");
+                alert("Error de conexión.");
             }
             btn.innerHTML = '<i class="fa-solid fa-rotate mr-1"></i> Reiniciar Sistema';
             btn.disabled = false;
