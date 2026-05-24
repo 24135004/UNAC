@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNAC | Terminal Oficial de Movilidad v4.0 PRO</title>
     
-    <!-- LIBRERÍAS EXTERNAS (CARGA COMPLETA) -->
+    <!-- LIBRERÍAS EXTERNAS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -14,168 +14,108 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        :root { 
-            --accent: #ffc107; 
-            --dark: #050505; 
-            --lead: #2d3748; 
-            --success: #10b981; 
-            --danger: #ef4444;
-        }
-
-        body, html { 
-            margin: 0; padding: 0; min-height: 100vh; 
-            background-color: var(--dark); 
-            font-family: 'Inter', sans-serif; 
-            color: #ffffff; overflow-x: hidden; 
-        }
-
-        /* ANIMACIONES DE ENTRADA */
-        .step-container { 
-            display: none; opacity: 0; 
-            transform: translateY(40px); 
-            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        .step-active { display: block !important; opacity: 1; transform: translateY(0); }
-
-        /* HUD DE SINCRONIZACIÓN PROFESIONAL */
-        #loader-3d-canvas { position: fixed; inset: 0; z-index: 1; opacity: 0.7; pointer-events: none; }
-        #scanning-overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
-            z-index: 9999; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; backdrop-filter: blur(20px);
-        }
-        .hud-box { 
-            width: 320px; height: 320px; border: 1px solid rgba(255,193,7,0.2); 
-            position: relative; background: rgba(0,0,0,0.4); 
-            display: flex; align-items: center; justify-content: center;
-        }
-        .hud-line { 
-            position: absolute; width: 100%; height: 3px; 
-            background: #ff0000; top: 0; animation: scanLine 2s linear infinite; 
-            box-shadow: 0 0 20px #ff0000; 
-        }
-        .hud-corner { position: absolute; width: 40px; height: 40px; border: 4px solid var(--accent); }
+        :root { --accent: #ffc107; --dark: #050505; --lead: #2d3748; --success: #10b981; }
+        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
+        
+        /* ==========================================
+           ANIMACIONES CYBER-TECH (GALAXY & HUD)
+           ========================================== */
+        #loader-3d-canvas { position: fixed; inset: 0; z-index: 1; opacity: 0.8; pointer-events: none; }
+        #scanning-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .hud-box { width: 300px; height: 300px; border: 2px solid var(--accent); position: relative; box-shadow: 0 0 40px rgba(255,193,7,0.3); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); }
+        .hud-line { position: absolute; width: 100%; height: 4px; background: #ff0000; top: 0; animation: scanLine 2s linear infinite; box-shadow: 0 0 20px #ff0000; }
+        .hud-corner { position: absolute; width: 30px; height: 30px; border: 4px solid var(--accent); }
         .top-left { top: -5px; left: -5px; border-right: 0; border-bottom: 0; }
         .top-right { top: -5px; right: -5px; border-left: 0; border-bottom: 0; }
         .bottom-left { bottom: -5px; left: -5px; border-right: 0; border-top: 0; }
         .bottom-right { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
         @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* HEADER & LINKS */
-        header { width: 100%; max-width: 1200px; padding: 30px; z-index: 1000; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .nav-link { font-size: 11px; font-weight: 800; letter-spacing: 2px; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; position: relative; transition: 0.3s; }
+        /* HEADER 6 PUNTOS */
+        header { width: 100%; max-width: 1200px; padding: 25px; z-index: 1000; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
-        .active-link::after { width: 100%; }
+        .nav-link:hover::after, .active-link::after { width: 100%; }
 
-        /* CARDS TURNOS */
-        .card-panorama { 
-            position: relative; overflow: hidden; border-radius: 40px; 
-            border: 1px solid rgba(255,255,255,0.1); height: 260px; 
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; background-size: cover; background-position: center; 
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; width: 100%; 
-        }
-        .card-panorama:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .card-panorama.locked { filter: grayscale(1) brightness(0.5); opacity: 0.5; pointer-events: none !important; }
+        /* CARDS TURNO PROFESIONALES */
+        .card-panorama { position: relative; overflow: hidden; border-radius: 35px; border: 1px solid rgba(255,255,255,0.1); height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.5s; cursor: pointer; width: 100%; }
+        .card-panorama.locked { filter: grayscale(1); opacity: 0.4; pointer-events: none !important; }
         .card-panorama.scanned { pointer-events: none; border-color: var(--success); }
-        .scanned-overlay { position: absolute; inset: 0; background: rgba(16, 185, 129, 0.4); display: flex; align-items: center; justify-content: center; z-index: 20; backdrop-filter: blur(4px); }
-        
-        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; text-shadow: 0 5px 20px rgba(0,0,0,0.8); }
-        .badge-img { padding: 6px 20px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 2px; }
-        .badge-cerrado { background: var(--danger); color: white; }
-        .badge-abierto { background: var(--success); color: white; box-shadow: 0 0 20px var(--success); }
+        .scanned-overlay { position: absolute; inset: 0; background: rgba(16, 185, 129, 0.4); display: flex; align-items: center; justify-content: center; z-index: 20; backdrop-filter: blur(3px); }
+        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 45px; text-transform: uppercase; text-shadow: 0 4px 15px rgba(0,0,0,0.9); line-height: 1; }
+        .badge-img { padding: 5px 18px; border-radius: 20px; font-size: 10px; font-weight: 900; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .badge-cerrado { background: #ef4444; color: white; }
+        .badge-abierto { background: var(--success); color: white; box-shadow: 0 0 15px var(--success); }
 
-        /* TURNO NOCHE */
-        .card-noche-lead { background-color: var(--lead) !important; background-blend-mode: multiply; }
-        .btn-muy-pronto { background: var(--accent); color: #000; padding: 10px 30px; border-radius: 50px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; animation: glow 1.5s infinite; }
-        @keyframes glow { 0%, 100% { box-shadow: 0 0 10px var(--accent); } 50% { box-shadow: 0 0 30px var(--accent); } }
+        /* TURNO NOCHE PLOMO + ILUMINADO */
+        .card-noche-lead { background-color: var(--lead) !important; background-blend-mode: multiply; border: 1px solid #4a5568 !important; }
+        .btn-muy-pronto { background: var(--accent); color: #000; padding: 8px 25px; border-radius: 50px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; animation: blinkGlow 1.5s infinite; }
+        @keyframes blinkGlow { 0%, 100% { opacity: 1; box-shadow: 0 0 20px var(--accent); transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.05); } }
 
-        /* TICKET VIP */
-        .ticket-tech { 
-            background: #ffffff; color: #111; border-radius: 35px; 
-            width: 100%; max-width: 440px; margin: 0 auto; 
-            overflow: hidden; position: relative; 
-            box-shadow: 0 50px 100px rgba(0,0,0,0.9); border-top: 8px solid var(--accent); 
-        }
-        .tech-header { background: #000; color: #fff; padding: 30px 20px; text-align: center; }
+        /* TICKET VIP TECNOLÓGICO MEJORADO */
+        .ticket-tech { background: #ffffff; color: #111; border-radius: 30px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; position: relative; box-shadow: 0 40px 80px rgba(0,0,0,0.9); border-top: 8px solid var(--accent); }
+        .tech-header { background: #000; color: #fff; padding: 25px 20px; text-align: center; }
+        .tech-header h2 { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; font-style: italic; }
         .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 110px; font-weight: 900; color: #e11d48; line-height: 0.9; margin: 15px 0; }
+        .tech-info-box { background: #f3f4f6; border-radius: 15px; padding: 15px; margin: 15px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
 
-        /* BOTÓN DELEGADOS */
-        .btn-delegados-premium {
-            background: rgba(255, 193, 7, 0.05);
-            border: 1px solid rgba(255, 193, 7, 0.3);
-            color: var(--accent);
-            padding: 18px 40px;
-            border-radius: 20px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-size: 11px;
-            transition: 0.4s;
-            display: flex; align-items: center; justify-content: center;
-            gap: 15px; width: 100%; max-width: 350px; margin: 0 auto;
-        }
-        .btn-delegados-premium:hover {
-            background: var(--accent);
-            color: #000;
-            box-shadow: 0 0 40px rgba(255,193,7,0.3);
-        }
-
-        /* GLOBO & FOOTER */
-        #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: 20px; }
-        .main-wrapper { 
-            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.6) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
-            background-size: cover; background-attachment: fixed; min-height: 100vh; display: flex; flex-direction: column; z-index: 10; 
-        }
+        /* GLOBO Y FOOTER */
+        #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: 30px; }
+        .main-wrapper { background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.6) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); background-size: cover; background-attachment: fixed; min-height: 100vh; display: flex; flex-direction: column; position: relative; z-index: 10; }
         .hidden-section { display: none !important; }
         #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.99); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 40px; }
         #mobile-menu.active { display: flex; }
 
-        @media (max-width: 768px) { .shift-title { font-size: 36px; } header { padding: 20px; } }
+        @media (max-width: 768px) {
+            .shift-title { font-size: 34px; }
+            header { padding: 15px; }
+            .nav-desktop { display: none; }
+        }
     </style>
 </head>
 <body>
 
     <div id="loader-3d-canvas"></div>
 
-    <!-- HUD ANTI-HACK (NIVEL GUBERNAMENTAL) -->
+    <!-- OVERLAY ESCANEO HUD BIOMÉTRICO -->
     <div id="scanning-overlay">
         <div class="hud-box">
-            <div class="hud-corner top-left"></div><div class="hud-corner top-right"></div>
-            <div class="hud-corner bottom-left"></div><div class="hud-corner bottom-right"></div>
+            <div class="hud-corner top-left"></div>
+            <div class="hud-corner top-right"></div>
+            <div class="hud-corner bottom-left"></div>
+            <div class="hud-corner bottom-right"></div>
             <div class="hud-line"></div>
-            <div class="flex flex-col items-center">
-                <i class="fa-solid fa-atom text-7xl text-yellow-500/40 animate-spin-slow mb-6" style="animation-duration: 6s"></i>
-                <p class="font-mono text-[10px] tracking-[6px] text-yellow-500 uppercase font-black" id="sync-text">Sincronizando Reloj Atómico</p>
-                <p class="text-white/30 text-[8px] uppercase mt-2">Bypass local clock... OK</p>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-fingerprint text-7xl text-yellow-500/50"></i>
+                <p class="font-mono text-[10px] mt-6 tracking-[5px] text-yellow-500 uppercase">Verificando Tiempo Real...</p>
             </div>
         </div>
-        <div class="mt-10 text-center relative z-20 px-8">
-            <p id="loader-msg" class="text-white font-black uppercase text-[10px] tracking-[3px] italic mb-4">Verificando Integridad Temporal</p>
-            <div class="w-64 h-1 bg-white/10 mx-auto overflow-hidden rounded-full">
-                <div id="progress-bar" class="h-full bg-yellow-500 w-0 transition-all duration-300"></div>
-            </div>
+        <div class="mt-8 text-center relative z-20">
+            <p id="loader-msg" class="text-white font-black uppercase text-xs tracking-widest italic">Sincronización con time.is/Peru</p>
+            <div class="w-48 h-1 bg-white/10 mt-2 mx-auto overflow-hidden rounded-full"><div id="progress-bar" class="h-full bg-yellow-500 w-0 transition-all duration-300"></div></div>
         </div>
     </div>
 
+    <!-- Menú Móvil -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black text-white uppercase tracking-[5px]">Inicio</a>
         <a href="rutas.html" class="text-xl font-black text-white uppercase tracking-[5px]">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black text-yellow-500 uppercase underline tracking-[5px]">Ticket</a>
+        <a href="ticket.html" class="text-xl font-black text-yellow-500 uppercase tracking-[5px] underline">Ticket</a>
+        <a href="registro.html" class="text-xl font-black text-white uppercase tracking-[5px]">Registro</a>
     </div>
 
     <div class="main-wrapper">
         <header>
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-xl"></i></div>
+                <div class="w-9 h-9 bg-yellow-500 rounded flex items-center justify-center shadow-lg"><i class="fa-solid fa-bus text-black text-lg"></i></div>
                 <div class="flex flex-col text-left uppercase leading-none">
-                    <span class="text-[11px] font-black tracking-widest text-white">UNAC</span>
-                    <span class="text-[9px] text-yellow-500 font-bold">Terminal Móvil</span>
+                    <span class="text-[10px] font-black tracking-widest text-white">UNAC</span>
+                    <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
-            <nav class="hidden md:flex gap-10 nav-desktop">
+            <nav class="hidden md:flex gap-8 nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link">Rutas</a>
                 <a href="ticket.html" class="nav-link active-link">Ticket</a>
@@ -183,89 +123,89 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-5 py-2.5 rounded-xl font-black text-xs">MENU</button>
+            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">MENU <i class="fa-solid fa-bars-staggered"></i></button>
         </header>
 
-        <main class="max-w-6xl mx-auto px-6 py-10 w-full flex-grow z-20">
+        <main class="max-w-5xl mx-auto px-6 py-10 w-full flex-grow z-20">
             
-            <!-- PASO 1 -->
-            <div id="step-1" class="step-container step-active text-center">
-                <h1 class="text-5xl md:text-8xl font-black uppercase italic tracking-tighter text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
-                <p class="text-[10px] text-gray-400 mt-4 mb-10 uppercase font-bold tracking-[6px]">Sistema de Movilidad Inteligente - Ciclo 2026-A</p>
-                <div class="max-w-md mx-auto space-y-4">
-                    <input type="text" id="dniInput" class="w-full bg-black/60 border-2 border-yellow-500/20 p-6 rounded-2xl text-center text-2xl font-black outline-none focus:border-yellow-500 transition-all text-yellow-500" placeholder="ID ESTUDIANTE">
-                    <button id="btn-verify" onclick="Core.startScan()" class="w-full bg-yellow-500 text-black p-6 rounded-2xl font-black uppercase text-sm shadow-xl active:scale-95 transition-all opacity-50 cursor-not-allowed" disabled>Sincronizando...</button>
-                    <div class="grid grid-cols-2 gap-3 pt-6">
-                        <a href="lista.html" class="flex items-center justify-center bg-white/5 border border-white/10 p-5 rounded-2xl text-[10px] font-black uppercase text-white hover:bg-white/10 transition">Pasajeros</a>
-                        <a href="tutorial.html" class="flex items-center justify-center bg-white/5 border border-white/10 p-5 rounded-2xl text-[10px] font-black uppercase text-white hover:bg-white/10 transition">Tutorial</a>
+            <div id="step-1" class="text-center">
+                <h1 class="text-4xl md:text-7xl font-black uppercase italic tracking-tighter text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
+                <p class="text-xs text-gray-400 mt-3 mb-8 max-w-md mx-auto font-semibold uppercase tracking-wider">Sistema de Movilidad UNAC - Ciclo 2026-A</p>
+                <div class="max-w-sm mx-auto space-y-3">
+                    <input type="text" id="dniInput" class="w-full bg-black/50 border border-yellow-500 p-5 rounded-xl text-center text-xl font-bold outline-none" placeholder="DOCUMENTO DNI" maxlength="8">
+                    <button onclick="Core.startScan()" class="w-full bg-yellow-500 text-black p-5 rounded-xl font-black uppercase shadow-lg shadow-yellow-500/20 active:scale-95 transition">Verificar Alumno</button>
+                    <div class="grid grid-cols-1 gap-2 pt-4">
+                        <a href="lista.html" class="flex items-center justify-center w-full bg-white/5 border border-white/10 p-4 rounded-xl text-xs font-black uppercase text-white hover:bg-white/10 transition"><i class="fa-solid fa-list-ul mr-2 text-yellow-500"></i> Lista de Pasajeros</a>
+                        <a href="tutorial.html" class="flex items-center justify-center w-full bg-white/5 border border-white/10 p-4 rounded-xl text-xs font-black uppercase text-white hover:bg-white/10 transition"><i class="fa-solid fa-circle-play mr-2 text-yellow-500"></i> Tutorial</a>
                     </div>
                 </div>
             </div>
 
-            <!-- PASO 2 -->
-            <div id="step-2" class="step-container">
-                <div class="bg-white/5 border border-white/10 p-10 rounded-[40px] mb-12 border-l-[12px] border-yellow-500 flex flex-col md:flex-row justify-between items-center gap-8 backdrop-blur-xl">
-                    <div class="flex items-center gap-8">
-                        <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-5xl border border-white/10 shadow-2xl"><i class="fa-solid fa-user-graduate"></i></div>
+            <div id="step-2" class="hidden-section">
+                <div class="bg-white/5 border border-white/10 p-10 rounded-[35px] mb-10 border-l-8 border-yellow-500 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div class="flex items-center gap-6">
+                        <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-5xl border border-white/10 shadow-xl"><i class="fa-solid fa-user-graduate"></i></div>
                         <div>
-                            <h2 id="userName" class="text-4xl font-black uppercase italic text-white leading-none"></h2>
-                            <div class="bg-green-500/10 border border-green-500 text-green-500 text-[10px] font-black px-5 py-2 rounded-full mt-4 uppercase tracking-widest inline-block">ALUMNO HABILITADO - APTO</div>
+                            <h2 id="userName" class="text-3xl font-black uppercase italic text-white leading-none"></h2>
+                            <div class="bg-green-500/10 border border-green-500 text-green-500 text-[10px] font-black px-4 py-1.5 rounded-full mt-3 uppercase tracking-widest inline-block">ALUMNO HABILITADO - APTO</div>
                         </div>
                     </div>
-                    <div class="text-right font-mono text-[12px] uppercase space-y-3 bg-black/40 p-6 rounded-3xl border border-white/5">
+                    <div class="text-right font-mono text-[11px] uppercase space-y-2 bg-black/40 p-5 rounded-2xl border border-white/5">
                         <p class="text-yellow-500 font-black" id="userFac"></p>
-                        <p class="text-gray-400">COD: <span id="userCod" class="text-white"></span></p>
+                        <p class="text-gray-400">CÓDIGO: <span id="userCod" class="text-white"></span></p>
                         <p class="text-gray-400">DNI: <span id="userDni" class="text-white"></span></p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
-                    <div id="card-m" class="card-panorama" onclick="Core.requestTicket('MAÑANA')" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('DSC07555-768x432.jpg');">
-                        <div id="overlay-m" class="scanned-overlay hidden-section"><p class="text-sm font-black text-white bg-black/90 px-8 py-4 rounded-2xl border-2 border-green-500 uppercase tracking-widest">ACCESO YA VALIDADO</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div id="card-m" class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('DSC07555-768x432.jpg');" onclick="Core.requestTicket('MAÑANA')">
+                        <div id="overlay-m" class="scanned-overlay hidden-section"><p class="text-sm font-black text-white bg-black/90 px-6 py-3 rounded-xl border-2 border-green-500 uppercase tracking-widest">ACCESO YA VALIDADO</p></div>
                         <span id="badge-m" class="badge-img"></span>
                         <div class="shift-title text-white">Mañana</div>
-                        <div class="mt-4 bg-black/60 px-8 py-3 rounded-2xl text-yellow-500 font-black text-sm uppercase">SALIDA: 05:15 AM</div>
-                        <p id="info-m" class="text-[11px] text-white/60 mt-4 font-bold"></p>
+                        <div class="mt-3 bg-black/50 px-6 py-2 rounded-xl text-yellow-500 font-black text-sm uppercase">SALIDA: 05:15 AM</div>
+                        <p id="info-m" class="text-[10px] text-white/70 mt-2 font-bold"></p>
                     </div>
-                    <div id="card-t" class="card-panorama" onclick="Core.requestTicket('TARDE')" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('DSC07588-768x432.jpg');">
+                    <div id="card-t" class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('DSC07588-768x432.jpg');" onclick="Core.requestTicket('TARDE')">
                         <div id="overlay-t" class="scanned-overlay hidden-section"><p class="text-sm font-black text-white bg-black/90 px-6 py-3 rounded-xl border-2 border-green-500 uppercase tracking-widest">ACCESO YA VALIDADO</p></div>
                         <span id="badge-t" class="badge-img"></span>
                         <div class="shift-title text-white">Tarde</div>
-                        <div class="mt-4 bg-black/60 px-8 py-3 rounded-2xl text-white font-black text-sm uppercase">SALIDA: 06:00 PM</div>
-                        <p id="info-t" class="text-[11px] text-white/60 mt-4 font-bold"></p>
+                        <div class="mt-3 bg-black/50 px-6 py-2 rounded-xl text-white font-black text-sm uppercase">SALIDA: 06:00 PM</div>
+                        <p id="info-t" class="text-[10px] text-white/70 mt-2 font-bold"></p>
                     </div>
                 </div>
 
-                <div id="card-n" class="card-panorama card-noche-lead" onclick="Core.requestTicket('NOCHE')" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('DSC07629-768x432.jpg');">
+                <div id="card-n" class="card-panorama card-noche-lead" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('DSC07629-768x432.jpg');" onclick="Core.requestTicket('NOCHE')">
                     <div id="overlay-n" class="scanned-overlay hidden-section"><p class="text-sm font-black text-white bg-black/90 px-6 py-3 rounded-xl border-2 border-green-500 uppercase tracking-widest">ACCESO YA VALIDADO</p></div>
                     <span id="badge-n" class="badge-img"></span>
                     <div class="shift-title text-white">Noche</div>
-                    <div class="mt-4 bg-black/60 px-8 py-3 rounded-2xl text-white font-black text-sm uppercase">SALIDA: 10:15 PM</div>
+                    <div class="mt-3 bg-black/50 px-6 py-2 rounded-xl text-white font-black text-sm uppercase">SALIDA: 10:15 PM</div>
                     <div class="btn-muy-pronto">Muy Pronto</div>
                 </div>
             </div>
 
-            <!-- PASO 3 -->
-            <div id="step-3" class="step-container">
+            <!-- PASO 3: TICKET VIP TECH -->
+            <div id="step-3" class="hidden-section">
                 <div class="ticket-tech mx-auto relative">
                     <div class="tech-header">
                         <h2>PASAPORTE DIGITAL</h2>
-                        <p class="text-[10px] font-bold text-yellow-500 uppercase tracking-[4px] mt-3">Documento Oficial Intransferible</p>
+                        <p class="text-[9px] font-bold text-yellow-500 uppercase tracking-[3px] mt-2">Documento oficial intransferible UNAC</p>
                     </div>
-                    <div class="p-10 text-center bg-white text-black">
-                        <p id="t-fecha" class="text-2xl font-black text-gray-800 uppercase mb-6"></p>
+                    <div class="p-8 text-center bg-white text-black">
+                        <p id="t-fecha" class="text-xl font-black text-gray-800 uppercase mb-4"></p>
+                        
                         <div class="tech-info-box">
-                            <div><p class="text-[10px] text-gray-500 font-bold uppercase">Turno</p><p id="t-turno-val" class="font-black text-black text-xl"></p></div>
-                            <div class="text-right"><p class="text-[10px] text-gray-500 font-bold uppercase">Salida</p><p id="t-salida-val" class="font-black text-yellow-600 text-xl"></p></div>
+                            <div><p class="text-[8px] text-gray-500 text-left font-bold uppercase">Turno</p><p id="t-turno-val" class="font-black text-black text-lg"></p></div>
+                            <div class="text-right"><p class="text-[8px] text-gray-500 font-bold uppercase">Salida</p><p id="t-salida-val" class="font-black text-yellow-600 text-lg"></p></div>
                         </div>
-                        <div id="seat-area" class="min-h-[200px] flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-[50px] mb-10"></div>
-                        <div class="flex justify-center mb-10 relative">
-                            <div class="p-5 border-2 border-black rounded-[40px]"><div id="qrcode-vip"></div></div>
+
+                        <div id="seat-area" class="min-h-[180px] flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-[40px] mb-8"></div>
+                        <div class="flex justify-center mb-8 relative">
+                            <div class="p-4 border-2 border-black rounded-3xl"><div id="qrcode-vip"></div></div>
                         </div>
-                        <div class="text-left px-10 py-8 bg-black text-white rounded-[35px] font-mono text-[10px] uppercase space-y-3 shadow-2xl">
-                            <p>PASAJERO: <span id="t-nom" class="text-yellow-500 float-right"></span></p>
-                            <p>FACULTAD: <span id="t-fac" class="text-yellow-500 float-right"></span></p>
-                            <p>DNI: <span id="t-dni" class="text-yellow-500 float-right"></span></p>
+                        <div class="text-left px-8 py-6 bg-black text-white rounded-[25px] font-mono text-[9px] uppercase space-y-2 shadow-2xl">
+                            <p>PASAJERO: <span id="t-nom" class="text-yellow-500 float-right ml-2"></span></p>
+                            <p>FACULTAD: <span id="t-fac" class="text-yellow-500 float-right ml-2"></span></p>
+                            <p>DNI: <span id="t-dni" class="text-yellow-500 float-right ml-2"></span></p>
                         </div>
                     </div>
                 </div>
@@ -274,24 +214,17 @@
 
         <div id="globe-container" class="animate-float"></div>
 
-        <!-- PANEL DELEGADOS (DENTRO DE DIV PARA CONTROLAR VISIBILIDAD) -->
-        <div id="delegados-panel" class="max-w-md mx-auto px-6 mb-16 z-30 relative">
-            <a href="AccesoDelegados.html" class="btn-delegados-premium">
-                <i class="fa-solid fa-users-gear text-2xl"></i> Acceso de los Delegados
-            </a>
-        </div>
-
-        <footer class="p-16 text-center z-20 border-t border-white/5 bg-black/60">
-            <p class="text-[12px] tracking-[10px] text-yellow-500 font-black uppercase mb-4">SISTEMA CREADO POR SEBASTIAN</p>
-            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest opacity-50">© 2026 UNAC - Movilidad Universitaria.</p>
+        <footer class="p-12 text-center z-20 border-t border-white/5 bg-black/40">
+            <p class="text-[11px] tracking-[8px] text-yellow-500 font-black uppercase mb-3">SISTEMA CREADO POR SEBASTIAN</p>
+            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</p>
         </footer>
     </div>
 
     <script>
-        // REGLAS ORIGINALES
+        // CONFIGURACIÓN DE REGLAS (EDITABLES)
         const REGLAS = {
             MAÑANA: { hAbre: 21, mAbre: 0, hCierra: 7, mCierra: 0, salida: "05:15 AM" },
-            TARDE: { hAbre: 18, mAbre: 0, hCierra: 18, mCierra: 30, salida: "06:00 PM" }, // Ejemplo tarde
+            TARDE: { hAbre: 21, mAbre: 45, hCierra: 21, mCierra: 59, salida: "06:00 PM" },
             NOCHE: { hAbre: 1, mAbre: 49, hCierra: 1, mCierra: 55, salida: "10:15 PM" }
         };
 
@@ -301,61 +234,39 @@
 
         const Core = {
             alumno: null,
-            // LOGICA ANTI-HACK DE TIEMPO (BLINDAJE TOTAL)
-            limaTimeOffset: 0, // Desfase entre celular y Lima
-            syncReady: false,
+            serverTimeOffset: 0,
 
             init: async function() {
                 Galaxy3D.init();
-                await this.syncWithAtomicServer(); 
+                await this.syncTime(); // Sincronización Blindada
                 setInterval(() => this.updateStatus(), 1000);
-                this.initThreeGlobe(); 
+                this.initThree(); 
             },
 
-            // ANTI-HACK: Detecta el desfase del celular respecto a Lima
-            syncWithAtomicServer: async function() {
+            // ANTI-HACK: Obtener la hora real de Lima desde el servidor
+            syncTime: async function() {
                 try {
-                    const start = performance.now();
                     const r = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
                     const d = await r.json();
-                    const end = performance.now();
-                    const latency = (end - start) / 2; // Ajuste de latencia de red
-
-                    const atomicLimaTime = new Date(d.datetime).getTime() + latency;
-                    const localTime = Date.now();
-                    
-                    // Calculamos el desfase exacto: (Tiempo Real Lima - Tiempo del Celular)
-                    this.limaTimeOffset = atomicLimaTime - localTime;
-                    this.syncReady = true;
-
-                    // Desbloqueo de UI
-                    const btn = document.getElementById('btn-verify');
-                    btn.disabled = false;
-                    btn.innerText = "VERIFICAR ESTUDIANTE";
-                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    this.serverTimeOffset = new Date(d.datetime).getTime() - Date.now();
                 } catch(e) { 
-                    document.getElementById('sync-text').innerText = "Fallo de Red. Reintentando...";
-                    setTimeout(() => this.syncWithAtomicServer(), 5000);
+                    console.error("Fallo de red. Intentando de nuevo...");
+                    setTimeout(() => this.syncTime(), 5000);
                 }
             },
 
-            // Obtiene la hora real de Lima sumando el desfase detectado al reloj del celular
-            // Si el usuario adelanta su reloj 1 hora, Date.now() sube 1 hora, pero el offset baja 1 hora.
-            // (Local + 1h) + (Offset - 1h) = Tiempo Real Lima.
-            getLimaTime: function() {
-                return new Date(Date.now() + this.limaTimeOffset);
-            },
+            getNow: () => new Date(Date.now() + Core.serverTimeOffset),
 
             updateStatus: function() {
-                if(!this.syncReady) return;
-                const now = this.getLimaTime(), h = now.getHours(), m = now.getMinutes(), t = h * 60 + m;
-                
+                const now = this.getNow(), h = now.getHours(), m = now.getMinutes(), t = h * 60 + m;
                 const setB = (id, cardId, infoId, rule) => {
                     const el = document.getElementById(id), c = document.getElementById(cardId), i = document.getElementById(infoId);
                     if(!el) return;
-                    let ok = (id === 'badge-m') ? (h >= rule.hAbre || h < rule.hCierra) : (t >= (rule.hAbre*60+rule.mAbre) && t <= (rule.hCierra*60+rule.mCierra));
+                    let ok = false;
+                    if (id === 'badge-m') ok = (h >= rule.hAbre || h < rule.hCierra);
+                    else ok = (t >= (rule.hAbre*60+rule.mAbre) && t <= (rule.hCierra*60+rule.mCierra));
                     el.innerText = ok ? "ABIERTO" : "CERRADO";
-                    el.className = `badge-img ${ok ? 'badge-abierto' : 'badge-cerrado'}`;
+                    el.className = `badge-img ${ok ? 'badge-abierto shadow-[0_0_15px_var(--success)]' : 'badge-cerrado'}`;
                     ok ? c.classList.remove('locked') : c.classList.add('locked');
                     if(i) i.innerText = `Apertura: ${rule.hAbre.toString().padStart(2,'0')}:${rule.mAbre.toString().padStart(2,'0')} | Cierra: ${rule.hCierra.toString().padStart(2,'0')}:${rule.mCierra.toString().padStart(2,'0')}`;
                 };
@@ -378,13 +289,8 @@
                         document.getElementById('progress-bar').style.width = '100%';
                         setTimeout(() => {
                             document.getElementById('scanning-overlay').style.display = 'none';
-                            
-                            // ELIMINAR BOTÓN DELEGADOS AL PASAR AL PASO 2
-                            const delBtn = document.getElementById('delegados-panel');
-                            if(delBtn) delBtn.remove();
-
-                            document.getElementById('step-1').classList.remove('step-active');
-                            document.getElementById('step-2').classList.add('step-active');
+                            document.getElementById('step-1').classList.add('hidden-section');
+                            document.getElementById('step-2').classList.remove('hidden-section');
                             document.getElementById('userName').innerText = resBD.Estudiante;
                             document.getElementById('userFac').innerText = resBD.Facultad;
                             document.getElementById('userCod').innerText = resBD.Codigo;
@@ -392,37 +298,36 @@
                             if(this.alumno.asistio) {
                                 ['overlay-m','overlay-t','overlay-n'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).classList.remove('hidden-section'); });
                                 ['card-m','card-t','card-n'].forEach(id => document.getElementById(id).classList.add('scanned'));
-                                Swal.fire('Acceso Ya Escaneado', 'Usted ya registró su ingreso hoy.', 'info');
+                                Swal.fire('Acceso Ya Escaneado', 'Hoy ya registraste tu ingreso.', 'info');
                             }
-                        }, 1200);
+                        }, 1500);
                     } else throw "X";
                 } catch(e) {
                     document.getElementById('scanning-overlay').style.display = 'none';
-                    Swal.fire({ title: 'No Registrado', text: 'Usted no figura en el sistema oficial.', icon: 'error', confirmButtonText: 'Ir a Registro', confirmButtonColor: '#ffc107', background: '#111', color: '#fff' }).then((r) => { if(r.isConfirmed) window.location.href = 'registro.html'; });
+                    Swal.fire({ title: 'No Registrado', text: 'Usted no figura en el sistema oficial. Debe registrarse primero.', icon: 'error', confirmButtonText: 'Ir a Registro', confirmButtonColor: '#ffc107', background: '#111', color: '#fff' }).then((result) => { if(result.isConfirmed) window.location.href = 'registro.html'; });
                 }
             },
 
             requestTicket: function(turno) {
                 // DOBLE VALIDACIÓN ANTI-HACK ANTES DE PROCEDER
-                const now = this.getLimaTime(), h = now.getHours(), m = now.getMinutes(), t = h * 60 + m;
+                const now = this.getNow(), h = now.getHours(), m = now.getMinutes(), t = h * 60 + m;
                 const r = REGLAS[turno];
                 let allowed = (turno === 'MAÑANA') ? (h >= r.hAbre || h < r.hCierra) : (t >= (r.hAbre*60+r.mAbre) && t <= (r.hCierra*60+r.mCierra));
-                
-                if(!allowed) return Swal.fire('Error de Acceso', 'El turno está cerrado según la hora oficial de Lima.', 'error');
+                if(!allowed) return Swal.fire('Error de Acceso', 'El turno está fuera de horario según el servidor de tiempo.', 'error');
                 if(this.alumno.asistio) return;
-
                 document.getElementById('loader-msg').innerText = "GENERANDO TICKET VIP...";
                 document.getElementById('scanning-overlay').style.display = 'flex';
                 let p = 0;
                 const itv = setInterval(() => {
-                    p += 2; document.getElementById('progress-bar').style.width = p + '%';
+                    p += 1; document.getElementById('progress-bar').style.width = p + '%';
                     if(p >= 100) { clearInterval(itv); this.processTicket(turno); }
-                }, 15); 
+                }, 100); 
             },
 
             processTicket: async function(turno) {
                 const area = document.getElementById('seat-area');
-                document.getElementById('t-fecha').innerText = this.getLimaTime().toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long' });
+                const fecha = this.getNow().toLocaleDateString('es-PE');
+                document.getElementById('t-fecha').innerText = fecha;
                 document.getElementById('t-nom').innerText = this.alumno.Estudiante;
                 document.getElementById('t-fac').innerText = this.alumno.Facultad;
                 document.getElementById('t-dni').innerText = this.alumno.dni;
@@ -434,17 +339,30 @@
                 } else {
                     try {
                         const res = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`).then(r => r.json());
-                        area.innerHTML = `<p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">ASIENTO ASIGNADO</p><div class="asiento-num-big">${res.orden}</div>`;
+                        const n = parseInt(res.orden);
+                        if(n <= 45) area.innerHTML = `<p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">ASIENTO ASIGNADO</p><div class="asiento-num-big">${n}</div>`;
+                        else area.innerHTML = `<i class="fa-solid fa-person-walking text-8xl text-gray-300 mb-2"></i><p class="font-black text-red-600 uppercase text-xl">VIAJE DE PIE</p>`;
                     } catch(e) { area.innerHTML = "ERROR"; }
                 }
                 document.getElementById('qrcode-vip').innerHTML = "";
-                new QRCode(document.getElementById("qrcode-vip"), { text: `VALID-UNAC-${this.alumno.dni}`, width: 160, height: 160 });
+                new QRCode(document.getElementById("qrcode-vip"), { text: `TICKET-${this.alumno.dni}`, width: 160, height: 160 });
                 document.getElementById('scanning-overlay').style.display = 'none';
-                document.getElementById('step-2').classList.remove('step-active');
-                document.getElementById('step-3').classList.add('step-active');
+                document.getElementById('step-2').classList.add('hidden-section');
+                document.getElementById('step-3').classList.remove('hidden-section');
+                this.waitScan();
             },
 
-            initThreeGlobe: function() {
+            waitScan: function() {
+                const check = setInterval(async () => {
+                    const r = await fetch(`${L3}?dni=${this.alumno.dni}&accion=consultar`).then(r => r.json());
+                    if(r.asistio) {
+                        clearInterval(check);
+                        Swal.fire({ icon: 'success', title: 'ESCANEADO EXITOSO', timer: 3000 }).then(() => location.reload());
+                    }
+                }, 3000);
+            },
+
+            initThree: function() {
                 const container = document.getElementById('globe-container');
                 const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(45, container.clientWidth/container.clientHeight, 0.1, 1000);
                 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -452,24 +370,27 @@
                 container.appendChild(renderer.domElement);
                 const globe = new THREE.Mesh(new THREE.IcosahedronGeometry(30, 4), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.15 }));
                 scene.add(globe); camera.position.z = 100;
-                const animate = () => { requestAnimationFrame(animate); globe.rotation.y += 0.003; renderer.render(scene, camera); };
+                const animate = () => { requestAnimationFrame(animate); globe.rotation.y += 0.002; renderer.render(scene, camera); };
                 animate();
             }
         };
 
         const Galaxy3D = {
+            scene: null, camera: null, renderer: null, points: null,
             init: function() {
                 const container = document.getElementById('loader-3d-canvas');
-                const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-                const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                container.appendChild(renderer.domElement);
-                const geo = new THREE.BufferGeometry(); const pos = [];
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+                this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                container.appendChild(this.renderer.domElement);
+                const geo = new THREE.BufferGeometry();
+                const pos = [];
                 for(let i=0; i<4000; i++) pos.push((Math.random()-0.5)*10, (Math.random()-0.5)*10, (Math.random()-0.5)*10);
                 geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-                const points = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffc107, size: 0.03 }));
-                scene.add(points); camera.position.z = 5;
-                const animate = () => { requestAnimationFrame(animate); points.rotation.y += 0.002; renderer.render(scene, camera); };
+                this.points = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffc107, size: 0.03 }));
+                this.scene.add(this.points); this.camera.position.z = 5;
+                const animate = () => { requestAnimationFrame(animate); this.points.rotation.y += 0.002; this.renderer.render(this.scene, this.camera); };
                 animate();
             }
         };
