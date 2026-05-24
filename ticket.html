@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNAC | Terminal Oficial de Movilidad</title>
+    <title>UNAC | Terminal Oficial de Movilidad v4.0 PRO</title>
     
     <!-- LIBRERÍAS EXTERNAS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,42 +17,195 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-    <!-- VINCULACIÓN CSS EXTERNO -->
-    <link rel="stylesheet" href="css/estilos.css">
-
     <style>
-        /* ESTILOS TECNOLÓGICOS ADICIONALES */
+        /* ==========================================
+           CONFIGURACIÓN BASE Y VARIABLES
+           ========================================== */
+        :root { 
+            --accent: #ffc107; 
+            --dark: #050505; 
+            --lead: #2d3748; 
+            --success: #10b981; 
+            --error: #ef4444;
+        }
+
+        body, html { 
+            margin: 0; padding: 0; min-height: 100vh; 
+            background-color: var(--dark); 
+            font-family: 'Inter', sans-serif; 
+            color: #ffffff; 
+            overflow-x: hidden; 
+        }
+
+        /* ==========================================
+           ANIMACIONES CYBER-TECH (HUD & GALAXY)
+           ========================================== */
+        #loader-3d-canvas { position: fixed; inset: 0; z-index: 1; opacity: 0.6; pointer-events: none; }
+        
+        #scanning-overlay { 
+            position: fixed; inset: 0; 
+            background: rgba(0,0,0,0.98); 
+            z-index: 9999; 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            backdrop-filter: blur(20px);
+        }
+
+        .hud-box { 
+            width: 320px; height: 320px; 
+            border: 2px solid rgba(255, 193, 7, 0.2); 
+            position: relative; 
+            box-shadow: 0 0 60px rgba(255,193,7,0.15); 
+            background: rgba(0,0,0,0.4); 
+            border-radius: 20px;
+        }
+
+        .hud-line { 
+            position: absolute; width: 100%; height: 4px; 
+            background: linear-gradient(90deg, transparent, #ff0000, transparent); 
+            top: 0; animation: scanLine 2.5s linear infinite; 
+            box-shadow: 0 0 30px #ff0000; z-index: 10;
+        }
+
+        .hud-corner { position: absolute; width: 45px; height: 45px; border: 6px solid var(--accent); z-index: 5; border-radius: 4px; }
+        .top-left { top: -10px; left: -10px; border-right: 0; border-bottom: 0; }
+        .top-right { top: -10px; right: -10px; border-left: 0; border-bottom: 0; }
+        .bottom-left { bottom: -10px; left: -10px; border-right: 0; border-top: 0; }
+        .bottom-right { bottom: -10px; right: -10px; border-left: 0; border-top: 0; }
+
+        @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
+
+        /* ==========================================
+           HEADER / NAVEGACIÓN ORIGINAL
+           ========================================== */
+        header { width: 100%; max-width: 1200px; padding: 35px 20px; z-index: 1000; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-link { 
+            font-size: 11px; font-weight: 800; letter-spacing: 2.5px; 
+            color: rgba(255, 255, 255, 0.5); text-transform: uppercase; 
+            position: relative; transition: 0.3s; 
+        }
+        .nav-link:hover, .active-link { color: var(--accent); }
+        .nav-link::after { 
+            content: ''; position: absolute; width: 0; height: 2px; 
+            bottom: -8px; left: 0; background: var(--accent); transition: width 0.3s; 
+        }
+        .nav-link:hover::after, .active-link::after { width: 100%; }
+
+        /* ==========================================
+           COMPONENTES UI TECNOLÓGICOS
+           ========================================== */
+        .main-wrapper { 
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover; background-attachment: fixed; min-height: 100vh; 
+            display: flex; flex-direction: column; position: relative; z-index: 10; 
+        }
+
         .btn-tech { 
-            background: var(--accent); color: #000; font-weight: 900; text-transform: uppercase; 
-            border-radius: 12px; transition: 0.3s; box-shadow: 0 10px 30px rgba(255,193,7,0.3); 
-            width: 100%; padding: 20px; letter-spacing: 2px; font-size: 14px;
+            background: var(--accent); color: #000; font-weight: 900; 
+            text-transform: uppercase; border-radius: 15px; transition: 0.3s; 
+            box-shadow: 0 10px 40px rgba(255,193,7,0.3); 
+            width: 100%; padding: 22px; letter-spacing: 2px; font-size: 16px;
             border: 1px solid rgba(255,255,255,0.2); cursor: pointer;
         }
-        .btn-tech:hover { transform: scale(1.03); background: white; box-shadow: 0 15px 45px rgba(255,255,255,0.2); }
+        .btn-tech:hover { transform: scale(1.03); background: white; box-shadow: 0 20px 50px rgba(255,255,255,0.15); }
 
-        /* HUD ESCANEO BIOMÉTRICO PROFESIONAL */
-        .hud-box { width: 320px; height: 320px; border: 2px solid var(--accent); position: relative; box-shadow: 0 0 60px rgba(255,193,7,0.3); background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); border-radius: 15px; }
-        .hud-line { position: absolute; width: 100%; height: 4px; background: #ff0000; top: 0; animation: scanLine 2.5s linear infinite; box-shadow: 0 0 25px #ff0000; z-index: 10; }
-        .hud-corner { position: absolute; width: 45px; height: 45px; border: 6px solid var(--accent); z-index: 5; }
-        
-        /* PASAPORTE VIP MEJORADO */
-        .ticket-tech { background: #ffffff; color: #111; border-radius: 40px; width: 100%; max-width: 440px; margin: 0 auto; overflow: hidden; position: relative; box-shadow: 0 40px 100px rgba(0,0,0,0.9); border-top: 12px solid var(--accent); }
-        .ticket-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.04; font-size: 140px; pointer-events: none; z-index: 1; }
+        .input-tech {
+            width: 100%; background: rgba(0,0,0,0.6); 
+            border: 1px solid rgba(255,193,7,0.3); 
+            padding: 22px; border-radius: 18px; 
+            text-align: center; text-transform: uppercase;
+            font-size: 28px; font-weight: 900; color: #fff;
+            outline: none; transition: 0.3s;
+        }
+        .input-tech:focus { border-color: var(--accent); box-shadow: 0 0 30px rgba(255,193,7,0.2); }
 
-        .sync-box {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 30px; border-radius: 35px; text-align: center; max-width: 300px; margin: 40px auto;
+        /* TURNOS / CARDS */
+        .card-panorama { 
+            position: relative; overflow: hidden; border-radius: 40px; 
+            border: 1px solid rgba(255,255,255,0.1); height: 260px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            background-size: cover; background-position: center; transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1); 
+            cursor: pointer; width: 100%; 
+        }
+        .card-panorama:hover { transform: translateY(-10px); border-color: var(--accent); }
+        .card-panorama.locked { filter: grayscale(1) blur(2px); opacity: 0.4; pointer-events: none !important; }
+        .card-panorama.scanned { pointer-events: none; border-color: var(--success); }
+
+        .shift-title { 
+            font-family: 'Montserrat', sans-serif; font-weight: 900; 
+            font-style: italic; font-size: 45px; text-transform: uppercase; 
+            text-shadow: 0 5px 25px rgba(0,0,0,1); line-height: 1; 
         }
 
+        .badge-img { 
+            padding: 8px 25px; border-radius: 50px; font-size: 11px; font-weight: 900; 
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; 
+        }
+        .badge-cerrado { background: var(--error); color: white; }
+        .badge-abierto { background: var(--success); color: white; box-shadow: 0 0 30px var(--success); }
+
+        /* ==========================================
+           PASAPORTE VIP TECNOLÓGICO
+           ========================================== */
+        .ticket-tech { 
+            background: #ffffff; color: #111; border-radius: 45px; 
+            width: 100%; max-width: 440px; margin: 0 auto; 
+            overflow: hidden; position: relative; 
+            box-shadow: 0 50px 120px rgba(0,0,0,0.9); 
+            border-top: 15px solid var(--accent);
+        }
+
+        .tech-header { background: #000; color: #fff; padding: 40px 30px; text-align: center; position: relative; }
+        .tech-header h2 { font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 900; font-style: italic; letter-spacing: -1px; line-height: 1; }
+        .tech-header p { font-size: 10px; color: var(--accent); letter-spacing: 5px; font-weight: 900; margin-top: 10px; }
+
+        .asiento-num-big { 
+            font-family: 'Montserrat', sans-serif; font-size: 130px; 
+            font-weight: 900; color: #e11d48; line-height: 0.7; 
+            margin: 25px 0; text-shadow: 0 10px 30px rgba(225,29,72,0.2);
+        }
+
+        .ticket-footer {
+            background: #000; color: #fff; padding: 30px; 
+            border-radius: 35px; text-align: left; 
+            font-family: 'Share Tech Mono', monospace;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            position: relative; overflow: hidden;
+        }
+        .ticket-footer::after {
+            content: "\f207"; font-family: "Font Awesome 6 Free"; font-weight: 900;
+            position: absolute; right: -10px; bottom: -10px; 
+            font-size: 80px; opacity: 0.05; transform: rotate(-15deg);
+        }
+
+        .sync-box {
+            background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px; border-radius: 35px; text-align: center;
+            max-width: 320px; margin: 50px auto; backdrop-filter: blur(10px);
+        }
+
+        /* GLOBOS 3D */
+        #globe-container, #globe-container-2 { width: 100%; height: 350px; pointer-events: none; margin-top: 20px; }
+
         .hidden-section { display: none !important; }
-        #globe-box, #globe-box-2 { width: 100%; height: 350px; pointer-events: none; }
+        @keyframes blinkGlow { 0%, 100% { opacity: 1; filter: drop-shadow(0 0 15px var(--accent)); } 50% { opacity: 0.7; } }
+        .pulse-text { animation: blinkGlow 2s infinite; }
+
+        @media (max-width: 768px) {
+            .shift-title { font-size: 36px; }
+            header { padding: 20px; }
+            .nav-desktop { display: none; }
+        }
     </style>
 </head>
 <body>
 
     <div id="loader-3d-canvas"></div>
 
-    <!-- OVERLAY HUD ESCANEO BIOMÉTRICO -->
+    <!-- HUD ESCANEO BIOMÉTRICO (RESTAURADO) -->
     <div id="scanning-overlay">
         <div class="hud-box">
             <div class="hud-corner top-left"></div><div class="hud-corner top-right"></div>
@@ -60,29 +213,30 @@
             <div class="hud-line"></div>
             <div class="absolute inset-0 flex flex-col items-center justify-center">
                 <i class="fa-solid fa-fingerprint text-8xl text-yellow-500/40"></i>
-                <p id="loader-msg" class="font-mono text-[11px] mt-8 tracking-[6px] text-yellow-500 uppercase font-black">Procesando Identidad...</p>
+                <p id="loader-msg" class="font-mono text-[11px] mt-10 tracking-[6px] text-yellow-500 uppercase font-black">Autenticando Acceso...</p>
             </div>
         </div>
-        <div class="mt-10 text-center relative z-20">
-            <div class="w-56 h-1.5 bg-white/10 mx-auto overflow-hidden rounded-full border border-white/5">
-                <div id="progress-bar" class="h-full bg-yellow-500 w-0 transition-all duration-300"></div>
+        <div class="mt-12 text-center relative z-20">
+            <div class="w-64 h-2 bg-white/10 mx-auto overflow-hidden rounded-full border border-white/5 shadow-inner">
+                <div id="progress-bar" class="h-full bg-yellow-500 w-0 transition-all duration-300 shadow-[0_0_20px_#ffc107]"></div>
             </div>
+            <p id="time-left" class="text-[10px] text-gray-500 font-bold uppercase mt-4 tracking-widest">Sincronización segura activa</p>
         </div>
     </div>
 
     <div class="main-wrapper">
-        <!-- BARRA DE NAVEGACIÓN EXACTA (MODELO INICIO) -->
+        <!-- BARRA DE NAVEGACIÓN EXACTA -->
         <header class="animate-fade-up">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center shadow-lg">
-                    <i class="fa-solid fa-bus text-black text-xl"></i>
+            <div class="flex items-center gap-4">
+                <div class="w-11 h-11 bg-yellow-500 rounded-xl flex items-center justify-center shadow-[0_0_25px_rgba(255,193,7,0.4)]">
+                    <i class="fa-solid fa-bus text-black text-2xl"></i>
                 </div>
-                <div class="flex flex-col text-left leading-none">
-                    <span class="text-[11px] font-black tracking-widest text-white uppercase">UNAC</span>
-                    <span class="text-[10px] text-yellow-500 font-bold uppercase">Movilidad</span>
+                <div class="flex flex-col text-left leading-none uppercase">
+                    <span class="text-[12px] font-black tracking-widest text-white">UNAC</span>
+                    <span class="text-[10px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
-            <nav class="hidden md:flex gap-10">
+            <nav class="hidden md:flex gap-10 nav-desktop">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="rutas.html" class="nav-link">Rutas</a>
                 <a href="ticket.html" class="nav-link active-link">Ticket</a>
@@ -90,128 +244,124 @@
                 <a href="noticias.html" class="nav-link">Noticias</a>
                 <a href="contacto.html" class="nav-link">Contacto</a>
             </nav>
-            <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-5 py-2 rounded-xl font-black text-xs uppercase">Menu <i class="fa-solid fa-bars-staggered ml-1"></i></button>
+            <button class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-6 py-2 rounded-xl font-black text-xs uppercase tracking-widest">Menu</button>
         </header>
 
-        <main class="max-w-5xl mx-auto px-6 py-12 w-full flex-grow z-20">
+        <main class="max-w-6xl mx-auto px-6 py-12 w-full flex-grow z-20">
             
-            <!-- PASO 1: INICIO -->
+            <!-- PASO 1: LOGIN -->
             <div id="step-1" class="text-center animate-fade-up">
                 <div class="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-8">
-                    <span class="h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
-                    <span class="text-yellow-500 text-[10px] font-black uppercase tracking-widest">Servicio Activo Ciclo 2026-A</span>
+                    <span class="h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></span>
+                    <span class="text-yellow-500 text-[10px] font-black uppercase tracking-widest">Sistema Oficial Ciclo 2026-A</span>
                 </div>
-                <h1 class="text-5xl md:text-8xl font-black uppercase italic tracking-tighter mb-12 leading-none">Tickets <br><span class="text-yellow-500">Oficiales</span></h1>
+                <h1 class="text-6xl md:text-9xl font-black uppercase italic tracking-tighter mb-14 leading-none">Tickets <br><span class="text-yellow-500">Oficiales</span></h1>
                 
-                <div class="max-w-sm mx-auto space-y-5">
-                    <input type="text" id="dniInput" class="w-full bg-black/60 border border-white/10 p-6 rounded-2xl text-center text-3xl font-black outline-none focus:border-yellow-500 transition shadow-2xl" placeholder="DOCUMENTO DNI" maxlength="8">
+                <div class="max-w-sm mx-auto space-y-6">
+                    <input type="text" id="dniInput" class="input-tech" placeholder="DOCUMENTO DNI" maxlength="8">
                     <button onclick="Core.startScan()" class="btn-tech">Verificar Alumno</button>
                     
-                    <div class="grid grid-cols-2 gap-3 pt-2">
-                        <a href="lista.html" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition flex items-center justify-center gap-2"><i class="fa-solid fa-list-ul text-yellow-500"></i> Lista</a>
-                        <a href="tutorial.html" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition flex items-center justify-center gap-2"><i class="fa-solid fa-circle-play text-yellow-500"></i> Tutorial</a>
-                    </div>
+                    <div id="globe-container" class="animate-float"></div>
 
-                    <!-- GLOBO 1 -->
-                    <div id="globe-box" class="animate-float mt-6"></div>
-
-                    <!-- ACCESO DELEGADOS (RESTAURADO) -->
-                    <a href="AccesoDelegados.html" id="link-delegados" class="flex items-center justify-center gap-2 text-[11px] font-black text-gray-500 uppercase tracking-widest hover:text-yellow-500 transition pt-6">
-                        <i class="fa-solid fa-user-shield"></i> Acceso Restringido Delegados
+                    <!-- ACCESO DELEGADOS -->
+                    <a href="AccesoDelegados.html" id="link-delegados" class="flex items-center justify-center gap-3 text-[11px] font-black text-gray-600 uppercase tracking-widest hover:text-yellow-500 transition mt-10">
+                        <i class="fa-solid fa-user-shield text-lg"></i> Acceso Restringido Delegados
                     </a>
                 </div>
             </div>
 
-            <!-- PASO 2: PANEL DE CONTROL DETALLADO -->
+            <!-- PASO 2: PANEL DE SELECCIÓN -->
             <div id="step-2" class="hidden-section animate-fade-up">
-                <div class="bg-white/5 border border-white/10 p-10 rounded-[40px] mb-10 flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-2 h-full bg-yellow-500"></div>
-                    <div class="flex items-center gap-8">
-                        <div class="w-24 h-24 bg-yellow-500 rounded-[30px] flex items-center justify-center text-black text-5xl shadow-2xl"><i class="fa-solid fa-id-card-clip"></i></div>
+                <div class="bg-white/5 border border-white/10 p-12 rounded-[50px] mb-12 flex flex-col md:flex-row justify-between items-center gap-10 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-3 h-full bg-yellow-500"></div>
+                    <div class="flex items-center gap-10">
+                        <div class="w-28 h-24 bg-yellow-500 rounded-[35px] flex items-center justify-center text-black text-6xl shadow-[0_0_40px_rgba(255,193,7,0.5)]"><i class="fa-solid fa-id-card"></i></div>
                         <div>
                             <h2 id="userName" class="text-4xl font-black uppercase italic text-white leading-none"></h2>
-                            <p class="text-yellow-500 text-[11px] font-black mt-3 tracking-widest uppercase" id="userFac"></p>
+                            <p class="text-yellow-500 text-[12px] font-black mt-4 tracking-[3px] uppercase" id="userFac"></p>
                         </div>
                     </div>
-                    <div class="text-right bg-black/40 p-6 rounded-[25px] border border-white/10 shadow-2xl">
-                        <p class="text-[10px] text-gray-500 font-black uppercase mb-2 tracking-widest">Sincronización Biométrica</p>
-                        <span class="text-sm font-black text-green-500 uppercase tracking-widest"><i class="fa-solid fa-circle-check"></i> Alumno Habilitado</span>
+                    <div class="text-right bg-black/60 p-8 rounded-[30px] border border-white/10 shadow-2xl">
+                        <p class="text-[11px] text-gray-500 font-black uppercase mb-3 tracking-widest">Sincronización Servidor</p>
+                        <span class="text-sm font-black text-green-500 uppercase tracking-widest"><i class="fa-solid fa-circle-check mr-2"></i> Perfil Habilitado</span>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div id="card-m" class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('DSC07555-768x432.jpg');" onclick="Core.requestTicket('MAÑANA')">
+                <!-- CARDS CON MENSAJES DETALLADOS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+                    <div id="card-m" class="card-panorama shadow-2xl" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('DSC07555-768x432.jpg');" onclick="Core.requestTicket('MAÑANA')">
                         <span id="badge-m" class="badge-img"></span>
                         <div class="shift-title text-white">Mañana</div>
-                        <p class="text-[11px] text-white/60 font-black uppercase mt-3 tracking-widest">Apertura: 09:00 PM - Cierre: 07:00 AM</p>
+                        <div class="mt-4 bg-black/50 px-10 py-3 rounded-2xl text-yellow-500 font-black text-sm uppercase tracking-widest">Salida: 05:15 AM</div>
+                        <p class="text-[10px] text-white/50 font-bold uppercase mt-4 tracking-widest">Apertura Automática: 09:00 PM - 07:00 AM</p>
                     </div>
-                    <div id="card-t" class="card-panorama" style="background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('DSC07588-768x432.jpg');" onclick="Core.requestTicket('TARDE')">
+                    <div id="card-t" class="card-panorama shadow-2xl" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('DSC07588-768x432.jpg');" onclick="Core.requestTicket('TARDE')">
                         <span id="badge-t" class="badge-img"></span>
                         <div class="shift-title text-white">Tarde</div>
-                        <p class="text-[11px] text-white/60 font-black uppercase mt-3 tracking-widest">Activación vía Delegado - Grupos</p>
+                        <div class="mt-4 bg-black/50 px-10 py-3 rounded-2xl text-white font-black text-sm uppercase tracking-widest">Salida: 06:00 PM</div>
+                        <p class="text-[10px] text-white/50 font-bold uppercase mt-4 tracking-widest">Activación vía Delegado - Grupos Oficiales</p>
                     </div>
                 </div>
-                <div id="card-n" class="card-panorama mt-10" style="background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('DSC07629-768x432.jpg');" onclick="Core.requestTicket('NOCHE')">
+                <div id="card-n" class="card-panorama shadow-2xl" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('DSC07629-768x432.jpg');" onclick="Core.requestTicket('NOCHE')">
                     <span id="badge-n" class="badge-img"></span>
                     <div class="shift-title text-white">Noche</div>
-                    <p class="text-[11px] text-white/60 font-black uppercase mt-3 tracking-widest">Horario comunicado por Grupo Oficial</p>
+                    <div class="mt-4 bg-black/50 px-10 py-3 rounded-2xl text-white font-black text-sm uppercase tracking-widest">Salida: 10:15 PM</div>
+                    <p class="text-[10px] text-white/50 font-bold uppercase mt-4 tracking-widest">Horario comunicado por Grupo Oficial</p>
                 </div>
 
-                <!-- CONTADOR DE SINCRONIZACIÓN (LINK 2) -->
-                <div class="sync-box animate-fade-up shadow-2xl">
-                    <p class="text-[11px] text-gray-500 font-black uppercase tracking-[5px] mb-3">Sincronización Hoy</p>
-                    <div class="text-5xl font-black text-yellow-500" id="total-requests">00</div>
-                    <p class="text-[9px] text-gray-600 mt-2 uppercase italic font-bold">Solicitudes en tiempo real del servidor</p>
+                <!-- SINCRONIZACIÓN PASAJEROS (LINK 2) -->
+                <div class="sync-box shadow-2xl animate-fade-up">
+                    <p class="text-[12px] text-gray-500 font-black uppercase tracking-[6px] mb-4">Sincronización Hoy</p>
+                    <div class="text-6xl font-black text-yellow-500" id="total-requests">00</div>
+                    <p class="text-[10px] text-gray-600 mt-3 uppercase italic font-bold">Solicitudes registradas en tiempo real</p>
                 </div>
 
                 <!-- GLOBO 2 -->
-                <div id="globe-box-2" class="animate-float mt-10"></div>
+                <div id="globe-container-2" class="animate-float mt-10"></div>
             </div>
 
-            <!-- PASO 3: PASAPORTE DIGITAL VIP (TECNOLÓGICO) -->
+            <!-- PASO 3: PASAPORTE DIGITAL VIP -->
             <div id="step-3" class="hidden-section animate-fade-up">
                 <div class="ticket-tech">
-                    <div class="ticket-watermark"><i class="fa-solid fa-bus"></i></div>
-                    <div class="tech-header relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-full h-1.5 bg-yellow-500"></div>
-                        <h2 class="italic text-3xl font-black tracking-tighter uppercase">PASAPORTE DIGITAL VIP</h2>
-                        <p class="text-[11px] text-yellow-500 font-black uppercase tracking-[5px] mt-2">Documento Oficial Intransferible UNAC</p>
+                    <div class="tech-header">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-yellow-500"></div>
+                        <h2 class="uppercase">PASAPORTE DIGITAL VIP</h2>
+                        <p>DOCUMENTO OFICIAL UNAC</p>
                     </div>
-                    <div class="p-12 text-center bg-white">
-                        <p id="t-fecha" class="text-sm font-black text-gray-400 mb-8 uppercase tracking-[4px]"></p>
+                    <div class="p-14 text-center bg-white">
+                        <p id="t-fecha" class="text-sm font-black text-gray-400 mb-10 uppercase tracking-[5px]"></p>
                         
-                        <div id="seat-area" class="min-h-[180px] flex flex-col items-center justify-center border-4 border-double border-gray-100 rounded-[50px] mb-10 bg-gray-50 shadow-inner">
-                            <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">Reserva Confirmada</p>
+                        <div id="seat-area" class="min-h-[200px] flex flex-col items-center justify-center border-4 border-dashed border-gray-200 rounded-[60px] mb-12 bg-gray-50 shadow-inner relative">
+                            <p class="text-[11px] font-black text-gray-300 absolute top-5 uppercase tracking-widest">Reserva Confirmada</p>
                         </div>
                         
-                        <div class="flex justify-center mb-10"><div id="qrcode-vip" class="p-5 border-2 border-black rounded-[40px] shadow-2xl"></div></div>
+                        <div class="flex justify-center mb-10"><div id="qrcode-vip" class="p-6 border-4 border-black rounded-[45px] shadow-2xl"></div></div>
                         
-                        <div class="bg-black text-white p-8 rounded-[35px] text-left text-[11px] font-mono space-y-4 shadow-2xl relative overflow-hidden border-b-4 border-yellow-500">
-                            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-bus-simple text-5xl text-white"></i></div>
-                            <p>PASAJERO: <span id="t-nom" class="text-yellow-500 float-right"></span></p>
-                            <p>DNI: <span id="t-dni" class="text-yellow-500 float-right"></span></p>
-                            <p>TURNO: <span id="t-turno-val" class="text-yellow-500 float-right"></span></p>
-                            <p>SALIDA: <span id="t-salida-val" class="text-yellow-500 float-right font-black"></span></p>
-                            <p class="pt-4 border-t border-white/10 text-center text-gray-500 font-black uppercase tracking-widest text-[9px]">Presentarse 15 min antes del horario</p>
+                        <div class="ticket-footer space-y-4">
+                            <p class="flex justify-between"><span>PASAJERO:</span> <span id="t-nom" class="text-yellow-500 font-black"></span></p>
+                            <p class="flex justify-between"><span>DNI:</span> <span id="t-dni" class="text-yellow-500 font-black"></span></p>
+                            <p class="flex justify-between border-t border-white/10 pt-4"><span>TURNO:</span> <span id="t-turno-val" class="text-yellow-500 font-black"></span></p>
+                            <p class="flex justify-between"><span>SALIDA:</span> <span id="t-salida-val" class="text-yellow-500 font-black text-xl"></span></p>
+                            <p class="pt-6 border-t border-white/10 text-center text-gray-500 font-black uppercase tracking-widest text-[10px]">Presentarse 15 min antes de la salida</p>
                         </div>
                     </div>
                 </div>
-                <p class="text-center text-red-500 text-[11px] font-black uppercase mt-12 tracking-[4px] animate-pulse italic">CADUCIDAD: TICKET VÁLIDO SOLO PARA EL TURNO EMITIDO</p>
-                <button onclick="location.reload()" class="mt-8 text-gray-600 font-black text-[11px] uppercase tracking-[5px] w-full hover:text-white transition">Cerrar Sesión Segura</button>
+                <p class="text-center text-red-500 text-[12px] font-black uppercase mt-12 tracking-[5px] animate-pulse italic">CADUCIDAD: TICKET VENCE AL FINALIZAR EL TURNO</p>
+                <button onclick="location.reload()" class="mt-8 text-gray-600 font-black text-[11px] uppercase tracking-[6px] w-full hover:text-white transition">Cerrar Sesión Segura</button>
             </div>
         </main>
 
         <!-- FOOTER SEBASTIAN -->
-        <footer class="w-full py-16 flex flex-col items-center border-t border-white/5 bg-black/40 relative z-20">
-            <span class="text-center text-[10px] font-extrabold tracking-[8px] text-yellow-500 mb-3 uppercase">Sistema Creado por Sebastian</span>
-            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic font-light">
+        <footer class="w-full py-20 flex flex-col items-center border-t border-white/5 bg-black/40 relative z-20">
+            <span class="text-center text-[12px] font-black tracking-[12px] text-yellow-500 mb-4 uppercase">Sistema Creado por Sebastian</span>
+            <span class="text-center text-[11px] text-gray-500 tracking-[2px] uppercase italic font-light">
                 © 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.
             </span>
         </footer>
     </div>
 
     <script>
-        // === CONFIGURACIÓN FIREBASE REAL ===
+        // === CONFIGURACIÓN FIREBASE (DATOS REALES) ===
         const firebaseConfig = {
             apiKey: "AIzaSyBxaeAc2nq7iEeiLejvja3lKGwR4E09QS4",
             authDomain: "movilidad-unac.firebaseapp.com",
@@ -234,7 +384,8 @@
         const Core = {
             alumno: null,
             init: function() {
-                this.initThree('globe-box');
+                Galaxy3D.init();
+                this.initThree('globe-container');
                 setInterval(() => this.updateStatus(), 1000);
                 this.updateGlobalCounter();
                 setInterval(() => this.updateGlobalCounter(), 20000);
@@ -245,6 +396,7 @@
                 const okM = (h >= 21 || h < 7);
                 const setB = (idB, idC, ok) => {
                     const el = document.getElementById(idB);
+                    if(!el) return;
                     el.innerText = ok ? "ACTIVO" : "INACTIVO";
                     el.className = `badge-img ${ok ? 'badge-abierto' : 'badge-cerrado'}`;
                     ok ? document.getElementById(idC).classList.remove('locked') : document.getElementById(idC).classList.add('locked');
@@ -256,7 +408,7 @@
 
             startScan: async function() {
                 const dni = document.getElementById('dniInput').value.trim();
-                if(dni.length < 8) return Swal.fire('Error', 'Complete el DNI.', 'warning');
+                if(dni.length < 8) return Swal.fire('Error', 'Ingrese su DNI completo.', 'warning');
 
                 document.getElementById('scanning-overlay').style.display = 'flex';
                 document.getElementById('loader-msg').innerText = "ESCANEO BIOMÉTRICO...";
@@ -265,7 +417,8 @@
                     const res = await fetch(`${L1}?dni=${dni}`).then(r => r.json());
                     let p = 0;
                     const itv = setInterval(() => {
-                        p += 2; document.getElementById('progress-bar').style.width = p + '%';
+                        p += 2; 
+                        document.getElementById('progress-bar').style.width = p + '%';
                         if(p >= 100) {
                             clearInterval(itv);
                             if(res.found) {
@@ -277,13 +430,15 @@
                                 document.getElementById('userFac').innerText = res.Facultad;
                                 document.getElementById('userCod').innerText = res.Codigo;
                                 document.getElementById('userDni').innerText = dni;
-                                this.initThree('globe-box-2');
-                            } else throw "X";
+                                this.initThree('globe-container-2');
+                            } else {
+                                throw "No Encontrado";
+                            }
                         }
                     }, 40);
                 } catch(e) {
                     document.getElementById('scanning-overlay').style.display = 'none';
-                    Swal.fire('Error', 'Usted no figura en el padrón oficial.', 'error');
+                    Swal.fire('Error', 'Alumno no figura en el padrón oficial.', 'error');
                 }
             },
 
@@ -299,13 +454,14 @@
                 if(!ok) return;
 
                 document.getElementById('scanning-overlay').style.display = 'flex';
-                document.getElementById('loader-msg').innerText = "PROCESANDO TICKET VIP...";
+                document.getElementById('loader-msg').innerText = "GENERANDO TICKET VIP...";
                 document.getElementById('progress-bar').style.width = '0%';
 
-                // ESPERA DE 10 SEGUNDOS (ANTI-SATURACIÓN)
+                // === 10 SEGUNDOS REALES ANTI-SATURACIÓN ===
                 let p = 0;
                 const itv = setInterval(async () => {
-                    p += 1; document.getElementById('progress-bar').style.width = p + '%';
+                    p += 1; 
+                    document.getElementById('progress-bar').style.width = p + '%';
                     if(p >= 100) {
                         clearInterval(itv);
                         this.finishTicket(turno);
@@ -322,16 +478,16 @@
                 document.getElementById('t-salida-val').innerText = (turno==='MAÑANA'?"05:15 AM":(turno==='TARDE'?"06:00 PM":"10:15 PM"));
 
                 if(turno === 'MAÑANA') {
-                    area.innerHTML = '<i class="fa-solid fa-qrcode text-7xl text-gray-200 mb-2"></i><p class="font-black text-2xl uppercase italic">Ingreso Libre</p>';
+                    area.innerHTML = '<i class="fa-solid fa-qrcode text-8xl text-gray-200 mb-2"></i><p class="font-black text-3xl uppercase italic tracking-tighter">Ingreso Libre</p>';
                 } else {
                     try {
                         const res = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`).then(r => r.json());
-                        area.innerHTML = `<p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1">N° Asiento</p><div class="asiento-num-big">${res.orden}</div>`;
+                        area.innerHTML = `<p class="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-2">Número de Asiento</p><div class="asiento-num-big">${res.orden}</div>`;
                     } catch(e) { area.innerHTML = "ERROR"; }
                 }
 
                 document.getElementById('qrcode-vip').innerHTML = "";
-                new QRCode(document.getElementById("qrcode-vip"), { text: `UNAC-${this.alumno.dni}-${turno}`, width: 160, height: 160 });
+                new QRCode(document.getElementById("qrcode-vip"), { text: `UNAC-${this.alumno.dni}-${turno}`, width: 170, height: 170 });
                 
                 document.getElementById('scanning-overlay').style.display = 'none';
                 document.getElementById('step-2').classList.add('hidden-section');
@@ -349,6 +505,26 @@
                 const globe = new THREE.Mesh(new THREE.IcosahedronGeometry(30, 2), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.15 }));
                 scene.add(globe); camera.position.z = 100;
                 const animate = () => { requestAnimationFrame(animate); globe.rotation.y += 0.003; globe.rotation.x += 0.001; renderer.render(scene, camera); };
+                animate();
+            }
+        };
+
+        const Galaxy3D = {
+            scene: null, camera: null, renderer: null, points: null,
+            init: function() {
+                const container = document.getElementById('loader-3d-canvas');
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+                this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                container.appendChild(this.renderer.domElement);
+                const geo = new THREE.BufferGeometry();
+                const pos = [];
+                for(let i=0; i<5000; i++) pos.push((Math.random()-0.5)*12, (Math.random()-0.5)*12, (Math.random()-0.5)*12);
+                geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+                this.points = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffc107, size: 0.035 }));
+                this.scene.add(this.points); this.camera.position.z = 6;
+                const animate = () => { requestAnimationFrame(animate); this.points.rotation.y += 0.0025; this.renderer.render(this.scene, this.camera); };
                 animate();
             }
         };
