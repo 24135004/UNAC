@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNAC | Terminal Oficial de Movilidad v5.0 ULTRA</title>
+    <title>UNAC | Terminal Oficial de Movilidad v5.5 ULTRA</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -21,15 +21,18 @@
         }
         
         body, html { 
-            margin: 0; padding: 0; min-height: 100vh; 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh; 
             background-color: var(--dark); 
             font-family: 'Inter', sans-serif; 
-            color: #ffffff; overflow-x: hidden; 
+            color: #ffffff; 
+            overflow-x: hidden; 
         }
 
-        /* FONDO ÚNICO E INMERSIVO (PUNTO 3) */
+        /* FONDO ÚNICO TOTALMENTE UNIFICADO */
         .main-wrapper { 
-            background: radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.7) 0%, rgba(5, 5, 5, 0.98) 100%), 
+            background: radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.75) 0%, rgba(5, 5, 5, 0.99) 90%), 
                         url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); 
             background-size: cover; 
             background-attachment: fixed; 
@@ -41,94 +44,121 @@
             z-index: 10; 
         }
 
-        /* ANIMACIONES HOLOGRÁFICAS */
-        .cyber-entry {
-            animation: cyberEntrance 0.7s cubic-bezier(0.075, 0.82, 0.165, 1) both;
+        /* ANIMACIÓN DE ENTRADA HOLOGRÁFICA AL PANEL */
+        .cyber-panel-entry {
+            animation: hologiEntrance 0.6s cubic-bezier(0.075, 0.82, 0.165, 1) both;
         }
-        @keyframes cyberEntrance {
-            0% { transform: scale(0.95) translateY(20px); opacity: 0; filter: brightness(2) blur(10px); }
-            100% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1) blur(0); }
+        @keyframes hologiEntrance {
+            0% { transform: scale(0.94) translateY(25px); opacity: 0; filter: blur(10px) brightness(1.8); }
+            100% { transform: scale(1) translateY(0); opacity: 1; filter: blur(0) brightness(1); }
         }
 
-        /* HUD DE ESCANEO 10S */
-        #scanning-overlay { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .hud-box { width: 280px; height: 280px; border: 2px solid var(--accent); position: relative; box-shadow: 0 0 50px rgba(255,193,7,0.3); }
+        /* HUD OVERLAY DE ESCANEO DE 10 SEGUNDOS */
+        #scanning-overlay { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .hud-box { width: 280px; height: 280px; border: 2px solid var(--accent); position: relative; box-shadow: 0 0 40px rgba(255,193,7,0.25); background: rgba(0,0,0,0.8); }
         .hud-line { position: absolute; width: 100%; height: 3px; background: var(--cyber-red); top: 0; animation: scanLine 2s linear infinite; box-shadow: 0 0 15px var(--cyber-red); }
-        .hud-corner { position: absolute; width: 30px; height: 30px; border: 4px solid var(--accent); }
-        .top-left { top: -5px; left: -5px; border-right: 0; border-bottom: 0; }
-        .top-right { top: -5px; right: -5px; border-left: 0; border-bottom: 0; }
-        .bottom-left { bottom: -5px; left: -5px; border-right: 0; border-top: 0; }
-        .bottom-right { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
+        .hud-corner { position: absolute; width: 25px; height: 25px; border: 4px solid var(--accent); }
+        .top-left { top: -4px; left: -4px; border-right: 0; border-bottom: 0; }
+        .top-right { top: -4px; right: -4px; border-left: 0; border-bottom: 0; }
+        .bottom-left { bottom: -4px; left: -4px; border-right: 0; border-top: 0; }
+        .bottom-right { bottom: -4px; right: -4px; border-left: 0; border-top: 0; }
         @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* HEADER */
-        header { width: 100%; max-width: 1200px; padding: 20px; z-index: 1000; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; transition: 0.3s; }
-        .active-link { color: var(--accent); border-bottom: 2px solid var(--accent); }
+        /* HEADER DE NAVEGACIÓN */
+        header { width: 100%; max-width: 1200px; padding: 25px; z-index: 1000; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
+        .nav-link:hover, .active-link { color: var(--accent); text-shadow: 0 0 10px rgba(255,193,7,0.6); }
 
-        /* GLOBO 3D COMPLETO (PUNTO 2) */
+        /* CONTENEDOR DEL GLOBO 3D COMPLETO */
         #globe-container { 
             width: 100%; 
-            height: 450px; 
+            height: 380px; 
             position: relative; 
-            cursor: grab;
+            margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: visible;
         }
 
-        /* TARJETAS DE TURNOS */
+        /* TARJETAS DE TURNOS TECNOLÓGICAS */
         .card-panorama { 
-            position: relative; overflow: hidden; border-radius: 20px; 
-            border: 1px solid rgba(255,255,255,0.1); height: 230px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            background-size: cover; background-position: center; transition: 0.4s; cursor: pointer; 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: 24px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            height: 220px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            background-size: cover; 
+            background-position: center; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            cursor: pointer; 
+            width: 100%;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.95);
         }
-        .card-panorama.locked { filter: grayscale(1) brightness(0.3); opacity: 0.5; pointer-events: none !important; }
-        .scanned-overlay { position: absolute; inset: 0; background: rgba(5,5,5,0.95); display: flex; align-items: center; justify-content: center; z-index: 30; border: 2px solid var(--success); border-radius: 20px; }
+        .card-panorama.locked { 
+            filter: grayscale(1) brightness(0.35); 
+            opacity: 0.4; 
+            pointer-events: none !important; 
+            border: 1px dashed rgba(255,255,255,0.2) !important;
+        }
+        .card-panorama.scanned { pointer-events: none; border-color: var(--success); box-shadow: 0 0 30px rgba(16,185,129,0.25); }
+        .scanned-overlay { position: absolute; inset: 0; background: rgba(5,5,5,0.92); display: flex; align-items: center; justify-content: center; z-index: 30; backdrop-filter: blur(6px); }
         
-        .badge-img { padding: 4px 12px; border-radius: 4px; font-size: 10px; font-family: 'Share Tech Mono', monospace; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
-        .badge-cerrado { background: rgba(255, 0, 85, 0.2); color: #ff0055; border: 1px solid #ff0055; }
-        .badge-abierto { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .shift-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 36px; text-transform: uppercase; text-shadow: 0 4px 15px rgba(0,0,0,1); letter-spacing: -1px; }
+        .badge-img { padding: 5px 16px; border-radius: 6px; font-size: 10px; font-family: 'Share Tech Mono', monospace; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .badge-cerrado { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .badge-abierto { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 15px rgba(16,185,129,0.3); }
 
-        /* CUADRO DE SINCRONIZACIÓN QR (PUNTO 2) */
-        .sync-counter-box {
-            background: rgba(255, 193, 7, 0.05);
-            border: 1px dashed var(--accent);
-            padding: 15px;
-            border-radius: 15px;
-            margin-top: 20px;
+        /* CUADRO DE SINCRONIZACIÓN BAJO EL TURNO NOCHE */
+        .sync-counter-panel {
+            background: rgba(255, 193, 7, 0.04);
+            border: 1px dashed rgba(255, 193, 7, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-family: 'Share Tech Mono', monospace;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* PASAPORTE DIGITAL (DISEÑO IMAGEN) */
+        /* PASAPORTE DIGITAL DE LA IMAGEN REGENERADO */
         .ticket-tech { 
-            background: #ffffff; color: #111; border-radius: 30px; width: 100%; max-width: 420px; 
-            margin: 0 auto; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.9); 
-            border-top: 8px solid var(--accent);
+            background: #ffffff; 
+            color: #111; 
+            border-radius: 36px; 
+            width: 100%; 
+            max-width: 440px; 
+            margin: 0 auto; 
+            overflow: hidden; 
+            box-shadow: 0 30px 70px rgba(0,0,0,0.85); 
+            border-top: 6px solid var(--accent);
         }
-        .tech-header { background: #000; color: #fff; padding: 25px; text-align: center; }
-        .tech-info-box { background: #f3f4f6; border-radius: 15px; padding: 15px; margin: 15px; display: flex; justify-content: space-between; border: 1px solid #e5e7eb; }
-        .passport-meta { background: #000; color: #fff; padding: 15px 25px; border-radius: 20px; margin: 0 15px 15px; font-size: 10px; font-family: 'Share Tech Mono'; }
+        .tech-header { background: #050505; color: #fff; padding: 28px 20px; text-align: center; }
+        .tech-header h2 { font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 900; font-style: italic; letter-spacing: 1px; text-transform: uppercase; }
+        .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 95px; font-weight: 900; color: #e11d48; line-height: 0.85; margin: 10px 0; letter-spacing: -4px; }
+        .tech-info-box { background: #f8fafc; border-radius: 18px; padding: 18px 22px; margin: 15px; border: 1.5px solid #edf2f7; display: flex; justify-content: space-between; align-items: center; }
+        .passport-meta-footer { background: #000000; color: #ffffff; border-radius: 24px; padding: 20px; font-family: 'Share Tech Mono', monospace; font-size: 10px; text-transform: uppercase; }
 
-        /* BOTONES CYBER */
+        /* BOTONES INTERFAZ HUD */
         .btn-cyber {
-            background: rgba(255, 193, 7, 0.1);
+            font-family: 'Share Tech Mono', monospace;
+            background: rgba(255, 193, 7, 0.05);
             border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 15px;
-            border-radius: 12px;
-            font-family: 'Share Tech Mono';
             text-transform: uppercase;
             letter-spacing: 2px;
-            transition: 0.3s;
-            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        .btn-cyber:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
+        .btn-cyber:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 30px rgba(255, 193, 7, 0.4);
+        }
 
         .hidden-section { display: none !important; }
     </style>
@@ -142,11 +172,14 @@
             <div class="hud-corner bottom-left"></div>
             <div class="hud-corner bottom-right"></div>
             <div class="hud-line"></div>
-            <i class="fa-solid fa-fingerprint text-6xl text-yellow-500/30 absolute"></i>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-fingerprint text-7xl text-yellow-500/40 animate-pulse"></i>
+                <p class="font-mono text-[9px] mt-6 tracking-[6px] text-yellow-500 uppercase">Verificando Servidor...</p>
+            </div>
         </div>
         <div class="mt-8 text-center">
-            <p id="loader-msg" class="text-white font-black uppercase text-xs tracking-widest italic">Iniciando protocolo de seguridad...</p>
-            <div class="w-48 h-1 bg-white/10 mt-3 mx-auto overflow-hidden rounded-full">
+            <p id="loader-msg" class="text-white font-black uppercase text-xs tracking-widest italic">Sincronizando Base de Datos Oficial UNAC</p>
+            <div class="w-52 h-1 bg-white/10 mt-3 mx-auto overflow-hidden rounded-full">
                 <div id="progress-bar" class="h-full bg-yellow-500 w-0 transition-all duration-100"></div>
             </div>
         </div>
@@ -155,138 +188,148 @@
     <div class="main-wrapper">
         <header>
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-yellow-500 rounded flex items-center justify-center"><i class="fa-solid fa-bus text-black text-sm"></i></div>
-                <div class="flex flex-col leading-none">
-                    <span class="text-[10px] font-black text-white">UNAC</span>
-                    <span class="text-[8px] text-yellow-500 font-bold uppercase">Movilidad</span>
+                <div class="w-9 h-9 bg-yellow-500 rounded-lg flex items-center justify-center"><i class="fa-solid fa-bus text-black text-lg"></i></div>
+                <div class="flex flex-col text-left uppercase leading-none">
+                    <span class="text-[11px] font-black tracking-widest text-white">UNAC</span>
+                    <span class="text-[8px] text-yellow-500 font-bold tracking-wider">Movilidad</span>
                 </div>
             </div>
-            <nav class="hidden md:flex gap-6">
+            <nav class="flex gap-6">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="ticket.html" class="nav-link active-link">Ticket</a>
                 <a href="registro.html" class="nav-link">Registro</a>
             </nav>
         </header>
 
-        <main class="max-w-4xl mx-auto px-6 py-6 w-full flex-grow z-20">
+        <main class="max-w-4xl mx-auto px-6 py-4 w-full flex-grow z-20">
             
-            <div id="step-1" class="cyber-entry">
-                <div class="text-center">
-                    <h1 class="text-4xl md:text-6xl font-black uppercase italic text-white tracking-tighter">Tickets <span class="text-yellow-500">Oficiales</span></h1>
-                    <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Terminal Inteligente UNAC - 2026</p>
+            <div id="step-1" class="cyber-panel-entry flex flex-col items-center">
+                <div class="text-center mb-2">
+                    <h1 class="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">Tickets <span class="text-yellow-500">Oficiales</span></h1>
+                    <p class="text-[10px] text-gray-400 mt-1 font-semibold uppercase tracking-widest">Sistema de Control de Turnos Universatarios</p>
                 </div>
 
                 <div id="globe-container"></div>
-
-                <div class="flex flex-col items-center gap-4 -mt-10">
-                    <div class="max-w-xs w-full space-y-3">
-                        <input type="text" id="dniInput" class="w-full bg-black/80 border-2 border-yellow-500 p-4 rounded-xl text-center text-xl font-bold text-white outline-none focus:shadow-[0_0_20px_rgba(255,193,7,0.3)]" placeholder="DOCUMENTO DNI" maxlength="8">
-                        <button onclick="Core.startScan()" class="w-full btn-cyber">Verificar Identidad</button>
-                    </div>
-                    
-                    <a href="AccesoDelegados.html" target="_blank" class="text-[10px] font-black text-red-500 uppercase tracking-[4px] border border-red-500/30 px-6 py-2 rounded hover:bg-red-500 hover:text-white transition-all">
-                        <i class="fa-solid fa-shield-halved mr-2"></i> Acceso Delegados
+                
+                <div id="delegados-panel-btn" class="w-full max-w-xs text-center mb-8">
+                    <a href="AccesoDelegados.html" target="_blank" class="btn-cyber block py-3.5 px-6 rounded-xl font-black text-xs text-yellow-500 border border-yellow-500/40 bg-black/80 backdrop-blur shadow-xl">
+                        <i class="fa-solid fa-shield-halved mr-2 text-yellow-400"></i> Acceso Delegados
                     </a>
+                </div>
+
+                <div class="max-w-sm w-full space-y-4">
+                    <input type="text" id="dniInput" class="w-full bg-black/90 border-2 border-yellow-500 p-4 rounded-xl text-center text-xl font-mono font-bold outline-none text-white tracking-[6px] focus:shadow-[0_0_25px_rgba(255,193,7,0.3)] transition-all" placeholder="INGRESE DNI" maxlength="8">
+                    <button onclick="Core.startScan()" class="w-full btn-cyber p-4 rounded-xl font-black text-xs text-yellow-500 shadow-lg">INGRESAR AL TERMINAL</button>
                 </div>
             </div>
 
-            <div id="step-2" class="hidden-section cyber-entry">
-                <div class="bg-black/90 border border-yellow-500/20 p-6 rounded-3xl mb-8 flex justify-between items-center">
-                    <div>
-                        <span class="text-[9px] text-yellow-500 font-mono tracking-widest uppercase block mb-1">// Usuario Autenticado</span>
-                        <h2 id="userName" class="text-2xl font-black uppercase text-white italic"></h2>
-                        <span id="userFac" class="text-[10px] text-gray-400 font-bold uppercase"></span>
+            <div id="step-2" class="hidden-section cyber-panel-entry">
+                <div class="bg-black/90 border-2 border-yellow-500/30 backdrop-blur-md p-6 rounded-[28px] mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl">
+                    <div class="flex items-center gap-5">
+                        <div class="w-14 h-14 bg-yellow-500/10 rounded-xl flex items-center justify-center text-yellow-500 text-2xl border border-yellow-500/20">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="text-[9px] font-mono tracking-[3px] text-yellow-500 block mb-0.5">// ALUMNO VERIFICADO</span>
+                            <h2 id="userName" class="text-2xl font-black uppercase italic text-white tracking-tight"></h2>
+                            <span id="userFac" class="text-[10px] text-gray-400 font-bold uppercase"></span>
+                        </div>
                     </div>
-                    <div class="text-right font-mono text-[9px] text-gray-500">
-                        <p>ID: <span id="userCod" class="text-white"></span></p>
-                        <p>DNI: <span id="userDni" class="text-white"></span></p>
+                    <div class="font-mono text-[10px] uppercase text-right space-y-0.5">
+                        <p class="text-gray-500">CÓDIGO: <span id="userCod" class="text-white font-bold"></span></p>
+                        <p class="text-gray-500">DOCUMENTO DNI: <span id="userDni" class="text-white font-bold"></span></p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div id="card-m" class="card-panorama locked" style="background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=600');" onclick="Core.requestTicket('MAÑANA')">
-                        <div id="overlay-m" class="scanned-overlay hidden-section"><p class="text-xs font-black text-success uppercase">REGISTRO COMPLETADO</p></div>
-                        <span id="badge-m" class="badge-img"></span>
-                        <div class="shift-title text-white text-3xl font-black italic uppercase">Mañana</div>
-                        <div class="text-[10px] text-yellow-500 font-mono mt-2 uppercase">Salida: 05:15 AM</div>
+                    <div id="card-m" class="card-panorama locked" style="background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=600');" onclick="Core.requestTicket('MAÑANA')">
+                        <div id="overlay-m" class="scanned-overlay hidden-section"><p class="text-xs font-black text-white bg-black border border-red-500 px-4 py-2 rounded-lg tracking-widest uppercase">TURNO YA ESCANEADO</p></div>
+                        <span id="badge-m" class="badge-img badge-cerrado">CERRADO</span>
+                        <div class="shift-title text-white">Mañana</div>
+                        <div class="mt-2 font-mono text-[10px] text-yellow-500 tracking-wider">SALIDA: 05:15 AM</div>
+                        <p id="info-m" class="text-[9px] font-mono text-gray-500 mt-2">Habilitado de 21:00 PM a 07:00 AM</p>
                     </div>
                     
-                    <div id="card-t" class="card-panorama locked" style="background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=600');" onclick="Core.requestTicket('TARDE')">
-                        <div id="overlay-t" class="scanned-overlay hidden-section"><p class="text-xs font-black text-success uppercase">REGISTRO COMPLETADO</p></div>
-                        <span id="badge-t" class="badge-img"></span>
-                        <div class="shift-title text-white text-3xl font-black italic uppercase">Tarde</div>
-                        <div class="text-[10px] text-yellow-500 font-mono mt-2 uppercase">Salida: 06:00 PM</div>
+                    <div id="card-t" class="card-panorama locked" style="background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=600');" onclick="Core.requestTicket('TARDE')">
+                        <div id="overlay-t" class="scanned-overlay hidden-section"><p class="text-xs font-black text-white bg-black border border-red-500 px-4 py-2 rounded-lg tracking-widest uppercase">TURNO YA ESCANEADO</p></div>
+                        <span id="badge-t" class="badge-img badge-cerrado">CERRADO</span>
+                        <div class="shift-title text-white">Tarde</div>
+                        <div class="mt-2 font-mono text-[10px] text-yellow-500 tracking-wider">SALIDA: 06:00 PM</div>
+                        <p id="info-t" class="text-[9px] font-mono text-gray-500 mt-2">Requiere Activación Panel Delegados</p>
                     </div>
                 </div>
 
-                <div id="card-n" class="card-panorama locked" style="background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=600');" onclick="Core.requestTicket('NOCHE')">
-                    <div id="overlay-n" class="scanned-overlay hidden-section"><p class="text-xs font-black text-success uppercase">REGISTRO COMPLETADO</p></div>
-                    <span id="badge-n" class="badge-img"></span>
-                    <div class="shift-title text-white text-3xl font-black italic uppercase">Noche</div>
-                    <div class="text-[10px] text-yellow-500 font-mono mt-2 uppercase">Salida: 10:15 PM</div>
+                <div id="card-n" class="card-panorama locked" style="background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=600');" onclick="Core.requestTicket('NOCHE')">
+                    <div id="overlay-n" class="scanned-overlay hidden-section"><p class="text-xs font-black text-white bg-black border border-red-500 px-4 py-2 rounded-lg tracking-widest uppercase">TURNO YA ESCANEADO</p></div>
+                    <span id="badge-n" class="badge-img badge-cerrado">CERRADO</span>
+                    <div class="shift-title text-white">Noche</div>
+                    <div class="mt-2 font-mono text-[10px] text-yellow-500 tracking-wider">SALIDA: 10:15 PM</div>
+                    <p id="info-n" class="text-[9px] font-mono text-gray-500 mt-2">Requiere Activación Panel Delegados</p>
                 </div>
 
-                <div class="sync-counter-box">
+                <div class="sync-counter-panel">
                     <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-rotate text-yellow-500 animate-spin"></i>
-                        <span class="text-[10px] uppercase text-gray-400 tracking-widest">Sincronización Link 2</span>
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
+                        <span class="text-[11px] font-bold text-gray-400 tracking-widest uppercase">// CONTROL GLOBAL DE EMISIÓN</span>
                     </div>
                     <div class="text-right">
-                        <span class="text-[10px] text-gray-400 block uppercase">Tickets Generados Hoy</span>
-                        <span id="qr-count" class="text-2xl text-yellow-500 font-black tracking-tighter">--</span>
+                        <span class="text-[10px] text-gray-500 block uppercase font-bold">PULSOS QR GENERADOS HOY (L2)</span>
+                        <span id="qr-count-val" class="text-3xl font-black text-yellow-500 tracking-tighter">--</span>
                     </div>
                 </div>
             </div>
 
-            <div id="step-3" class="hidden-section cyber-entry">
+            <div id="step-3" class="hidden-section cyber-panel-entry">
                 <div class="ticket-tech">
                     <div class="tech-header">
-                        <h2 class="uppercase font-black italic">Pasaporte Digital</h2>
-                        <p class="text-[8px] text-yellow-500 tracking-[5px] uppercase mt-1">Sincronizado vía Satélite UNAC</p>
+                        <h2>PASAPORTE DIGITAL</h2>
+                        <p class="text-[9px] font-bold text-yellow-500 uppercase tracking-[3px] mt-1.5">DOCUMENTO OFICIAL INTRANSFERIBLE UNAC</p>
                     </div>
-                    <div class="p-6 text-center bg-white">
-                        <p id="t-fecha" class="text-2xl font-black text-gray-800 uppercase mb-4"></p>
+                    <div class="p-6 text-center bg-white text-black flex flex-col justify-between min-h-[580px]">
+                        <p id="t-fecha" class="text-xl font-extrabold text-slate-800 tracking-tight mt-2"></p>
                         
                         <div class="tech-info-box">
                             <div class="text-left">
-                                <p class="text-[8px] text-gray-400 font-bold uppercase">Turno</p>
-                                <p id="t-turno-val" class="font-black text-black text-xl"></p>
+                                <p class="text-[8px] text-gray-400 font-bold uppercase tracking-wider">TURNO</p>
+                                <p id="t-turno-val" class="font-black text-black text-lg uppercase"></p>
                             </div>
                             <div class="text-right">
-                                <p class="text-[8px] text-gray-400 font-bold uppercase">Salida</p>
-                                <p id="t-salida-val" class="font-black text-yellow-600 text-xl"></p>
+                                <p class="text-[8px] text-gray-400 font-bold uppercase tracking-wider">SALIDA</p>
+                                <p id="t-salida-val" class="font-black text-yellow-600 text-lg tracking-tight"></p>
                             </div>
                         </div>
 
-                        <div id="seat-area" class="py-10 border-2 border-dashed border-gray-200 rounded-[30px] my-6"></div>
+                        <div id="seat-area" class="my-3 py-4 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-[28px] bg-slate-50/50"></div>
                         
-                        <div class="flex justify-center mb-6">
-                            <div class="p-4 border-2 border-black rounded-3xl">
+                        <div class="flex justify-center my-3">
+                            <div class="p-3 border-[1.5px] border-slate-900 rounded-2xl bg-white shadow-sm">
                                 <div id="qrcode-vip"></div>
                             </div>
                         </div>
 
-                        <div class="passport-meta text-left space-y-1">
-                            <p>PASAJERO: <span id="t-nom" class="text-yellow-500 float-right"></span></p>
-                            <p>FACULTAD: <span id="t-fac" class="text-yellow-500 float-right"></span></p>
-                            <p>DNI: <span id="t-dni" class="text-yellow-500 float-right"></span></p>
+                        <div class="passport-meta-footer text-left space-y-1.5 shadow-xl">
+                            <div class="flex justify-between"><span class="text-gray-500">PASAJERO:</span><span id="t-nom" class="text-yellow-400 font-bold tracking-tight truncate max-w-[200px]"></span></div>
+                            <div class="flex justify-between"><span class="text-gray-500">FACULTAD:</span><span id="t-fac" class="text-yellow-400 font-bold"></span></div>
+                            <div class="flex justify-between"><span class="text-gray-500">DNI:</span><span id="t-dni" class="text-yellow-400 font-bold"></span></div>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
 
-        <footer class="p-10 text-center z-20 bg-transparent">
-            <div class="max-w-xs mx-auto h-[1px] bg-white/10 mb-6"></div>
-            <p class="text-[11px] tracking-[8px] text-yellow-500 font-black uppercase mb-2">SISTEMA CREADO POR SEBASTIAN</p>
-            <p class="text-[9px] text-gray-600 font-bold uppercase tracking-widest leading-loose">
-                © 2026 UNAC - Movilidad Universitaria.<br>
-                Infraestructura Concurrente para Alta Demanda.
+        <footer class="w-full py-12 px-6 text-center bg-transparent mt-auto z-20">
+            <div class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-500/5 border border-yellow-500/10 mb-2 text-yellow-500">
+                <i class="fa-solid fa-code text-xs"></i>
+            </div>
+            <p class="text-[11px] tracking-[8px] text-yellow-500 font-black uppercase mb-1">SISTEMA CREADO POR SEBASTIAN</p>
+            <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest max-w-sm mx-auto leading-relaxed">
+                © 2026 UNAC - Infraestructura Concurrente Avanzada con tolerancia a fallas por sobredemanda masiva.
             </p>
         </footer>
     </div>
 
     <script>
+        // REGLAS ESTRUCTURALES
         const REGLAS = {
             MAÑANA: { salida: "05:15 AM" },
             TARDE: { salida: "06:00 PM" },
@@ -304,12 +347,13 @@
 
             init: async function() {
                 await this.syncTime();
-                this.updateStatus();
-                this.initThreeGlobe();
-                this.updateQRCount(); // Inicializar contador
+                await this.fetchDelegadosState(); 
+                this.initThreeGlobe(); 
+                this.syncQRTotalCount();
+                
                 setInterval(() => this.updateStatus(), 1000);
-                setInterval(() => this.fetchDelegadosState(), 3000);
-                setInterval(() => this.updateQRCount(), 10000); // Sincronizar contador cada 10s
+                setInterval(() => this.fetchDelegadosState(), 4000);
+                setInterval(() => this.syncQRTotalCount(), 8000); // Polling asincrónico para contador en tiempo real desde Link 2
             },
 
             syncTime: async function() {
@@ -317,135 +361,233 @@
                     const r = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
                     const d = await r.json();
                     this.serverTimeOffset = new Date(d.datetime).getTime() - Date.now();
-                } catch(e) { setTimeout(() => this.syncTime(), 3000); }
+                } catch(e) { setTimeout(() => this.syncTime(), 4000); }
             },
 
             fetchDelegadosState: async function() {
                 try {
-                    const r = await fetch(`${L3}?accion=obtener_estados_turnos&t=${Date.now()}`).then(res => res.json());
-                    this.delegadoStatus.tardeActivo = !!r.tardeActivo;
-                    this.delegadoStatus.nocheActivo = !!r.nocheActivo;
+                    const r = await fetch(`${L3}?accion=obtener_estados_turnos&timestamp=${Date.now()}`).then(res => res.json());
+                    if(r) {
+                        this.delegadoStatus.tardeActivo = !!r.tardeActivo;
+                        this.delegadoStatus.nocheActivo = !!r.nocheActivo;
+                    }
                 } catch(e){}
             },
 
-            // PUNTO 2: ASINCRONIZAR CON LINK 2 PARA CONTEO DE QR
-            updateQRCount: async function() {
+            // CONTADOR EN TIEMPO REAL CONECTADO CON LINK 2
+            syncQRTotalCount: async function() {
                 try {
-                    const r = await fetch(`${L2}?accion=contar_qr&t=${Date.now()}`).then(res => res.json());
-                    document.getElementById('qr-count').innerText = r.total || "00";
-                } catch(e) { document.getElementById('qr-count').innerText = "ERROR"; }
+                    const r = await fetch(`${L2}?accion=contar_qr&timestamp=${Date.now()}`).then(res => res.json());
+                    if(r && r.total !== undefined) {
+                        document.getElementById('qr-count-val').innerText = String(r.total).padStart(2, '0');
+                    }
+                } catch(e) {
+                    document.getElementById('qr-count-val').innerText = "00";
+                }
             },
 
             getNow: function() { return new Date(Date.now() + this.serverTimeOffset); },
 
+            // REGLAS HORARIAS EXACTAS SOLICITADAS
             updateStatus: function() {
                 const now = this.getNow(), h = now.getHours();
                 
-                // REGLA MAÑANA: 21h dia anterior a 7am mismo dia
+                // Horario Mañana habilitado estrictamente de 21 h del día anterior hasta las 7 am
                 let mananaOk = (h >= 21 || h < 7);
                 let tardeOk = this.delegadoStatus.tardeActivo;
                 let nocheOk = this.delegadoStatus.nocheActivo;
 
-                const setCard = (id, cardId, ok) => {
+                const renderCard = (id, cardId, isOpen) => {
                     const el = document.getElementById(id), c = document.getElementById(cardId);
-                    if(!el) return;
-                    el.innerText = ok ? "ABIERTO" : "CERRADO";
-                    el.className = `badge-img ${ok ? 'badge-abierto' : 'badge-cerrado'}`;
-                    ok ? c.classList.remove('locked') : c.classList.add('locked');
+                    if(!el || !c) return;
+                    
+                    if(this.alumno && this.alumno.asistio) return; 
+
+                    if(isOpen) {
+                        el.innerText = "ABIERTO";
+                        el.className = "badge-img badge-abierto";
+                        c.classList.remove('locked');
+                    } else {
+                        el.innerText = "CERRADO";
+                        el.className = "badge-img badge-cerrado";
+                        c.classList.add('locked');
+                    }
                 };
 
-                setCard('badge-m', 'card-m', mananaOk);
-                setCard('badge-t', 'card-t', tardeOk);
-                setCard('badge-n', 'card-n', nocheOk);
+                renderCard('badge-m', 'card-m', mananaOk);
+                renderCard('badge-t', 'card-t', tardeOk);
+                renderCard('badge-n', 'card-n', nocheOk);
             },
 
-            startScan: function() {
+            // PROTOCOLO DE ESCANEO DE 10 SEGUNDOS MANDATORIOS
+            startScan: async function() {
                 const dni = document.getElementById('dniInput').value.trim();
-                if(dni.length !== 8) return Swal.fire('DNI Inválido', 'Debe tener 8 dígitos.', 'warning');
+                if(dni.length !== 8) return Swal.fire('Atención', 'Ingrese un DNI válido de 8 dígitos.', 'warning');
                 
                 document.getElementById('scanning-overlay').style.display = 'flex';
-                let p = 0;
-                
-                const interval = setInterval(async () => {
-                    p += 1.5;
-                    document.getElementById('progress-bar').style.width = p + '%';
-                    
-                    if(p >= 100) {
-                        clearInterval(interval);
-                        try {
-                            const [resBD, resSincro] = await Promise.all([
-                                fetch(`${L1}?dni=${dni}`).then(r => r.json()),
-                                fetch(`${L3}?dni=${dni}&accion=consultar`).then(r => r.json())
-                            ]);
+                document.getElementById('progress-bar').style.width = '0%';
 
-                            if(resBD.found) {
-                                this.alumno = { ...resBD, dni, asistio: resSincro.asistio };
-                                document.getElementById('step-1').classList.add('hidden-section');
-                                document.getElementById('step-2').classList.remove('hidden-section');
-                                document.getElementById('userName').innerText = resBD.Estudiante;
-                                document.getElementById('userFac').innerText = resBD.Facultad;
-                                document.getElementById('userCod').innerText = resBD.Codigo;
-                                document.getElementById('userDni').innerText = dni;
-                                
-                                if(this.alumno.asistio) {
-                                    ['overlay-m','overlay-t','overlay-n'].forEach(id => document.getElementById(id).classList.remove('hidden-section'));
-                                }
-                            } else throw "X";
-                        } catch(e) { 
-                            Swal.fire('No Registrado', 'Verifique su DNI.', 'error');
-                        } finally {
-                            document.getElementById('scanning-overlay').style.display = 'none';
+                let progress = 0;
+                let isFetchDone = false;
+                let networkError = null;
+                let dataBD = null;
+                let dataSincro = null;
+
+                // Consulta concurrente en paralelo imediata
+                Promise.all([
+                    fetch(`${L1}?dni=${dni}`).then(r => r.json()),
+                    fetch(`${L3}?dni=${dni}&accion=consultar`).then(r => r.json())
+                ]).then(([resBD, resSincro]) => {
+                    if(resBD.found) {
+                        dataBD = resBD;
+                        dataSincro = resSincro;
+                    } else {
+                        networkError = "NOT_FOUND";
+                    }
+                    isFetchDone = true;
+                }).catch(() => {
+                    networkError = "ERR_NET";
+                    isFetchDone = true;
+                });
+
+                // Intervalo para completar la animación fluida obligatoria de 10 segundos
+                const scanInterval = setInterval(() => {
+                    progress += 1.0; // Control de velocidad constante para simular la seguridad concurrente
+                    if(progress > 100) progress = 100;
+                    document.getElementById('progress-bar').style.width = progress + '%';
+                    
+                    if(progress >= 100 && isFetchDone) {
+                        clearInterval(scanInterval);
+                        document.getElementById('scanning-overlay').style.display = 'none';
+                        
+                        if(networkError) {
+                            if(networkError === "NOT_FOUND") {
+                                Swal.fire({ title: 'No Registrado', text: 'Usted no figura en el padrón oficial.', icon: 'error', confirmButtonText: 'Registrarse', confirmButtonColor: '#ffc107', background: '#111', color: '#fff' }).then(r => { if(r.isConfirmed) window.location.href = 'registro.html'; });
+                            } else {
+                                Swal.fire('Error de Red', 'Saturación temporal detectada en el servidor central. Intente nuevamente.', 'error');
+                            }
+                            return;
+                        }
+
+                        Core.alumno = { ...dataBD, dni, asistio: dataSincro.asistio };
+                        
+                        // Ocultar la primera interfaz completamente
+                        document.getElementById('step-1').classList.add('hidden-section');
+                        document.getElementById('step-2').classList.remove('hidden-section');
+                        
+                        document.getElementById('userName').innerText = dataBD.Estudiante;
+                        document.getElementById('userFac').innerText = dataBD.Facultad;
+                        document.getElementById('userCod').innerText = dataBD.Codigo;
+                        document.getElementById('userDni').innerText = dni;
+
+                        // Sincronización en tiempo real: Si ya fue asistido/escaneado por el delegado se bloquean los botones
+                        if(Core.alumno.asistio) {
+                            ['overlay-m','overlay-t','overlay-n'].forEach(id => document.getElementById(id).classList.remove('hidden-section'));
+                            ['card-m','card-t','card-n'].forEach(id => {
+                                const card = document.getElementById(id);
+                                if(card) { card.classList.add('scanned'); card.classList.remove('locked'); }
+                            });
+                            Swal.fire('Atención', 'Este usuario ya registra un escaneo de ticket efectivo el día de hoy.', 'info');
                         }
                     }
-                }, 100); // 10 Segundos aprox de escaneo
+                }, 100); 
             },
 
             requestTicket: function(turno) {
                 this.updateStatus();
-                document.getElementById('loader-msg').innerText = "Emitiendo pasaporte digital...";
+                let enabled = false;
+                const h = this.getNow().getHours();
+
+                if(turno === 'MAÑANA') enabled = (h >= 21 || h < 7);
+                else if(turno === 'TARDE') enabled = this.delegadoStatus.tardeActivo;
+                else if(turno === 'NOCHE') enabled = this.delegadoStatus.nocheActivo;
+
+                if(!enabled) return Swal.fire('Acceso Cerrado', 'El turno solicitado no está habilitado.', 'error');
+                if(this.alumno.asistio) return;
+                
+                document.getElementById('loader-msg').innerText = "EMITIENDO PASAPORTE DIGITAL VIP...";
                 document.getElementById('scanning-overlay').style.display = 'flex';
+                document.getElementById('progress-bar').style.width = '0%';
+                
                 let p = 0;
                 const itv = setInterval(() => {
                     p += 4; document.getElementById('progress-bar').style.width = p + '%';
                     if(p >= 100) { clearInterval(itv); this.processTicket(turno); }
-                }, 50);
+                }, 20); 
             },
 
             processTicket: async function(turno) {
                 const area = document.getElementById('seat-area');
-                document.getElementById('t-fecha').innerText = this.getNow().toLocaleDateString('es-PE');
+                const fecha = this.getNow().toLocaleDateString('es-PE');
+                
+                document.getElementById('t-fecha').innerText = fecha;
                 document.getElementById('t-nom').innerText = this.alumno.Estudiante;
                 document.getElementById('t-fac').innerText = this.alumno.Facultad;
                 document.getElementById('t-dni').innerText = this.alumno.dni;
                 document.getElementById('t-turno-val').innerText = turno;
                 document.getElementById('t-salida-val').innerText = REGLAS[turno].salida;
 
-                try {
-                    const res = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`).then(r => r.json());
-                    const n = parseInt(res.orden);
-                    area.innerHTML = n <= 45 ? `<p class="text-[10px] text-gray-400 uppercase">Asiento</p><div class="text-8xl font-black text-red-600">${n}</div>` 
-                                           : `<i class="fa-solid fa-person-walking text-6xl text-gray-300"></i><p class="font-bold text-red-600 mt-2">VIAJE DE PIE</p>`;
-                } catch(e) { area.innerHTML = "ERROR"; }
+                if(turno === 'MAÑANA') {
+                    area.innerHTML = `<i class="fa-solid fa-circle-check text-5xl text-green-500 mb-2"></i><p class="font-extrabold text-slate-800 text-lg uppercase tracking-tight">INGRESO LIBRE</p><p class="text-[9px] text-gray-400 font-medium">Asiento por orden de llegada física</p>`;
+                } else {
+                    try {
+                        const res = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}&cb=${Date.now()}`).then(r => r.json());
+                        const n = parseInt(res.orden);
+                        
+                        if(n <= 45) {
+                            area.innerHTML = `<p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">ASIENTO ASIGNADO</p><div class="asiento-num-big">${n}</div><p class="text-[9px] text-gray-400 uppercase font-bold tracking-wider">// BUS OFICIAL UNAC</p>`;
+                        } else {
+                            area.innerHTML = `<i class="fa-solid fa-person-walking text-5xl text-amber-500 mb-2"></i><p class="font-black text-red-600 uppercase text-lg tracking-tight">CONDICIÓN: DE PIE</p><p class="text-[9px] text-gray-400 font-bold max-w-[180px] mx-auto">Capacidad de asientos (45) cubierta. Autorizado viajar de pie.</p>`;
+                        }
+                    } catch(e) { 
+                        area.innerHTML = `<p class="font-mono text-[10px] p-4 text-red-500 font-bold">ERROR AL PROCESAR COLA CONCURRENTE</p>`; 
+                    }
+                }
 
-                new QRCode(document.getElementById("qrcode-vip"), { text: `QR-${this.alumno.dni}`, width: 150, height: 150 });
+                document.getElementById('qrcode-vip').innerHTML = "";
+                new QRCode(document.getElementById("qrcode-vip"), { text: `TICKET-${this.alumno.dni}-${turno}`, width: 150, height: 150 });
+                
                 document.getElementById('scanning-overlay').style.display = 'none';
                 document.getElementById('step-2').classList.add('hidden-section');
                 document.getElementById('step-3').classList.remove('hidden-section');
+                this.listenRealtimeScanStatus();
             },
 
+            listenRealtimeScanStatus: function() {
+                const check = setInterval(async () => {
+                    try {
+                        const r = await fetch(`${L3}?dni=${this.alumno.dni}&accion=consultar`).then(r => r.json());
+                        if(r.asistio) {
+                            clearInterval(check);
+                            Swal.fire({ icon: 'success', title: 'PASAPORTE COMBATIDO Y CERRADO', text: 'El delegado oficial escaneó este ticket exitosamente.', background: '#111', color: '#fff', timer: 2500 }).then(() => location.reload());
+                        }
+                    } catch(e){}
+                }, 3000);
+            },
+
+            // REDISEÑO INTEGRAL DEL GLOBO 3D SIN CORTES NI RECORTES DE LIENZO
             initThreeGlobe: function() {
                 const container = document.getElementById('globe-container');
-                const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(45, container.clientWidth/container.clientHeight, 0.1, 1000);
+                const width = container.clientWidth;
+                const height = container.clientHeight || 380;
+                
+                const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(45, width/height, 1, 1000);
                 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-                renderer.setSize(container.clientWidth, container.clientHeight);
+                renderer.setSize(width, height);
                 container.appendChild(renderer.domElement);
                 
-                const globe = new THREE.Mesh(new THREE.IcosahedronGeometry(35, 4), new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.15 }));
-                scene.add(globe); camera.position.z = 100;
+                // Redimensionamiento controlado de malla para evitar desbordamiento y renderizarlo completo
+                const globe = new THREE.Mesh(
+                    new THREE.IcosahedronGeometry(26, 3), 
+                    new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.18 })
+                );
+                scene.add(globe); 
+                camera.position.z = 70;
                 
                 const animate = () => { 
                     requestAnimationFrame(animate); 
                     globe.rotation.y += 0.003; 
+                    globe.rotation.x += 0.001; 
                     renderer.render(scene, camera); 
                 };
                 animate();
