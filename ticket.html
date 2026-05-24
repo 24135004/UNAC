@@ -13,13 +13,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
+    <!-- === LIBRERÍAS FIREBASE COMPAT (AGREGADO) === -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <style>
         :root { --accent: #ffc107; --dark: #050505; --lead: #2d3748; --success: #10b981; }
         body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
         
-        /* ==========================================
-           ANIMACIONES CYBER-TECH (GALAXY & HUD)
-           ========================================== */
         #loader-3d-canvas { position: fixed; inset: 0; z-index: 1; opacity: 0.8; pointer-events: none; }
         #scanning-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .hud-box { width: 300px; height: 300px; border: 2px solid var(--accent); position: relative; box-shadow: 0 0 40px rgba(255,193,7,0.3); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); }
@@ -31,14 +32,12 @@
         .bottom-right { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
         @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* HEADER 6 PUNTOS */
         header { width: 100%; max-width: 1200px; padding: 25px; z-index: 1000; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -6px; left: 0; background: var(--accent); transition: width 0.3s; }
         .nav-link:hover::after, .active-link::after { width: 100%; }
 
-        /* CARDS TURNO PROFESIONALES */
         .card-panorama { position: relative; overflow: hidden; border-radius: 35px; border: 1px solid rgba(255,255,255,0.1); height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-size: cover; background-position: center; transition: 0.5s; cursor: pointer; width: 100%; }
         .card-panorama.locked { filter: grayscale(1); opacity: 0.4; pointer-events: none !important; }
         .card-panorama.scanned { pointer-events: none; border-color: var(--success); }
@@ -48,19 +47,16 @@
         .badge-cerrado { background: #ef4444; color: white; }
         .badge-abierto { background: var(--success); color: white; box-shadow: 0 0 15px var(--success); }
 
-        /* TURNO NOCHE PLOMO + ILUMINADO */
         .card-noche-lead { background-color: var(--lead) !important; background-blend-mode: multiply; border: 1px solid #4a5568 !important; }
         .btn-muy-pronto { background: var(--accent); color: #000; padding: 8px 25px; border-radius: 50px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; animation: blinkGlow 1.5s infinite; }
         @keyframes blinkGlow { 0%, 100% { opacity: 1; box-shadow: 0 0 20px var(--accent); transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.05); } }
 
-        /* TICKET VIP TECNOLÓGICO MEJORADO */
         .ticket-tech { background: #ffffff; color: #111; border-radius: 30px; width: 100%; max-width: 420px; margin: 0 auto; overflow: hidden; position: relative; box-shadow: 0 40px 80px rgba(0,0,0,0.9); border-top: 8px solid var(--accent); }
         .tech-header { background: #000; color: #fff; padding: 25px 20px; text-align: center; }
         .tech-header h2 { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; font-style: italic; }
         .asiento-num-big { font-family: 'Montserrat', sans-serif; font-size: 110px; font-weight: 900; color: #e11d48; line-height: 0.9; margin: 15px 0; }
         .tech-info-box { background: #f3f4f6; border-radius: 15px; padding: 15px; margin: 15px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
 
-        /* GLOBO Y FOOTER */
         #globe-container { width: 100%; height: 350px; pointer-events: none; margin-top: 30px; }
         .main-wrapper { background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.6) 0%, rgba(5, 5, 5, 1) 100%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920'); background-size: cover; background-attachment: fixed; min-height: 100vh; display: flex; flex-direction: column; position: relative; z-index: 10; }
         .hidden-section { display: none !important; }
@@ -78,7 +74,6 @@
 
     <div id="loader-3d-canvas"></div>
 
-    <!-- OVERLAY ESCANEO HUD BIOMÉTRICO -->
     <div id="scanning-overlay">
         <div class="hud-box">
             <div class="hud-corner top-left"></div>
@@ -97,7 +92,6 @@
         </div>
     </div>
 
-    <!-- Menú Móvil -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black text-white uppercase tracking-[5px]">Inicio</a>
@@ -179,11 +173,10 @@
                     <span id="badge-n" class="badge-img"></span>
                     <div class="shift-title text-white">Noche</div>
                     <div class="mt-3 bg-black/50 px-6 py-2 rounded-xl text-white font-black text-sm uppercase">SALIDA: 10:15 PM</div>
-                    <div class="btn-muy-pronto">Muy Pronto</div>
+                    <div id="txt-muy-pronto" class="btn-muy-pronto">Muy Pronto</div>
                 </div>
             </div>
 
-            <!-- PASO 3: TICKET VIP TECH -->
             <div id="step-3" class="hidden-section">
                 <div class="ticket-tech mx-auto relative">
                     <div class="tech-header">
@@ -221,11 +214,33 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE REGLAS (EDITABLES)
+        // === CONFIGURACIÓN FIREBASE (REAL) ===
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxaeAc2nq7iEeiLejvja3lKGwR4E09QS4",
+            authDomain: "movilidad-unac.firebaseapp.com",
+            databaseURL: "https://movilidad-unac-default-rtdb.firebaseio.com",
+            projectId: "movilidad-unac",
+            storageBucket: "movilidad-unac.firebasestorage.app",
+            messagingSenderId: "245380540222",
+            appId: "1:245380540222:web:d4ea08b7818bf89d682e6f"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Variables globales para sincronización de botones
+        let ticket6pmActivo = false;
+        let ticket1015pmActivo = false;
+
+        // Escuchar cambios en Firebase en tiempo real
+        db.ref('horarios/ticket_6pm').on('value', (snap) => { ticket6pmActivo = snap.val() || false; });
+        db.ref('horarios/ticket_1015pm').on('value', (snap) => { ticket1015pmActivo = snap.val() || false; });
+
+        // REGLAS AUTOMÁTICAS (Solo mañana ahora)
         const REGLAS = {
             MAÑANA: { hAbre: 21, mAbre: 0, hCierra: 7, mCierra: 0, salida: "05:15 AM" },
-            TARDE: { hAbre: 21, mAbre: 45, hCierra: 21, mCierra: 59, salida: "06:00 PM" },
-            NOCHE: { hAbre: 1, mAbre: 49, hCierra: 1, mCierra: 55, salida: "10:15 PM" }
+            TARDE: { salida: "06:00 PM" }, // Configurado desde Firebase
+            NOCHE: { salida: "10:15 PM" }  // Configurado desde Firebase
         };
 
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
@@ -238,19 +253,17 @@
 
             init: async function() {
                 Galaxy3D.init();
-                await this.syncTime(); // Sincronización Blindada
+                await this.syncTime();
                 setInterval(() => this.updateStatus(), 1000);
                 this.initThree(); 
             },
 
-            // ANTI-HACK: Obtener la hora real de Lima desde el servidor
             syncTime: async function() {
                 try {
                     const r = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
                     const d = await r.json();
                     this.serverTimeOffset = new Date(d.datetime).getTime() - Date.now();
                 } catch(e) { 
-                    console.error("Fallo de red. Intentando de nuevo...");
                     setTimeout(() => this.syncTime(), 5000);
                 }
             },
@@ -258,21 +271,34 @@
             getNow: () => new Date(Date.now() + Core.serverTimeOffset),
 
             updateStatus: function() {
-                const now = this.getNow(), h = now.getHours(), m = now.getMinutes(), t = h * 60 + m;
-                const setB = (id, cardId, infoId, rule) => {
-                    const el = document.getElementById(id), c = document.getElementById(cardId), i = document.getElementById(infoId);
-                    if(!el) return;
-                    let ok = false;
-                    if (id === 'badge-m') ok = (h >= rule.hAbre || h < rule.hCierra);
-                    else ok = (t >= (rule.hAbre*60+rule.mAbre) && t <= (rule.hCierra*60+rule.mCierra));
-                    el.innerText = ok ? "ABIERTO" : "CERRADO";
-                    el.className = `badge-img ${ok ? 'badge-abierto shadow-[0_0_15px_var(--success)]' : 'badge-cerrado'}`;
-                    ok ? c.classList.remove('locked') : c.classList.add('locked');
-                    if(i) i.innerText = `Apertura: ${rule.hAbre.toString().padStart(2,'0')}:${rule.mAbre.toString().padStart(2,'0')} | Cierra: ${rule.hCierra.toString().padStart(2,'0')}:${rule.mCierra.toString().padStart(2,'0')}`;
-                };
-                setB('badge-m', 'card-m', 'info-m', REGLAS.MAÑANA);
-                setB('badge-t', 'card-t', 'info-t', REGLAS.TARDE);
-                setB('badge-n', 'card-n', null, REGLAS.NOCHE);
+                const now = this.getNow(), h = now.getHours();
+                
+                // --- TURNO MAÑANA (Sigue automático) ---
+                const badgeM = document.getElementById('badge-m'), cardM = document.getElementById('card-m');
+                let mañanaOk = (h >= REGLAS.MAÑANA.hAbre || h < REGLAS.MAÑANA.hCierra);
+                badgeM.innerText = mañanaOk ? "ABIERTO" : "CERRADO";
+                badgeM.className = `badge-img ${mañanaOk ? 'badge-abierto' : 'badge-cerrado'}`;
+                mañanaOk ? cardM.classList.remove('locked') : cardM.classList.add('locked');
+
+                // --- TURNO TARDE (Sincronizado con Firebase) ---
+                const badgeT = document.getElementById('badge-t'), cardT = document.getElementById('card-t');
+                badgeT.innerText = ticket6pmActivo ? "ABIERTO" : "CERRADO";
+                badgeT.className = `badge-img ${ticket6pmActivo ? 'badge-abierto' : 'badge-cerrado'}`;
+                ticket6pmActivo ? cardT.classList.remove('locked') : cardT.classList.add('locked');
+
+                // --- TURNO NOCHE (Sincronizado con Firebase) ---
+                const badgeN = document.getElementById('badge-n'), cardN = document.getElementById('card-n');
+                const txtPronto = document.getElementById('txt-muy-pronto');
+                badgeN.innerText = ticket1015pmActivo ? "ABIERTO" : "CERRADO";
+                badgeN.className = `badge-img ${ticket1015pmActivo ? 'badge-abierto' : 'badge-cerrado'}`;
+                
+                if(ticket1015pmActivo) {
+                    cardN.classList.remove('locked');
+                    if(txtPronto) txtPronto.style.display = 'none'; // Escondemos "Muy pronto" si está activo
+                } else {
+                    cardN.classList.add('locked');
+                    if(txtPronto) txtPronto.style.display = 'block';
+                }
             },
 
             startScan: async function() {
@@ -304,24 +330,32 @@
                     } else throw "X";
                 } catch(e) {
                     document.getElementById('scanning-overlay').style.display = 'none';
-                    Swal.fire({ title: 'No Registrado', text: 'Usted no figura en el sistema oficial. Debe registrarse primero.', icon: 'error', confirmButtonText: 'Ir a Registro', confirmButtonColor: '#ffc107', background: '#111', color: '#fff' }).then((result) => { if(result.isConfirmed) window.location.href = 'registro.html'; });
+                    Swal.fire({ title: 'No Registrado', icon: 'error' });
                 }
             },
 
             requestTicket: function(turno) {
-                // DOBLE VALIDACIÓN ANTI-HACK ANTES DE PROCEDER
-                const now = this.getNow(), h = now.getHours(), m = now.getMinutes(), t = h * 60 + m;
-                const r = REGLAS[turno];
-                let allowed = (turno === 'MAÑANA') ? (h >= r.hAbre || h < r.hCierra) : (t >= (r.hAbre*60+r.mAbre) && t <= (r.hCierra*60+r.mCierra));
-                if(!allowed) return Swal.fire('Error de Acceso', 'El turno está fuera de horario según el servidor de tiempo.', 'error');
+                // VALIDACIÓN SEGÚN FIREBASE O RELOJ
+                let allowed = false;
+                if(turno === 'MAÑANA') {
+                    const h = this.getNow().getHours();
+                    allowed = (h >= REGLAS.MAÑANA.hAbre || h < REGLAS.MAÑANA.hCierra);
+                } else if(turno === 'TARDE') {
+                    allowed = ticket6pmActivo;
+                } else if(turno === 'NOCHE') {
+                    allowed = ticket1015pmActivo;
+                }
+
+                if(!allowed) return Swal.fire('Error de Acceso', 'El turno no está habilitado por el delegado.', 'error');
                 if(this.alumno.asistio) return;
+
                 document.getElementById('loader-msg').innerText = "GENERANDO TICKET VIP...";
                 document.getElementById('scanning-overlay').style.display = 'flex';
                 let p = 0;
                 const itv = setInterval(() => {
                     p += 1; document.getElementById('progress-bar').style.width = p + '%';
                     if(p >= 100) { clearInterval(itv); this.processTicket(turno); }
-                }, 100); 
+                }, 15); 
             },
 
             processTicket: async function(turno) {
@@ -340,8 +374,8 @@
                     try {
                         const res = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`).then(r => r.json());
                         const n = parseInt(res.orden);
-                        if(n <= 45) area.innerHTML = `<p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">ASIENTO ASIGNADO</p><div class="asiento-num-big">${n}</div>`;
-                        else area.innerHTML = `<i class="fa-solid fa-person-walking text-8xl text-gray-300 mb-2"></i><p class="font-black text-red-600 uppercase text-xl">VIAJE DE PIE</p>`;
+                        if(n <= 45) area.innerHTML = `<div class="asiento-num-big">${n}</div>`;
+                        else area.innerHTML = `<p class="font-black text-red-600 uppercase text-xl">VIAJE DE PIE</p>`;
                     } catch(e) { area.innerHTML = "ERROR"; }
                 }
                 document.getElementById('qrcode-vip').innerHTML = "";
@@ -364,6 +398,7 @@
 
             initThree: function() {
                 const container = document.getElementById('globe-container');
+                if(!container) return;
                 const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(45, container.clientWidth/container.clientHeight, 0.1, 1000);
                 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
                 renderer.setSize(container.clientWidth, container.clientHeight);
