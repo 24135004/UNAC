@@ -162,7 +162,7 @@
             <div id="step-1" class="text-center animate-fade-up">
                 <h1 class="text-5xl md:text-6xl font-black uppercase italic tracking-tighter mb-4">Tickets <span class="text-yellow-500">Oficiales</span></h1>
                 <p class="text-gray-400 text-[11px] uppercase tracking-[3px] max-w-xl mx-auto mb-10 font-bold leading-relaxed">
-                    Terminal de gestión para la Ruta Ventanilla. Obtenga su pase digital para asegurar un viaje <span class="text-yellow-500">cómodo, sentado y bajo supervisión delegada</span>.
+                    Movilidad Universitaria - Ruta Ventanilla. Sistema oficial de pases digitales para un traslado seguro e organizado. <span class="text-yellow-500">reserva tu asiento y viaja cómodo, bajo la coordinación de la ruta.</span>.
                 </p>
                 
                 <div class="max-w-xs mx-auto space-y-6">
@@ -171,7 +171,7 @@
                     
                     <div class="grid grid-cols-2 gap-3">
                         <a href="lista.html" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-yellow-500 hover:text-black transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-list-ul"></i> Lista
+                            <i class="fa-solid fa-list-ul"></i> Lista de HOY
                         </a>
                         <a href="tutorial.html" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-yellow-500 hover:text-black transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-play"></i> Tutorial
@@ -215,14 +215,14 @@
                         <span id="badge-t" class="relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2"></span>
                         <h3 class="shift-title text-white">Tarde</h3>
                         <div class="time-badge">SALIDA: 06:00 PM</div>
-                        <p class="delegate-msg">Activación mediante panel de delegados y grupo oficial de movilidad</p>
+                        <p class="delegate-msg">Activación mediante el panel de los delegados y se comunica en el grupo oficial de movilidad</p>
                     </div>
                 </div>
                 <div id="card-n" class="card-panorama w-full" style="background-image: url('DSC07629-768x432.jpg');" onclick="Core.requestTicket('NOCHE')">
                     <span id="badge-n" class="relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2"></span>
                     <h3 class="shift-title text-white text-5xl">Noche</h3>
                     <div class="time-badge">SALIDA: 10:15 PM</div>
-                    <p class="delegate-msg">Activación mediante panel de delegados y comunicación en grupo oficial</p>
+                    <p class="delegate-msg">Activación mediante el panel de los delegados y previa comunicacion en el grupo oficial</p>
                 </div>
 
                 <div id="globe-box-2"></div>
@@ -232,7 +232,7 @@
             <div id="step-3" class="hidden-section animate-fade-up text-center">
                 <div class="ticket-tech">
                     <div class="tech-header">
-                        <h2>MOVILIDAD UNIVERSITARIA | RUTA VENTANILLA</h2>
+                        <h2>MOVILIDAD UNIVERSITARIA   RUTA VENTANILLA</h2>
                         <p>PASAPORTE DIGITAL DE ABORDAJE VIP</p>
                     </div>
                     <div class="p-8">
@@ -320,7 +320,7 @@
                 const dni = document.getElementById('dniInput').value.trim();
                 if(dni.length < 8) return Swal.fire('Error', 'DNI incompleto', 'warning');
                 document.getElementById('scanning-overlay').style.display = 'flex';
-                document.getElementById('loader-msg').innerText = "CALIBRANDO ESCANEO BIOMÉTRICO...";
+                document.getElementById('loader-msg').innerText = "ESPERE UN MOMENTO - ESCANEO BIOMÉTRICO...";
                 
                 try {
                     const res = await fetch(`${L1}?dni=${dni}`).then(r => r.json());
