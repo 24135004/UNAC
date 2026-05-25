@@ -88,7 +88,7 @@
 
                 resultados.forEach(res => {
                     const nombre = res.found ? res.Estudiante : "USUARIO MANUAL / EXTERNO";
-                    const facultad = res.found ? res.Facultad : "RUTA VENTANILLA";
+                    const facultad = res.found ? res.Facultad : "RUTA - VENTANILLA";
                     const shiftColor = res.turno === 'MAÑANA' ? 'bg-blue-600' : (res.turno === 'TARDE' ? 'bg-orange-600' : 'bg-purple-600');
                     const dniMasked = res.dni.charAt(0) + "********";
 
