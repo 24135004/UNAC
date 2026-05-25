@@ -31,9 +31,9 @@
             align-items: center;
             transition: 0.3s;
             backdrop-filter: blur(10px);
-            animation: fadeIn 0.5s ease-out; /* Animación de entrada suave */
+            animation: fadeIn 0.5s ease;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .list-row:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent); }
 
@@ -97,7 +97,7 @@
             </div>
 
             <div id="lista-master" class="pb-20">
-                <!-- Los datos se inyectarán aquí sin refrescar toda la lista -->
+                <!-- Los datos se agregan aquí sin recargar la lista completa -->
             </div>
         </main>
     </div>
@@ -109,65 +109,75 @@
         }
 
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2 = "https://script.google.com/macros/s/AKfycbwZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
+        const L2 = "https://script.google.com/macros/s/AKfycbZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
 
-        // Set para llevar control de los DNIs ya dibujados en pantalla
-        let dnisProcesados = new Set();
+        // Registro de DNIs ya cargados para evitar duplicados y re-sincronizaciones
+        let manifestDnis = new Set();
 
-        async function syncData() {
+        async function syncManifest() {
             try {
-                const res = await fetch(`${L2}?accion=obtener_lista&t=${Date.now()}`);
-                const data = await res.json();
+                // Paso 1: Consultar Link 2 (El manifiesto con Orden y DNI)
+                const response = await fetch(`${L2}?accion=obtener_lista&t=${Date.now()}`);
+                const data = await response.json();
                 
+                if (!data.lista) return;
+
                 const container = document.getElementById('lista-master');
 
-                // Iteramos sobre la lista recibida
                 data.lista.forEach(item => {
-                    // SI EL DNI YA ESTÁ EN EL SET, NO HACEMOS NADA (EVITA DUPLICADOS Y RE-CARGAS)
-                    if (dnisProcesados.has(item.dni)) return;
+                    // Si el DNI ya fue dibujado, lo ignoramos para no "re-sincronizar"
+                    if (manifestDnis.has(item.dni)) return;
 
-                    // Si es nuevo, lo agregamos al Set y creamos el elemento
-                    dnisProcesados.add(item.dni);
+                    // Marcamos como dibujado
+                    manifestDnis.add(item.dni);
 
                     const shiftClass = item.turno === 'MAÑANA' ? 'm-bg' : (item.turno === 'TARDE' ? 't-bg' : 'n-bg');
-                    const num = item.orden > 45 ? "🧍" : item.orden.toString().padStart(2, '0');
                     
+                    // Número de orden directamente del Link 2
+                    const num = item.orden.toString().padStart(2, '0');
+                    // Anonimización DNI (Solo primer dígito)
+                    const dniAnon = item.dni.toString().charAt(0) + "*******";
+
                     const row = document.createElement('div');
                     row.className = "list-row";
-                    row.id = `row-${item.dni}`; // ID único por DNI
+                    row.id = `orden-${item.orden}`; // ID único por orden
                     row.innerHTML = `
                         <div class="font-black text-xl text-yellow-500">#${num}</div>
                         <div>
-                            <p class="name-val font-black text-sm uppercase text-gray-500 animate-pulse">Sincronizando...</p>
-                            <p class="text-[10px] font-mono opacity-40">DNI: ${item.dni.substring(0,2)}******</p>
+                            <p class="name-val font-black text-sm uppercase text-gray-500 animate-pulse">Buscando...</p>
+                            <p class="text-[10px] font-mono opacity-40">DNI: ${dniAnon}</p>
                         </div>
-                        <div class="fac-val text-[10px] font-bold text-gray-400 uppercase tracking-widest hide-mobile">Cargando...</div>
+                        <div class="fac-val text-[10px] font-bold text-gray-400 uppercase tracking-widest hide-mobile">...</div>
                         <div class="hide-mobile"><span class="badge-turno ${shiftClass}">${item.turno}</span></div>
                         <div class="text-right text-[10px] font-black text-gray-500 hide-mobile">${item.fecha}</div>
                     `;
                     
-                    // Se agrega al final de la lista para mantener el orden de llegada
                     container.appendChild(row);
 
-                    // Consultamos los detalles del estudiante solo una vez para este DNI
-                    fetch(`${L1}?dni=${item.dni}`)
-                        .then(r => r.json())
-                        .then(st => {
-                            const rEl = document.getElementById(`row-${item.dni}`);
-                            if(rEl && st.found) {
-                                const nameEl = rEl.querySelector('.name-val');
-                                const facEl = rEl.querySelector('.fac-val');
-                                nameEl.innerText = st.Estudiante;
-                                nameEl.classList.remove('animate-pulse', 'text-gray-500');
-                                facEl.innerText = st.Facultad;
-                            }
-                        })
-                        .catch(err => console.error("Error cargando detalles DNI:", item.dni));
+                    // Paso 2: Consultar Link 1 para el nombre del estudiante (Privacidad aplicada)
+                    fetchStudentData(item.dni, item.orden);
                 });
+            } catch (e) { console.error("Error sincronización Link 2"); }
+        }
 
-            } catch(e) { 
-                console.error("Sync Error:", e); 
-            }
+        async function fetchStudentData(dni, orden) {
+            try {
+                const res = await fetch(`${L1}?dni=${dni}`);
+                const student = await res.json();
+                
+                const targetRow = document.getElementById(`orden-${orden}`);
+                if (targetRow && student.found) {
+                    const nameEl = targetRow.querySelector('.name-val');
+                    const facEl = targetRow.querySelector('.fac-val');
+
+                    // Privacidad: Solo el primer nombre
+                    const primerNombre = student.Estudiante.split(' ')[0];
+                    
+                    nameEl.innerText = primerNombre;
+                    nameEl.classList.remove('animate-pulse', 'text-gray-500');
+                    facEl.innerText = student.Facultad;
+                }
+            } catch (err) { console.error("Error Link 1 para DNI:", dni); }
         }
 
         function filter() {
@@ -179,9 +189,9 @@
         }
 
         window.onload = () => {
-            syncData();
-            // Verificamos nuevos ingresos cada 10 segundos
-            setInterval(syncData, 10000); 
+            syncManifest();
+            // Actualización automática cada 10 segundos
+            setInterval(syncManifest, 10000); 
         };
     </script>
 </body>
