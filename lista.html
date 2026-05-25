@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNAC | Manifiesto de Pasajeros Sincronizado</title>
+    <title>UNAC | Manifiesto de Pasajeros</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Share+Tech+Mono&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -16,99 +16,105 @@
             background-size: cover; background-position: center; background-attachment: fixed;
             min-height: 100vh; width: 100%; display: flex; flex-direction: column;
         }
+        /* TARJETA PROFESIONAL CON BORDE BLANCO */
         .card-student {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             border: 1.5px solid #ffffff; border-radius: 25px; padding: 20px;
-            position: relative; overflow: hidden; transition: 0.4s; backdrop-filter: blur(10px);
+            position: relative; transition: 0.4s; backdrop-filter: blur(15px);
         }
-        .shift-tag { position: absolute; top: 0; right: 0; padding: 5px 15px; font-size: 9px; font-weight: 900; text-transform: uppercase; border-bottom-left-radius: 15px; color: #fff; }
-        .name-display { font-family: 'Montserrat'; font-weight: 800; font-size: 14px; text-transform: uppercase; color: #fff; margin-bottom: 5px; }
-        .fac-display { font-size: 9px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-        .search-container { width: 100%; background: rgba(0,0,0,0.5); border: 1.5px solid #ffffff; padding: 15px 25px; border-radius: 20px; color: #fff; outline: none; }
-        .btn-back { background: #fff; color: #000; font-weight: 900; padding: 12px 25px; border-radius: 15px; font-size: 11px; text-transform: uppercase; transition: 0.3s; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        .order-badge { position: absolute; top: -10px; left: 20px; background: #ff4500; color: white; padding: 2px 15px; border-radius: 10px; font-weight: 900; font-size: 14px; box-shadow: 0 5px 15px rgba(255,0,0,0.3); }
+        .shift-tag { position: absolute; top: 0; right: 0; padding: 5px 15px; font-size: 9px; font-weight: 900; text-transform: uppercase; border-bottom-left-radius: 15px; }
+        .bg-manana { background: #3b82f6; } .bg-tarde { background: #f59e0b; } .bg-noche { background: #8b5cf6; }
+        .input-search { width: 100%; background: rgba(0,0,0,0.6); border: 1.5px solid #ffffff; padding: 18px; border-radius: 20px; color: #fff; text-align: center; font-weight: 700; outline: none; }
+        .btn-back { background: #fff; color: #000; font-weight: 900; padding: 10px 20px; border-radius: 12px; font-size: 11px; text-transform: uppercase; }
+        .spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="main-wrapper">
-        <header class="max-w-7xl mx-auto w-full p-8 flex justify-between items-center">
+        <header class="max-w-7xl mx-auto w-full p-6 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-yellow-500 rounded-xl flex items-center justify-center text-black shadow-lg"><i class="fa-solid fa-users-viewfinder text-xl"></i></div>
-                <div class="flex flex-col leading-none uppercase font-black"><span class="text-xs">UNAC</span><span class="text-[9px] text-yellow-500">Manifiesto Digital</span></div>
+                <div class="w-10 h-10 bg-yellow-500 rounded-xl flex items-center justify-center text-black font-black shadow-lg">U</div>
+                <div class="flex flex-col leading-none uppercase font-black"><span class="text-xs">UNAC</span><span class="text-[9px] text-yellow-500">Manifiesto</span></div>
             </div>
-            <a href="ticket.html" class="btn-back"><i class="fa-solid fa-chevron-left mr-2"></i> Volver</a>
+            <button onclick="window.close()" class="btn-back">Cerrar Lista</button>
         </header>
 
         <main class="max-w-7xl mx-auto px-6 py-4 w-full flex-grow z-20">
-            <div class="text-center mb-10">
+            <div class="text-center mb-8">
                 <h1 class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-2">Pasajeros <span class="text-yellow-500">Registrados</span></h1>
-                <p class="text-gray-400 text-[10px] uppercase tracking-[4px]">Sincronización en Tiempo Real (Link 1 + Link 2)</p>
+                <p class="text-gray-400 text-[10px] uppercase tracking-[4px]">Sincronización Total con Base de Datos UNAC</p>
             </div>
 
-            <div class="max-w-md mx-auto mb-12">
-                <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="FILTRAR POR DNI O NOMBRE..." class="search-container font-bold text-center shadow-2xl">
+            <div class="max-w-md mx-auto mb-10">
+                <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="FILTRAR POR DNI O NOMBRE..." class="input-search shadow-2xl">
             </div>
 
-            <div id="loader">
+            <div id="loader" class="text-center py-10">
                 <div class="spinner"></div>
-                <p class="text-[10px] font-black uppercase tracking-[5px] text-gray-500 text-center">Sincronizando Base de Datos...</p>
+                <p class="text-[10px] font-black uppercase tracking-[5px] mt-4 text-gray-500">Cargando Manifiesto...</p>
             </div>
 
-            <div id="grid-pasajeros" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            <div id="grid-pasajeros" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
         </main>
     </div>
 
     <script>
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2 = "https://script.google.com/macros/s/AKfycbxZKRs2kRJ0SSSIA7_6YBP5H3oC9ESfnV_YA6ChsDJ7gZcvmRGupVzDkVl8cLlF9mhK/exec";
+        const L2 = "https://script.google.com/macros/s/AKfycbyyqBaPfLgVw6CJBV_Du3yfZEK_pGvrg7YkEYk5oDTEcaGbzh4X07I941YdJuEnFTn4/exec";
 
         async function initLista() {
             try {
-                const resL2 = await fetch(`${L2}?accion=obtener_lista`);
-                const dataL2 = await resL2.json();
+                const res = await fetch(`${L2}?accion=obtener_lista`);
+                const data = await res.json();
                 
-                if (!dataL2.lista || dataL2.lista.length === 0) {
-                    document.getElementById('loader').innerHTML = "<p class='text-center text-gray-500 font-black uppercase tracking-widest'>NO HAY REGISTROS EN EL SISTEMA</p>";
+                if (!data.lista || data.lista.length === 0) {
+                    document.getElementById('loader').innerHTML = "NO HAY REGISTROS";
                     return;
                 }
 
+                document.getElementById('loader').style.display = 'none';
                 const container = document.getElementById('grid-pasajeros');
-                document.getElementById('loader').classList.add('hidden');
 
-                // Sincronizar todos los nombres en paralelo para que sea rápido
-                const promesas = dataL2.lista.map(async (item) => {
-                    const resL1 = await fetch(`${L1}?dni=${item.dni}`);
-                    const student = await resL1.json();
-                    return { ...item, ...student };
-                });
-
-                const resultados = await Promise.all(promesas);
-
-                resultados.forEach(res => {
-                    const nombre = res.found ? res.Estudiante : "USUARIO MANUAL / EXTERNO";
-                    const facultad = res.found ? res.Facultad : "RUTA - VENTANILLA";
-                    const shiftColor = res.turno === 'MAÑANA' ? 'bg-blue-600' : (res.turno === 'TARDE' ? 'bg-orange-600' : 'bg-purple-600');
-                    const dniMasked = res.dni.charAt(0) + "********";
+                // Primero dibujamos los cuadros con DNI para que se vea la lista "AL TOQUE"
+                data.lista.forEach((item, index) => {
+                    const dniMasked = item.dni.charAt(0) + "********";
+                    const shiftClass = item.turno === 'MAÑANA' ? 'bg-manana' : (item.turno === 'TARDE' ? 'bg-tarde' : 'bg-noche');
+                    const asiento = item.orden > 45 ? "🧍" : item.orden.toString().padStart(2, '0');
 
                     const card = `
-                        <div class="card-student">
-                            <div class="shift-tag ${shiftColor}">${res.turno}</div>
-                            <div class="name-display">${nombre}</div>
-                            <div class="fac-display">${facultad}</div>
-                            <div class="text-[10px] text-gray-500 font-mono mt-2">DNI: ${dniMasked}</div>
-                            <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center text-[10px] font-black">
-                                <span class="text-gray-500">FECHA:</span>
-                                <span class="text-yellow-500">${res.fecha}</span>
+                        <div class="card-student" id="card-${item.dni}">
+                            <div class="order-badge">ASIENTO: ${asiento}</div>
+                            <div class="shift-tag ${shiftClass}">${item.turno}</div>
+                            <div class="pt-4">
+                                <div class="name-placeholder text-gray-600 text-xs font-bold animate-pulse mb-2">CARGANDO NOMBRE...</div>
+                                <div class="fac-display text-[9px] font-bold text-yellow-500 uppercase tracking-widest">RUTA VENTANILLA</div>
+                                <div class="text-[10px] text-gray-500 font-mono mt-2">DNI: ${dniMasked}</div>
+                                <div class="mt-4 pt-4 border-t border-white/5 text-[10px] font-black text-gray-400">FECHA: ${item.fecha}</div>
                             </div>
                         </div>
                     `;
                     container.innerHTML += card;
                 });
 
+                // Luego, cargamos los nombres reales del Link 1 uno por uno
+                data.lista.forEach(async (item) => {
+                    try {
+                        const sRes = await fetch(`${L1}?dni=${item.dni}`);
+                        const student = await sRes.json();
+                        const cardEl = document.getElementById(`card-${item.dni}`);
+                        if (student.found) {
+                            cardEl.querySelector('.name-placeholder').innerText = student.Estudiante;
+                            cardEl.querySelector('.name-placeholder').classList.remove('animate-pulse', 'text-gray-600');
+                            cardEl.querySelector('.name-placeholder').classList.add('text-white', 'text-sm', 'font-black', 'uppercase');
+                            cardEl.querySelector('.fac-display').innerText = student.Facultad;
+                        }
+                    } catch (e) {}
+                });
+
             } catch (e) {
-                document.getElementById('loader').innerHTML = "ERROR CRÍTICO DE ENLACE";
+                document.getElementById('loader').innerHTML = "ERROR DE CONEXIÓN";
             }
         }
 
