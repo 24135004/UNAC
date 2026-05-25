@@ -3,130 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNAC | Manifiesto de Pasajeros</title>
+    <title>UNAC | Manifiesto Maestro de Pasajeros</title>
+    
+    <!-- LIBRERÍAS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Share+Tech+Mono&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
-        :root { --accent: #ffc107; --dark: #050505; }
+        :root { --accent: #ffc107; --dark: #050505; --neon: #00f2ff; }
         body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
+
         .main-wrapper {
+            position: relative; z-index: 10;
             background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), 
                         url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
             background-size: cover; background-position: center; background-attachment: fixed;
             min-height: 100vh; width: 100%; display: flex; flex-direction: column;
         }
-        /* TARJETA PROFESIONAL CON BORDE BLANCO */
-        .card-student {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1.5px solid #ffffff; border-radius: 25px; padding: 20px;
-            position: relative; transition: 0.4s; backdrop-filter: blur(15px);
+
+        /* ANIMACIONES */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+
+        /* HEADER */
+        header { width: 100%; max-width: 1300px; padding: 40px 30px; margin: 0 auto; display: flex; justify-content: space-between; items-center; }
+        .btn-back { background: #fff; color: #000; font-weight: 900; padding: 12px 25px; border-radius: 15px; font-size: 11px; text-transform: uppercase; transition: 0.3s; display: flex; align-items: center; gap: 10px; border: 1.5px solid #fff; }
+        .btn-back:hover { background: var(--accent); border-color: var(--accent); transform: translateX(-5px); }
+
+        /* BUSCADOR PROFESIONAL */
+        .search-box { width: 100%; max-width: 600px; position: relative; margin: 0 auto 50px; }
+        .search-input { width: 100%; background: rgba(0,0,0,0.7); border: 1.5px solid #ffffff; padding: 20px 30px 20px 60px; border-radius: 25px; color: #fff; font-size: 16px; font-weight: 700; outline: none; transition: 0.3s; backdrop-filter: blur(10px); }
+        .search-input:focus { border-color: var(--accent); box-shadow: 0 0 30px rgba(255,193,7,0.2); }
+        .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 20px; }
+
+        /* TARJETA DE ESTUDIANTE (BORDE BLANCO 1.5PX) */
+        .card-passenger {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid #ffffff; 
+            border-radius: 30px;
+            padding: 30px;
+            position: relative;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 220px;
         }
-        .order-badge { position: absolute; top: -10px; left: 20px; background: #ff4500; color: white; padding: 2px 15px; border-radius: 10px; font-weight: 900; font-size: 14px; box-shadow: 0 5px 15px rgba(255,0,0,0.3); }
-        .shift-tag { position: absolute; top: 0; right: 0; padding: 5px 15px; font-size: 9px; font-weight: 900; text-transform: uppercase; border-bottom-left-radius: 15px; }
-        .bg-manana { background: #3b82f6; } .bg-tarde { background: #f59e0b; } .bg-noche { background: #8b5cf6; }
-        .input-search { width: 100%; background: rgba(0,0,0,0.6); border: 1.5px solid #ffffff; padding: 18px; border-radius: 20px; color: #fff; text-align: center; font-weight: 700; outline: none; }
-        .btn-back { background: #fff; color: #000; font-weight: 900; padding: 10px 20px; border-radius: 12px; font-size: 11px; text-transform: uppercase; }
-        .spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+        .card-passenger:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.07); border-color: var(--accent); }
+
+        /* BADGES */
+        .badge-order { position: absolute; top: -15px; left: 30px; background: #ff4500; color: white; padding: 4px 18px; border-radius: 12px; font-weight: 900; font-size: 13px; box-shadow: 0 10px 20px rgba(255,69,0,0.3); border: 1px solid rgba(255,255,255,0.2); }
+        .badge-shift { position: absolute; top: 0; right: 0; padding: 8px 20px; font-size: 10px; font-weight: 900; text-transform: uppercase; border-bottom-left-radius: 25px; letter-spacing: 1px; }
+        
+        .shift-m { background: #3b82f6; }
+        .shift-t { background: #f59e0b; }
+        .shift-n { background: #8b5cf6; }
+
+        /* TEXTOS */
+        .student-name { font-family: 'Montserrat'; font-weight: 900; font-size: 15px; color: #fff; text-transform: uppercase; line-height: 1.2; margin-bottom: 8px; }
+        .student-fac { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
+        .student-dni { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 10px; letter-spacing: 4px; }
+
+        .footer-card { margin-top: 20px; pt-4; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 10px; font-black; color: #777; }
+
+        #main-loader { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 0; }
+        .tech-spinner { width: 50px; height: 50px; border: 5px solid rgba(255,193,7,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .hidden { display: none !important; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
+
     <div class="main-wrapper">
-        <header class="max-w-7xl mx-auto w-full p-6 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-yellow-500 rounded-xl flex items-center justify-center text-black font-black shadow-lg">U</div>
-                <div class="flex flex-col leading-none uppercase font-black"><span class="text-xs">UNAC</span><span class="text-[9px] text-yellow-500">Manifiesto</span></div>
+        <!-- HEADER -->
+        <header class="animate-fade-up">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-yellow-500 rounded-2xl flex items-center justify-center text-black shadow-2xl">
+                    <i class="fa-solid fa-database text-2xl"></i>
+                </div>
+                <div class="flex flex-col leading-none uppercase font-black">
+                    <span class="text-sm tracking-widest">UNAC</span>
+                    <span class="text-[10px] text-yellow-500">Manifiesto Oficial</span>
+                </div>
             </div>
-            <button onclick="window.close()" class="btn-back">Cerrar Lista</button>
+            <button onclick="window.close()" class="btn-back">
+                <i class="fa-solid fa-circle-xmark"></i> Salir del Manifiesto
+            </button>
         </header>
 
-        <main class="max-w-7xl mx-auto px-6 py-4 w-full flex-grow z-20">
-            <div class="text-center mb-8">
-                <h1 class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-2">Pasajeros <span class="text-yellow-500">Registrados</span></h1>
-                <p class="text-gray-400 text-[10px] uppercase tracking-[4px]">Sincronización Total con Base de Datos UNAC</p>
+        <main class="max-w-7xl mx-auto px-8 py-10 w-full flex-grow z-20">
+            
+            <div class="text-center mb-16 animate-fade-up">
+                <h1 class="text-5xl md:text-7xl font-black uppercase italic tracking-tighter mb-4">Relación de <span class="text-yellow-500">Pasajeros</span></h1>
+                <p class="text-gray-400 text-[11px] uppercase tracking-[6px] font-bold">Sincronización Maestra: Base Académica + Registro de Movilidad</p>
             </div>
 
-            <div class="max-w-md mx-auto mb-10">
-                <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="FILTRAR POR DNI O NOMBRE..." class="input-search shadow-2xl">
+            <!-- BUSCADOR -->
+            <div class="search-box animate-fade-up">
+                <i class="fa-solid fa-terminal search-icon"></i>
+                <input type="text" id="searchInput" onkeyup="filterCards()" placeholder="INGRESAR DNI O NOMBRE PARA CONSULTAR..." class="search-input shadow-2xl">
             </div>
 
-            <div id="loader" class="text-center py-10">
-                <div class="spinner"></div>
-                <p class="text-[10px] font-black uppercase tracking-[5px] mt-4 text-gray-500">Cargando Manifiesto...</p>
+            <!-- LOADER TÉCNICO -->
+            <div id="main-loader">
+                <div class="tech-spinner"></div>
+                <p class="mt-6 text-[10px] font-black uppercase tracking-[8px] text-gray-500 animate-pulse">Estableciendo conexión con servidores UNAC...</p>
             </div>
 
-            <div id="grid-pasajeros" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
+            <!-- GRID DE PASAJEROS -->
+            <div id="grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                <!-- Se inyecta mediante JavaScript -->
+            </div>
+
+            <div id="empty-state" class="hidden text-center py-32 animate-fade-up">
+                <i class="fa-solid fa-folder-open text-7xl text-gray-800 mb-8"></i>
+                <p class="text-gray-500 font-black uppercase tracking-[10px]">No se encontraron registros</p>
+            </div>
+
         </main>
+
+        <footer class="w-full py-16 flex flex-col items-center border-t border-white/5 bg-black/40 mt-20 relative z-20">
+            <span class="text-center text-[11px] font-black tracking-[12px] text-yellow-500 mb-4 uppercase">Sistema Creado por Sebastian</span>
+            <span class="text-center text-[10px] text-gray-600 tracking-[2px] uppercase italic font-light">© 2026 UNAC - Registro Oficial de Movilidad Universitaria</span>
+        </footer>
     </div>
 
     <script>
+        // CONFIGURACIÓN DE LINKS
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2 = "https://script.google.com/macros/s/AKfycbyyqBaPfLgVw6CJBV_Du3yfZEK_pGvrg7YkEYk5oDTEcaGbzh4X07I941YdJuEnFTn4/exec";
+        const L2 = "https://script.google.com/macros/s/AKfycbwyCWBSIvUw3id3_pG--ILGxX_xPDkiyE0wsX9C7Pnc_aJaNKlJvKtiZkw4_Nx_wBcb/exec";
 
-        async function initLista() {
+        async function cargarManifiesto() {
             try {
-                const res = await fetch(`${L2}?accion=obtener_lista`);
-                const data = await res.json();
+                // 1. Obtener lista completa del Link 2
+                const response = await fetch(`${L2}?accion=obtener_lista`);
+                const data = await response.json();
                 
                 if (!data.lista || data.lista.length === 0) {
-                    document.getElementById('loader').innerHTML = "NO HAY REGISTROS";
+                    document.getElementById('main-loader').innerHTML = "<p class='text-gray-600 font-black'>SISTEMA VACÍO</p>";
                     return;
                 }
 
-                document.getElementById('loader').style.display = 'none';
-                const container = document.getElementById('grid-pasajeros');
+                document.getElementById('main-loader').classList.add('hidden');
+                const container = document.getElementById('grid-container');
 
-                // Primero dibujamos los cuadros con DNI para que se vea la lista "AL TOQUE"
-                data.lista.forEach((item, index) => {
+                // 2. Dibujar esqueletos/ placeholders para carga inmediata
+                data.lista.forEach(item => {
+                    const shiftClass = item.turno === 'MAÑANA' ? 'shift-m' : (item.turno === 'TARDE' ? 'shift-t' : 'shift-n');
+                    const numAsiento = item.orden > 45 ? "🧍" : item.orden.toString().padStart(2, '0');
                     const dniMasked = item.dni.charAt(0) + "********";
-                    const shiftClass = item.turno === 'MAÑANA' ? 'bg-manana' : (item.turno === 'TARDE' ? 'bg-tarde' : 'bg-noche');
-                    const asiento = item.orden > 45 ? "🧍" : item.orden.toString().padStart(2, '0');
 
-                    const card = `
-                        <div class="card-student" id="card-${item.dni}">
-                            <div class="order-badge">ASIENTO: ${asiento}</div>
-                            <div class="shift-tag ${shiftClass}">${item.turno}</div>
-                            <div class="pt-4">
-                                <div class="name-placeholder text-gray-600 text-xs font-bold animate-pulse mb-2">CARGANDO NOMBRE...</div>
-                                <div class="fac-display text-[9px] font-bold text-yellow-500 uppercase tracking-widest">RUTA VENTANILLA</div>
-                                <div class="text-[10px] text-gray-500 font-mono mt-2">DNI: ${dniMasked}</div>
-                                <div class="mt-4 pt-4 border-t border-white/5 text-[10px] font-black text-gray-400">FECHA: ${item.fecha}</div>
+                    const cardHtml = `
+                        <div class="card-passenger animate-fade-up" id="card-${item.dni}">
+                            <div class="badge-order">ORDEN: ${numAsiento}</div>
+                            <div class="badge-shift ${shiftClass}">${item.turno}</div>
+                            
+                            <div class="content-body">
+                                <div class="name-placeholder student-name text-gray-700 animate-pulse">Sincronizando...</div>
+                                <div class="fac-placeholder student-fac text-gray-800 tracking-widest">Cargando datos...</div>
+                                <div class="student-dni">DNI: ${dniMasked}</div>
+                            </div>
+
+                            <div class="footer-card uppercase font-black">
+                                <span>FECHA:</span>
+                                <span class="text-yellow-500">${item.fecha}</span>
                             </div>
                         </div>
                     `;
-                    container.innerHTML += card;
+                    container.innerHTML += cardHtml;
                 });
 
-                // Luego, cargamos los nombres reales del Link 1 uno por uno
+                // 3. Sincronizar nombres con Link 1 de forma asíncrona (AL TOQUE)
                 data.lista.forEach(async (item) => {
                     try {
-                        const sRes = await fetch(`${L1}?dni=${item.dni}`);
-                        const student = await sRes.json();
-                        const cardEl = document.getElementById(`card-${item.dni}`);
+                        const resL1 = await fetch(`${L1}?dni=${item.dni}`);
+                        const student = await resL1.json();
+                        const cardElement = document.getElementById(`card-${item.dni}`);
+                        
                         if (student.found) {
-                            cardEl.querySelector('.name-placeholder').innerText = student.Estudiante;
-                            cardEl.querySelector('.name-placeholder').classList.remove('animate-pulse', 'text-gray-600');
-                            cardEl.querySelector('.name-placeholder').classList.add('text-white', 'text-sm', 'font-black', 'uppercase');
-                            cardEl.querySelector('.fac-display').innerText = student.Facultad;
+                            const nameEl = cardElement.querySelector('.name-placeholder');
+                            nameEl.innerText = student.Estudiante;
+                            nameEl.classList.remove('animate-pulse', 'text-gray-700');
+                            
+                            const facEl = cardElement.querySelector('.fac-placeholder');
+                            facEl.innerText = student.Facultad;
+                            facEl.classList.remove('text-gray-800');
+                        } else {
+                            cardElement.querySelector('.name-placeholder').innerText = "REGISTRO MANUAL";
+                            cardElement.querySelector('.fac-placeholder').innerText = "RUTA VENTANILLA";
                         }
-                    } catch (e) {}
+                    } catch (e) { console.error("Error en DNI:", item.dni); }
                 });
 
-            } catch (e) {
-                document.getElementById('loader').innerHTML = "ERROR DE CONEXIÓN";
+            } catch (error) {
+                document.getElementById('main-loader').innerHTML = "<p class='text-red-600 font-black'>FALLO EN LA CONEXIÓN CON EL SERVIDOR CENTRAL</p>";
             }
         }
 
-        function searchTable() {
-            let input = document.getElementById('searchInput').value.toUpperCase();
-            let cards = document.getElementsByClassName('card-student');
+        // FUNCIÓN DE FILTRO EN TIEMPO REAL
+        function filterCards() {
+            const val = document.getElementById('searchInput').value.toUpperCase();
+            const cards = document.getElementsByClassName('card-passenger');
+            let found = false;
+
             for (let i = 0; i < cards.length; i++) {
-                let text = cards[i].innerText.toUpperCase();
-                cards[i].style.display = text.indexOf(input) > -1 ? "" : "none";
+                const text = cards[i].innerText.toUpperCase();
+                if (text.includes(val)) {
+                    cards[i].classList.remove('hidden');
+                    found = true;
+                } else {
+                    cards[i].classList.add('hidden');
+                }
             }
+
+            const empty = document.getElementById('empty-state');
+            if (!found) empty.classList.remove('hidden');
+            else empty.classList.add('hidden');
         }
-        window.onload = initLista;
+
+        window.onload = cargarManifiesto;
     </script>
 </body>
 </html>
