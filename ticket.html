@@ -265,7 +265,7 @@
 
         <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/40 mt-10 relative z-20">
             <span class="text-center text-[10px] font-bold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
-            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
+            <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic font-light">© 2026 UNAC - Movilidad Universitaria. Todos los derechos reservados.</span>
         </footer>
     </div>
 
@@ -289,7 +289,7 @@
         db.ref('horarios/ticket_1015pm').on('value', s => t10 = s.val());
 
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2 = "https://script.google.com/macros/s/AKfycbwZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
+        const L2 = "https://script.google.com/macros/s/AKfycbywZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
 
         const Core = {
             alumno: null,
@@ -388,7 +388,8 @@
                 document.getElementById('t-turno-val').innerText = turno;
 
                 if(turno === 'MAÑANA') {
-                    area.innerHTML = 'FREE';
+                    // CORRECCIÓN SOLICITADA: REEMPLAZADO "FREE" POR EMOTICÓN Y ETIQUETA
+                    area.innerHTML = '✅ <br> <span class="text-2xl block font-black uppercase tracking-widest mt-2">(Ingreso Libre)</span>';
                 } else {
                     try {
                         const res = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`).then(r => r.json());
