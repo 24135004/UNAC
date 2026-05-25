@@ -168,8 +168,8 @@
     <script>
         // CONFIGURACIÓN DE LINKS
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2 = "https://script.google.com/macros/s/AKfycbyyqBaPfLgVw6CJBV_Du3yfZEK_pGvrg7YkEYk5oDTEcaGbzh4X07I941YdJuEnFTn4/exec";
-        const L3 = "https://script.google.com/macros/s/AKfycbzLz_LINK_3_AQUI/exec"; // REEMPLAZAR POR TU URL LINK 3
+        const L2 = "https://script.google.com/macros/s/AKfycbwZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
+        const L3 = "https://script.google.com/macros/s/AKfycbyw_YyEiEp63Kki4t0AHPUY_P55ikaaieJtk_v-wdeNC6i-23QIdS62Staeves4gt15/exec"; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyBxaeAc2nq7iEeiLejvja3lKGwR4E09QS4",
@@ -188,7 +188,7 @@
         let delegadoActivo = "", isScanningLocked = false;
         const DELEGADOS = ["71886034", "77570731", "63229248", "73438294"];
 
-        // FIREBASE SYNC
+        // FIREBASE SYNC (ESTO NO SE TOCA)
         db.ref('horarios/ticket_6pm').on('value', snap => {
             status6pm = snap.val();
             document.getElementById('btn-6pm').className = status6pm ? 'btn-horario active-6pm' : 'btn-horario';
@@ -230,7 +230,7 @@
         async function onScanSuccess(decodedText) {
             if (isScanningLocked) return;
             isScanningLocked = true;
-            setTimeout(() => isScanningLocked = false, 3000);
+            setTimeout(() => isScanningLocked = false, 3000); // Bloqueo de 3s para evitar doble escaneo
 
             // Formato QR: UNAC-VIP-DNI-TURNO
             const parts = decodedText.split('-');
@@ -271,7 +271,7 @@
 
         async function actualizarTotalGlobal() {
             try {
-                const response = await fetch(`${L3}?accion=obtener_total`); // Usando el obtener_total que agregamos al Link 3
+                const response = await fetch(`${L3}?accion=obtener_total`);
                 const data = await response.json();
                 document.getElementById('contador-global').innerText = data.total || 0;
             } catch (e) {}
@@ -303,20 +303,25 @@
         }
 
         function limpiarHistorial() {
-            if (confirm("¿Limpiar historial local?")) {
+            if (confirm("¿Limpiar historial local del panel?")) {
                 scannedData = [];
                 localStorage.removeItem('scanned_unac');
                 renderList();
             }
         }
 
-        function enviarYReiniciar() {
-            if (confirm("¿Reiniciar sistema y apagar tickets?")) {
+        async function enviarYReiniciar() {
+            if (!confirm("⚠️ ADVERTENCIA: Se borrarán los datos de HOY en los servidores (Link 2 y 3). ¿Continuar?")) return;
+            document.getElementById('btn-reiniciar').innerText = "VACIANDO...";
+            try {
+                await fetch(`${L2}?accion=reiniciar_sistema`);
+                await fetch(`${L3}?accion=reiniciar_sistema`);
                 db.ref('horarios/ticket_6pm').set(false);
                 db.ref('horarios/ticket_1015pm').set(false);
-                limpiarHistorial();
+                scannedData = [];
+                localStorage.removeItem('scanned_unac');
                 location.reload();
-            }
+            } catch (e) { alert("Error al conectar con servidor."); }
         }
     </script>
 </body>
