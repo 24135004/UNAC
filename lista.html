@@ -20,10 +20,10 @@
             min-height: 100vh; width: 100%; display: flex; flex-direction: column;
         }
 
-        /* DISEÑO DE COLUMNA / FILA TÉCNICA */
+        /* DISEÑO DE FILA TÉCNICA */
         .list-row {
             background: rgba(255, 255, 255, 0.02);
-            border: 1.5px solid #ffffff; /* BORDE BLANCO PEDIDO */
+            border: 1.5px solid #ffffff; /* BORDE BLANCO ORIGINAL */
             border-radius: 15px;
             padding: 15px 25px;
             margin-bottom: 12px;
@@ -72,7 +72,10 @@
                     <div id="sync-indicator"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Sincronizado</div>
                 </div>
             </div>
-            <button onclick="window.close()" class="bg-white text-black font-black px-6 py-2 rounded-xl text-[10px] uppercase">Cerrar</button>
+            <!-- BOTÓN CERRAR CORREGIDO -->
+            <button onclick="cerrarVentana()" class="bg-white text-black font-black px-6 py-2 rounded-xl text-[10px] uppercase hover:bg-yellow-500 transition shadow-lg">
+                <i class="fa-solid fa-circle-xmark mr-1"></i> Cerrar Lista
+            </button>
         </header>
 
         <main class="max-w-7xl mx-auto px-6 w-full flex-grow">
@@ -93,14 +96,22 @@
                 <div class="text-right">REGISTRO</div>
             </div>
 
-            <!-- LISTA DE ESTUDIANTES -->
             <div id="lista-master" class="pb-20">
-                <!-- Se inyecta aquí -->
+                <!-- Sincronización JS -->
             </div>
         </main>
     </div>
 
     <script>
+        // LÓGICA DE CIERRE ROBUSTA
+        function cerrarVentana() {
+            window.close();
+            // Fallback si window.close() es bloqueado por el navegador
+            setTimeout(() => {
+                window.location.href = "ticket.html";
+            }, 100);
+        }
+
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
         const L2 = "https://script.google.com/macros/s/AKfycbwZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
 
@@ -108,11 +119,9 @@
 
         async function syncData() {
             try {
-                // Prevenir caché con un timestamp
                 const res = await fetch(`${L2}?accion=obtener_lista&t=${Date.now()}`);
                 const data = await res.json();
                 
-                // Solo refrescar si hay cambios
                 if (JSON.stringify(data.lista) === ultimaData) return;
                 ultimaData = JSON.stringify(data.lista);
 
@@ -138,7 +147,6 @@
                     `;
                     container.appendChild(row);
 
-                    // Buscar nombre en Link 1
                     fetch(`${L1}?dni=${item.dni}`).then(r => r.json()).then(st => {
                         const rEl = document.getElementById(`row-${item.dni}`);
                         if(rEl && st.found) {
@@ -157,7 +165,6 @@
             for (let r of rows) { r.style.display = r.innerText.toUpperCase().includes(q) ? "" : "none"; }
         }
 
-        // SINCRONIZACIÓN AUTOMÁTICA CADA 10 SEGUNDOS
         window.onload = () => {
             syncData();
             setInterval(syncData, 10000); 
