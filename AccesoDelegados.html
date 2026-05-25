@@ -168,8 +168,8 @@
     <script>
         // CONFIGURACIÓN DE LINKS
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2 = "https://script.google.com/macros/s/AKfycbwgsbOrKmNfwTOgH5BK2CAxp8ZmH8Lix4R-1ICDwkEYBSHsZiycNTJUzQFTfDRxIhk/exec";
-        const L3 = "https://script.google.com/macros/s/AKfycbyw_YyEiEp63Kki4t0AHPUY_P55ikaaieJtk_v-wdeNC6i-23QIdS62Staeves4gt15/exec"; 
+        const L2 = "https://script.google.com/macros/s/AKfycbxavrdf_yymc9sdUEYuGz2qWTmzMNz0KQxEtzq6aDXlX8nL7PjXdhxBOvAyMY_jeF73/exec";
+        const L3 = "https://script.google.com/macros/s/AKfycbxg1tayTgW5rVS_lBmUbzztg7XQALXsYln6-RZaISFqoFayxs43WIF7PO9ctrRaPpFy/exec"; // REEMPLAZAR POR TU URL LINK 3
 
         const firebaseConfig = {
             apiKey: "AIzaSyBxaeAc2nq7iEeiLejvja3lKGwR4E09QS4",
@@ -188,7 +188,7 @@
         let delegadoActivo = "", isScanningLocked = false;
         const DELEGADOS = ["71886034", "77570731", "63229248", "73438294"];
 
-        // FIREBASE SYNC (ESTO NO SE TOCA)
+        // FIREBASE SYNC
         db.ref('horarios/ticket_6pm').on('value', snap => {
             status6pm = snap.val();
             document.getElementById('btn-6pm').className = status6pm ? 'btn-horario active-6pm' : 'btn-horario';
@@ -230,7 +230,7 @@
         async function onScanSuccess(decodedText) {
             if (isScanningLocked) return;
             isScanningLocked = true;
-            setTimeout(() => isScanningLocked = false, 3000); // Bloqueo de 3s para evitar doble escaneo
+            setTimeout(() => isScanningLocked = false, 3000);
 
             // Formato QR: UNAC-VIP-DNI-TURNO
             const parts = decodedText.split('-');
@@ -257,7 +257,7 @@
                         
                         await fetch(`${L3}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`);
                         
-                        notificarFlash("VERIFICADO", true);
+                        notificarFlash(nombre, true);
                         scannedData.push({ dni: dniAlumno, nombre: nombre, hora: new Date().toLocaleTimeString() });
                         localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
                         renderList();
@@ -284,7 +284,7 @@
             lista.innerHTML = scannedData.map(item => `
                 <div class="bg-white/5 p-4 rounded-xl border-l-4 border-yellow-500 mb-2">
                     <div class="flex justify-between items-start">
-                        <span class="text-xs font-black text-white uppercase">${item.nombre || item.dni}</span>
+                        <span class="text-xs font-black text-white uppercase">${item.nombre}</span>
                         <span class="text-[9px] font-bold text-yellow-500">${item.hora}</span>
                     </div>
                 </div>
@@ -311,17 +311,14 @@
         }
 
         async function enviarYReiniciar() {
-            if (!confirm("⚠️ ADVERTENCIA: Se borrarán los datos de HOY en los servidores (Link 2 y 3). ¿Continuar?")) return;
-            document.getElementById('btn-reiniciar').innerText = "VACIANDO...";
-            try {
+            if (confirm("⚠️ ADVERTENCIA: Se borrarán los datos de HOY en los servidores (Link 2 y 3). ¿Continuar?")) {
                 await fetch(`${L2}?accion=reiniciar_sistema`);
                 await fetch(`${L3}?accion=reiniciar_sistema`);
                 db.ref('horarios/ticket_6pm').set(false);
                 db.ref('horarios/ticket_1015pm').set(false);
-                scannedData = [];
-                localStorage.removeItem('scanned_unac');
+                limpiarHistorial();
                 location.reload();
-            } catch (e) { alert("Error al conectar con servidor."); }
+            }
         }
     </script>
 </body>
