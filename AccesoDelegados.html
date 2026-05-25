@@ -60,7 +60,6 @@
         }
         .notif-error { background: #ef4444 !important; box-shadow: 0 0 50px rgba(239, 68, 68, 0.6) !important; }
 
-        /* Estilos de botones de horario (Sincronizados con tu diseño) */
         .btn-horario {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -95,12 +94,12 @@
         </button>
     </header>
 
+    <!-- LOGIN -->
     <div id="login-container" class="w-full max-w-sm px-6 mt-10 text-center animate-fade-in">
         <div class="mb-8">
             <h1 class="text-3xl font-black uppercase italic tracking-tighter">Acceso <span class="text-yellow-500">Restringido</span></h1>
             <p class="text-gray-500 text-[10px] tracking-widest uppercase mt-2">Ingrese sus credenciales de delegado</p>
         </div>
-
         <div class="glass p-8">
             <div class="text-left mb-4">
                 <label class="text-[9px] font-black text-yellow-500 uppercase tracking-widest ml-1">Documento DNI</label>
@@ -113,6 +112,7 @@
         </div>
     </div>
 
+    <!-- SCANNER PANEL -->
     <div id="scanner-container" class="w-full max-w-lg px-4 py-4 hidden animate-fade-in">
         <div class="flex justify-between items-center mb-6 px-2">
             <div>
@@ -134,7 +134,7 @@
                 <span id="contador" class="text-3xl font-black text-yellow-500">0</span>
             </div>
             <div class="glass p-4 border-b-2 border-blue-500 relative">
-                <span class="text-[8px] text-gray-500 uppercase font-black block mb-1">Total Global <i class="fa-solid fa-rotate ml-1 text-gray-500 hover:text-white cursor-pointer" onclick="actualizarTotalGlobal()"></i></span>
+                <span class="text-[8px] text-gray-500 uppercase font-black block mb-1">Total Global</span>
                 <span id="contador-global" class="text-3xl font-black text-blue-500">0</span>
             </div>
         </div>
@@ -146,36 +146,31 @@
 
         <div class="glass p-6 mb-6">
             <h3 class="text-[10px] font-black uppercase text-gray-400 mb-4 border-b border-white/10 pb-2 flex justify-between">
-                <span>Registro Local (Solo Hoy)</span>
-                <span id="label-turno" class="text-yellow-500">En vivo</span>
+                <span>Registro Local (Hoy)</span>
+                <span class="text-yellow-500">Triple Sync</span>
             </h3>
             <div id="listaEscaneo" class="space-y-3 max-h-64 overflow-y-auto pr-2">
-                <p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros válidos hoy.</p>
+                <p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros hoy.</p>
             </div>
         </div>
 
-        <!-- --- NUEVOS BOTONES DE ACTIVACIÓN FIREBASE --- -->
         <div class="grid grid-cols-2 gap-3 mb-3">
-            <button id="btn-6pm" onclick="toggleHorario('6pm')" class="btn-horario">
-                <i class="fa-solid fa-clock mr-1"></i> Ticket 6:00 PM
-            </button>
-            <button id="btn-1015pm" onclick="toggleHorario('1015pm')" class="btn-horario">
-                <i class="fa-solid fa-clock mr-1"></i> Ticket 10:15 PM
-            </button>
+            <button id="btn-6pm" onclick="toggleHorario('6pm')" class="btn-horario">Ticket 6:00 PM</button>
+            <button id="btn-1015pm" onclick="toggleHorario('1015pm')" class="btn-horario">Ticket 10:15 PM</button>
         </div>
 
         <div class="grid grid-cols-2 gap-3 mb-10">
-            <button onclick="limpiarHistorial()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
-                <i class="fa-solid fa-eraser mr-1"></i> Borrar Historial
-            </button>
-            <button id="btn-reiniciar" onclick="enviarYReiniciar()" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-xl uppercase text-[10px] transition shadow-xl">
-                <i class="fa-solid fa-rotate mr-1"></i> Reiniciar Sistema
-            </button>
+            <button onclick="limpiarHistorial()" class="w-full bg-orange-600 text-white font-black py-4 rounded-xl uppercase text-[10px]">Borrar Historial</button>
+            <button id="btn-reiniciar" onclick="enviarYReiniciar()" class="w-full bg-red-600 text-white font-black py-4 rounded-xl uppercase text-[10px]">Reiniciar Sistema</button>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE FIREBASE (DATOS REALES)
+        // CONFIGURACIÓN DE LINKS
+        const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
+        const L2 = "https://script.google.com/macros/s/AKfycbyyqBaPfLgVw6CJBV_Du3yfZEK_pGvrg7YkEYk5oDTEcaGbzh4X07I941YdJuEnFTn4/exec";
+        const L3 = "https://script.google.com/macros/s/AKfycbzLz_LINK_3_AQUI/exec"; // REEMPLAZAR POR TU URL LINK 3
+
         const firebaseConfig = {
             apiKey: "AIzaSyBxaeAc2nq7iEeiLejvja3lKGwR4E09QS4",
             authDomain: "movilidad-unac.firebaseapp.com",
@@ -185,57 +180,28 @@
             messagingSenderId: "245380540222",
             appId: "1:245380540222:web:d4ea08b7818bf89d682e6f"
         };
-        
-        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Variables de estado para los botones
-        let status6pm = false;
-        let status1015pm = false;
-
-        // Escuchar Firebase para sincronizar botones en tiempo real
-        db.ref('horarios/ticket_6pm').on('value', (snap) => {
-            status6pm = snap.val() || false;
-            const btn = document.getElementById('btn-6pm');
-            if(status6pm) {
-                btn.classList.add('active-6pm');
-                btn.innerHTML = '<i class="fa-solid fa-check-circle mr-1"></i> ACTIVO 6:00 PM';
-            } else {
-                btn.classList.remove('active-6pm');
-                btn.innerHTML = '<i class="fa-solid fa-clock mr-1"></i> TICKET 6:00 PM';
-            }
-        });
-
-        db.ref('horarios/ticket_1015pm').on('value', (snap) => {
-            status1015pm = snap.val() || false;
-            const btn = document.getElementById('btn-1015pm');
-            if(status1015pm) {
-                btn.classList.add('active-10pm');
-                btn.innerHTML = '<i class="fa-solid fa-check-circle mr-1"></i> ACTIVO 10:15 PM';
-            } else {
-                btn.classList.remove('active-10pm');
-                btn.innerHTML = '<i class="fa-solid fa-clock mr-1"></i> TICKET 10:15 PM';
-            }
-        });
-
-        function toggleHorario(tipo) {
-            if(tipo === '6pm') {
-                db.ref('horarios/ticket_6pm').set(!status6pm);
-            } else {
-                db.ref('horarios/ticket_1015pm').set(!status1015pm);
-            }
-        }
-
-        // --- LÓGICA ORIGINAL ---
-        const DELEGADOS = ["71886034", "77570731", "63229248"];
-        const LINK_POST_REINICIO = "TU_LINK_REINICIO"; 
-        const LINK_MARCAR_ASISTENCIA = "TU_LINK_ASISTENCIA";
-        
+        let status6pm = false, status1015pm = false;
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
-        let delegadoActivo = "";
-        let html5QrcodeScanner;
-        let isScanningLocked = false;
+        let delegadoActivo = "", isScanningLocked = false;
+        const DELEGADOS = ["71886034", "77570731", "63229248", "73438294"];
+
+        // FIREBASE SYNC
+        db.ref('horarios/ticket_6pm').on('value', snap => {
+            status6pm = snap.val();
+            document.getElementById('btn-6pm').className = status6pm ? 'btn-horario active-6pm' : 'btn-horario';
+        });
+        db.ref('horarios/ticket_1015pm').on('value', snap => {
+            status1015pm = snap.val();
+            document.getElementById('btn-1015pm').className = status1015pm ? 'btn-horario active-10pm' : 'btn-horario';
+        });
+
+        function toggleHorario(t) {
+            if(t === '6pm') db.ref('horarios/ticket_6pm').set(!status6pm);
+            else db.ref('horarios/ticket_1015pm').set(!status1015pm);
+        }
 
         function intentarLogin() {
             const dni = document.getElementById('userDni').value;
@@ -251,121 +217,106 @@
             }
         }
 
-        function regresarLogin() {
-            if(html5QrcodeScanner) html5QrcodeScanner.clear();
-            document.getElementById('login-container').classList.remove('hidden');
-            document.getElementById('scanner-container').classList.add('hidden');
-        }
+        function regresarLogin() { location.reload(); }
 
         function iniciarSistema() {
             renderList();
-            actualizarTotalGlobal(); 
-            setInterval(actualizarTotalGlobal, 15000); 
-
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-            html5QrcodeScanner.render(onScanSuccess);
+            actualizarTotalGlobal();
+            setInterval(actualizarTotalGlobal, 15000);
+            const scanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
+            scanner.render(onScanSuccess);
         }
 
         async function onScanSuccess(decodedText) {
             if (isScanningLocked) return;
+            isScanningLocked = true;
+            setTimeout(() => isScanningLocked = false, 3000);
+
+            // Formato QR: UNAC-VIP-DNI-TURNO
+            const parts = decodedText.split('-');
+            if(parts.length < 4) { notificarFlash("QR INVÁLIDO", false); return; }
+            
+            const dniAlumno = parts[2];
+            const turnoTicket = parts[3];
+
             try {
-                let decodedInfo = decodedText;
-                if(!decodedText.includes('|')) {
-                    try { decodedInfo = atob(decodedText); } catch(e) {}
+                // 1. Verificar LINK 2 (Si existe ticket hoy)
+                const resL2 = await fetch(`${L2}?dni=${dniAlumno}&accion=solicitar_cola&turno=${turnoTicket}`).then(r => r.json());
+                
+                if (resL2.status === "EXISTENTE" || resL2.status === "OK") {
+                    
+                    // 2. Verificar LINK 3 (Si ya fue escaneado hoy)
+                    const resL3 = await fetch(`${L3}?dni=${dniAlumno}&accion=consultar`).then(r => r.json());
+                    
+                    if (resL3.asistio) {
+                        notificarFlash("YA ESCANEADO", false);
+                    } else {
+                        // 3. Obtener Nombre de LINK 1 y Marcar en LINK 3
+                        const resL1 = await fetch(`${L1}?dni=${dniAlumno}`).then(r => r.json());
+                        const nombre = resL1.found ? resL1.Estudiante : "ALUMNO EXTERNO";
+                        
+                        await fetch(`${L3}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`);
+                        
+                        notificarFlash("VERIFICADO", true);
+                        scannedData.push({ dni: dniAlumno, nombre: nombre, hora: new Date().toLocaleTimeString() });
+                        localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
+                        renderList();
+                        actualizarTotalGlobal();
+                    }
+                } else {
+                    notificarFlash("SIN TICKET HOY", false);
                 }
-                const [dniAlumno, turno, fechaTicket] = decodedInfo.split('|');
-                const fechaHoy = new Date().toLocaleDateString();
-                isScanningLocked = true;
-                setTimeout(() => { isScanningLocked = false; }, 3000);
-                if (fechaTicket !== fechaHoy) { notificarFlash("TICKET CADUCADO", false); return; }
-                if (scannedData.some(item => item.dni === dniAlumno)) { notificarFlash("YA ESCANEADO", false); return; }
-                const registro = { dni: dniAlumno, turno: turno, hora_scan: new Date().toLocaleTimeString(), fecha_scan: fechaHoy, delegado: delegadoActivo };
-                scannedData.push(registro);
-                localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
-                notificarFlash("ESCANEO VERIFICADO", true);
-                renderList();
-                fetch(`${LINK_MARCAR_ASISTENCIA}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`, { mode: 'no-cors' });
-                setTimeout(actualizarTotalGlobal, 1500);
-            } catch (e) { isScanningLocked = false; }
+            } catch (e) { notificarFlash("ERROR DE RED", false); }
         }
 
         async function actualizarTotalGlobal() {
             try {
-                const response = await fetch(`${LINK_MARCAR_ASISTENCIA}?accion=obtener_total`);
+                const response = await fetch(`${L3}?accion=obtener_total`); // Usando el obtener_total que agregamos al Link 3
                 const data = await response.json();
-                if (data && typeof data.total !== 'undefined') {
-                    document.getElementById('contador-global').innerText = data.total;
-                }
+                document.getElementById('contador-global').innerText = data.total || 0;
             } catch (e) {}
-        }
-
-        function limpiarHistorial() {
-            if (!confirm("¿Deseas borrar tu lista de escaneados local?")) return;
-            scannedData = [];
-            localStorage.removeItem('scanned_unac');
-            renderList();
-            notificarLector("Historial Local Limpio", true);
-        }
-
-        function notificarFlash(text, exito) {
-            const flash = document.getElementById('flash-notif');
-            const flashText = document.getElementById('flash-text');
-            const flashIcon = document.getElementById('flash-icon');
-            flashText.innerText = text;
-            if (exito) {
-                flash.classList.remove('notif-error');
-                flashIcon.className = "fa-solid fa-circle-check text-5xl mb-2";
-            } else {
-                flash.classList.add('notif-error');
-                flashIcon.className = "fa-solid fa-circle-xmark text-5xl mb-2";
-            }
-            flash.style.display = 'block';
-            notificarLector(text, exito);
-            setTimeout(() => { flash.style.display = 'none'; }, 2000);
         }
 
         function renderList() {
             document.getElementById('contador').innerText = scannedData.length;
             const lista = document.getElementById('listaEscaneo');
-            if (scannedData.length === 0) {
-                lista.innerHTML = '<p class="text-[10px] text-gray-600 italic text-center py-6">Sin registros válidos hoy.</p>';
-                return;
-            }
+            if (scannedData.length === 0) return;
             lista.innerHTML = scannedData.map(item => `
-                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border-l-4 border-yellow-500 mb-2">
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <span class="text-sm font-black text-white">DNI: ${item.dni}</span>
-                            <span class="text-[9px] font-bold text-yellow-500">${item.hora_scan}</span>
-                        </div>
+                <div class="bg-white/5 p-4 rounded-xl border-l-4 border-yellow-500 mb-2">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-black text-white uppercase">${item.nombre || item.dni}</span>
+                        <span class="text-[9px] font-bold text-yellow-500">${item.hora}</span>
                     </div>
                 </div>
             `).reverse().join('');
         }
 
-        function notificarLector(msg, exito) {
-            const el = document.getElementById('scan-status');
-            el.innerText = msg;
-            el.className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
+        function notificarFlash(text, exito) {
+            const flash = document.getElementById('flash-notif');
+            document.getElementById('flash-text').innerText = text;
+            flash.className = exito ? "" : "notif-error";
+            document.getElementById('flash-icon').className = exito ? "fa-solid fa-circle-check text-5xl mb-2" : "fa-solid fa-circle-xmark text-5xl mb-2";
+            flash.style.display = 'block';
+            setTimeout(() => { flash.style.display = 'none'; }, 2000);
+            document.getElementById('scan-status').innerText = text;
+            document.getElementById('scan-status').className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
         }
 
-        async function enviarYReiniciar() {
-            if (!confirm("Esto guardará los datos y limpiará el sistema. ¿Estás seguro?")) return;
-            const btn = document.getElementById('btn-reiniciar');
-            btn.innerHTML = 'REINICIANDO...';
-            
-            // Al reiniciar, también apagamos los tickets en Firebase
-            db.ref('horarios/ticket_6pm').set(false);
-            db.ref('horarios/ticket_1015pm').set(false);
-
-            try {
-                await fetch(LINK_POST_REINICIO, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ datos: scannedData }) });
-                alert("✅ Sistema Reiniciado.");
+        function limpiarHistorial() {
+            if (confirm("¿Limpiar historial local?")) {
                 scannedData = [];
                 localStorage.removeItem('scanned_unac');
                 renderList();
-            } catch (e) { alert("Error de conexión."); }
-            btn.innerHTML = '<i class="fa-solid fa-rotate mr-1"></i> Reiniciar Sistema';
+            }
+        }
+
+        function enviarYReiniciar() {
+            if (confirm("¿Reiniciar sistema y apagar tickets?")) {
+                db.ref('horarios/ticket_6pm').set(false);
+                db.ref('horarios/ticket_1015pm').set(false);
+                limpiarHistorial();
+                location.reload();
+            }
         }
     </script>
 </body>
