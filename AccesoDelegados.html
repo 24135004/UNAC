@@ -169,7 +169,7 @@
         // CONFIGURACIÓN DE LINKS
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
         const L2 = "https://script.google.com/macros/s/AKfycbxavrdf_yymc9sdUEYuGz2qWTmzMNz0KQxEtzq6aDXlX8nL7PjXdhxBOvAyMY_jeF73/exec";
-        const L3 = "https://script.google.com/macros/s/AKfycbxg1tayTgW5rVS_lBmUbzztg7XQALXsYln6-RZaISFqoFayxs43WIF7PO9ctrRaPpFy/exec"; // REEMPLAZAR POR TU URL LINK 3
+        const L3 = "https://script.google.com/macros/s/AKfycbxg1tayTgW5rVS_lBmUbzztg7XQALXsYln6-RZaISFqoFayxs43WIF7PO9ctrRaPpFy/exec"; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyBxaeAc2nq7iEeiLejvja3lKGwR4E09QS4",
@@ -182,6 +182,9 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        // Audio para error (Beep Rojo)
+        const errorSound = new Audio('https://www.soundjay.com/buttons/beep-05.mp3');
 
         let status6pm = false, status1015pm = false;
         let scannedData = JSON.parse(localStorage.getItem('scanned_unac')) || [];
@@ -210,7 +213,7 @@
                 delegadoActivo = dni;
                 document.getElementById('login-container').classList.add('hidden');
                 document.getElementById('scanner-container').classList.remove('hidden');
-                document.getElementById('delegadoNombre').innerText = "Delegado ID: " + dni;
+                document.getElementById('delegadoNombre').innerText = "ID Delegado: " + dni;
                 iniciarSistema();
             } else {
                 document.getElementById('errorLogin').classList.remove('hidden');
@@ -223,34 +226,36 @@
             renderList();
             actualizarTotalGlobal();
             setInterval(actualizarTotalGlobal, 15000);
-            const scanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: 250 });
+            // Configuración rápida del escáner
+            const scanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 280 });
             scanner.render(onScanSuccess);
         }
 
         async function onScanSuccess(decodedText) {
             if (isScanningLocked) return;
             isScanningLocked = true;
-            setTimeout(() => isScanningLocked = false, 3000);
 
-            // Formato QR: UNAC-VIP-DNI-TURNO
             const parts = decodedText.split('-');
-            if(parts.length < 4) { notificarFlash("QR INVÁLIDO", false); return; }
+            if(parts.length < 4) {
+                notificarFlash("QR INVÁLIDO", false);
+                setTimeout(() => isScanningLocked = false, 2000);
+                return;
+            }
             
             const dniAlumno = parts[2];
             const turnoTicket = parts[3];
 
             try {
-                // 1. Verificar LINK 2 (Si existe ticket hoy)
-                const resL2 = await fetch(`${L2}?dni=${dniAlumno}&accion=solicitar_cola&turno=${turnoTicket}`).then(r => r.json());
+                // 1. Verificar LINK 3 (Registro de asistencia - MÁXIMA PRIORIDAD)
+                const resL3 = await fetch(`${L3}?dni=${dniAlumno}&accion=consultar`).then(r => r.json());
                 
-                if (resL2.status === "EXISTENTE" || resL2.status === "OK") {
+                if (resL3.asistio) {
+                    notificarFlash("YA ESCANEADO", false);
+                } else {
+                    // 2. Verificar LINK 2 (Si tiene ticket válido de hoy)
+                    const resL2 = await fetch(`${L2}?dni=${dniAlumno}&accion=solicitar_cola&turno=${turnoTicket}`).then(r => r.json());
                     
-                    // 2. Verificar LINK 3 (Si ya fue escaneado hoy)
-                    const resL3 = await fetch(`${L3}?dni=${dniAlumno}&accion=consultar`).then(r => r.json());
-                    
-                    if (resL3.asistio) {
-                        notificarFlash("YA ESCANEADO", false);
-                    } else {
+                    if (resL2.status === "EXISTENTE" || resL2.status === "OK") {
                         // 3. Obtener Nombre de LINK 1 y Marcar en LINK 3
                         const resL1 = await fetch(`${L1}?dni=${dniAlumno}`).then(r => r.json());
                         const nombre = resL1.found ? resL1.Estudiante : "ALUMNO EXTERNO";
@@ -258,15 +263,20 @@
                         await fetch(`${L3}?dni=${dniAlumno}&accion=marcar_asistencia&delegado=${delegadoActivo}`);
                         
                         notificarFlash(nombre, true);
-                        scannedData.push({ dni: dniAlumno, nombre: nombre, hora: new Date().toLocaleTimeString() });
+                        scannedData.push({ dni: dniAlumno, nombre, hora: new Date().toLocaleTimeString() });
                         localStorage.setItem('scanned_unac', JSON.stringify(scannedData));
                         renderList();
                         actualizarTotalGlobal();
+                    } else {
+                        notificarFlash("SIN TICKET HOY", false);
                     }
-                } else {
-                    notificarFlash("SIN TICKET HOY", false);
                 }
-            } catch (e) { notificarFlash("ERROR DE RED", false); }
+            } catch (e) {
+                notificarFlash("ERROR DE CONEXIÓN", false);
+            }
+            
+            // Espera obligatoria entre escaneos para evitar saturación
+            setTimeout(() => isScanningLocked = false, 3000);
         }
 
         async function actualizarTotalGlobal() {
@@ -293,13 +303,25 @@
 
         function notificarFlash(text, exito) {
             const flash = document.getElementById('flash-notif');
-            document.getElementById('flash-text').innerText = text;
-            flash.className = exito ? "" : "notif-error";
-            document.getElementById('flash-icon').className = exito ? "fa-solid fa-circle-check text-5xl mb-2" : "fa-solid fa-circle-xmark text-5xl mb-2";
+            const flashText = document.getElementById('flash-text');
+            flashText.innerText = text;
+            
+            if (exito) {
+                flash.className = "";
+                document.getElementById('flash-icon').className = "fa-solid fa-circle-check text-5xl mb-2";
+            } else {
+                flash.className = "notif-error";
+                document.getElementById('flash-icon').className = "fa-solid fa-circle-xmark text-5xl mb-2";
+                // SONIDO DE ALERTA ROJA
+                errorSound.play();
+            }
+            
             flash.style.display = 'block';
             setTimeout(() => { flash.style.display = 'none'; }, 2000);
-            document.getElementById('scan-status').innerText = text;
-            document.getElementById('scan-status').className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
+            
+            const scanStatus = document.getElementById('scan-status');
+            scanStatus.innerText = text;
+            scanStatus.className = `text-[10px] font-black uppercase ${exito ? 'text-green-500' : 'text-red-500'}`;
         }
 
         function limpiarHistorial() {
@@ -311,7 +333,7 @@
         }
 
         async function enviarYReiniciar() {
-            if (confirm("⚠️ ADVERTENCIA: Se borrarán los datos de HOY en los servidores (Link 2 y 3). ¿Continuar?")) {
+            if (confirm("⚠️ ADVERTENCIA: Esto borrará la base de datos de tickets (Link 2) y asistencia (Link 3). ¿Reiniciar?")) {
                 await fetch(`${L2}?accion=reiniciar_sistema`);
                 await fetch(`${L3}?accion=reiniciar_sistema`);
                 db.ref('horarios/ticket_6pm').set(false);
