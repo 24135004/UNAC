@@ -87,10 +87,10 @@
         /* INPUT TECH */
         .input-tech { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,193,7,0.3); padding: 22px; border-radius: 20px; text-align: center; font-size: 26px; font-weight: 900; color: #fff; outline: none; transition: 0.3s; }
 
-        /* --- CORRECCIÓN VISTA CELULAR (COPIADA DE REGISTRO) --- */
+        /* --- CORRECCIÓN VISTA CELULAR --- */
         @media (max-width: 768px) { 
             .nav-desktop { display: none; } 
-            h1 { font-size: 3rem !important; } /* Título Tickets Oficiales reducido */
+            h1 { font-size: 3rem !important; } 
             header { padding: 20px; }
             .glass { padding: 25px !important; }
             .input-tech { font-size: 1.2rem; padding: 15px; }
@@ -120,15 +120,15 @@
         <p class="text-[9px] text-gray-500 font-bold uppercase mt-6 tracking-[6px]">Terminal de Seguridad Activa</p>
     </div>
 
-    <!-- MENÚ MÓVIL -->
+    <!-- MENÚ MÓVIL (CONFIGURADO PARA NUEVA PESTAÑA) -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
-        <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
-        <a href="rutas.html" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
-        <a href="ticket.html" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline">Ticket</a>
-        <a href="registro.html" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
-        <a href="noticias.html" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
-        <a href="contacto.html" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
+        <a href="index.html" target="_blank" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
+        <a href="rutas.html" target="_blank" class="text-xl font-black uppercase tracking-[4px] text-white">Rutas</a>
+        <a href="ticket.html" target="_blank" class="text-xl font-black uppercase tracking-[4px] text-yellow-500 underline">Ticket</a>
+        <a href="registro.html" target="_blank" class="text-xl font-black uppercase tracking-[4px] text-white">Registro</a>
+        <a href="noticias.html" target="_blank" class="text-xl font-black uppercase tracking-[4px] text-white">Noticias</a>
+        <a href="contacto.html" target="_blank" class="text-xl font-black uppercase tracking-[4px] text-white">Contacto</a>
     </div>
 
     <div class="main-wrapper">
@@ -140,13 +140,14 @@
                     <span class="text-[9px] text-yellow-500 font-bold">Movilidad</span>
                 </div>
             </div>
+            <!-- NAVEGACIÓN ESCRITORIO (CONFIGURADO PARA NUEVA PESTAÑA) -->
             <nav class="hidden md:flex gap-8 nav-desktop">
-                <a href="index.html" class="nav-link">Inicio</a>
-                <a href="rutas.html" class="nav-link">Rutas</a>
-                <a href="ticket.html" class="nav-link active-link">Ticket</a>
-                <a href="registro.html" class="nav-link">Registro</a>
-                <a href="noticias.html" class="nav-link">Noticias</a>
-                <a href="contacto.html" class="nav-link">Contacto</a>
+                <a href="index.html" target="_blank" class="nav-link">Inicio</a>
+                <a href="rutas.html" target="_blank" class="nav-link">Rutas</a>
+                <a href="ticket.html" target="_blank" class="nav-link active-link">Ticket</a>
+                <a href="registro.html" target="_blank" class="nav-link">Registro</a>
+                <a href="noticias.html" target="_blank" class="nav-link">Noticias</a>
+                <a href="contacto.html" target="_blank" class="nav-link">Contacto</a>
             </nav>
             <button onclick="toggleMenu()" class="md:hidden bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg font-black text-xs flex items-center gap-2">
                 MENU <i class="fa-solid fa-bars-staggered"></i>
@@ -166,18 +167,20 @@
                     <input type="text" id="dniInput" class="input-tech" placeholder="INGRESE DNI" maxlength="8">
                     <button onclick="Core.startScan()" class="bg-yellow-500 text-black font-black p-5 rounded-2xl w-full uppercase tracking-widest hover:bg-white transition shadow-xl">Verificar Alumno</button>
                     
+                    <!-- BOTONES SECUNDARIOS (CONFIGURADO PARA NUEVA PESTAÑA) -->
                     <div class="grid grid-cols-2 gap-3">
-                        <a href="lista.html" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-yellow-500 hover:text-black transition flex items-center justify-center gap-2">
+                        <a href="lista.html" target="_blank" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-yellow-500 hover:text-black transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-list-ul"></i> Lista de HOY
                         </a>
-                        <a href="tutorial.html" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-yellow-500 hover:text-black transition flex items-center justify-center gap-2">
+                        <a href="tutorial.html" target="_blank" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-yellow-500 hover:text-black transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-play"></i> Tutorial
                         </a>
                     </div>
 
                     <div id="globe-box"></div>
                     
-                    <a href="AccesoDelegados.html" class="flex items-center justify-center gap-3 text-[10px] font-black text-gray-600 hover:text-yellow-500 transition uppercase tracking-widest mt-6">
+                    <!-- ACCESO DELEGADOS (CONFIGURADO PARA NUEVA PESTAÑA) -->
+                    <a href="AccesoDelegados.html" target="_blank" class="flex items-center justify-center gap-3 text-[10px] font-black text-gray-600 hover:text-yellow-500 transition uppercase tracking-widest mt-6">
                         <i class="fa-solid fa-user-shield text-lg"></i> Acceso Restringido Delegados
                     </a>
                 </div>
@@ -347,7 +350,8 @@
                                     confirmButtonColor: '#ffc107',
                                     cancelButtonColor: '#d33'
                                 }).then((result) => {
-                                    if (result.isConfirmed) window.location.href = 'registro.html';
+                                    // CONFIGURACIÓN PARA ABRIR REGISTRO EN NUEVA PESTAÑA
+                                    if (result.isConfirmed) window.open('registro.html', '_blank');
                                 });
                             }
                         }
