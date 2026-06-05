@@ -112,15 +112,16 @@
             <div class="absolute inset-0 flex flex-col items-center justify-center p-8">
                 <i class="fa-solid fa-dna text-6xl text-yellow-500/40 mb-6 animate-pulse"></i>
                 <p id="loader-msg" class="font-mono text-[11px] tracking-[5px] text-yellow-500 uppercase font-black"></p>
+                <!-- BARRA DE PROGRESO REAL -->
                 <div class="mt-10 w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                    <div id="progress-bar" class="h-full bg-yellow-500 w-0 transition-all"></div>
+                    <div id="progress-bar" class="h-full bg-yellow-500 w-full transition-all duration-300"></div>
                 </div>
             </div>
         </div>
         <p class="text-[9px] text-gray-500 font-bold uppercase mt-6 tracking-[6px]">Terminal de Seguridad Activa</p>
     </div>
 
-    <!-- MENÚ MÓVIL (NORMAL) -->
+    <!-- MENÚ MÓVIL -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
@@ -166,7 +167,6 @@
                     <button onclick="Core.startScan()" class="bg-yellow-500 text-black font-black p-5 rounded-2xl w-full uppercase tracking-widest hover:bg-white transition shadow-xl">Verificar Alumno</button>
                     
                     <div class="grid grid-cols-2 gap-3">
-                        <!-- CONFIGURADO PARA OTRA PESTAÑA -->
                         <a href="lista.html" target="_blank" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-yellow-500 hover:text-black transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-list-ul"></i> Lista de HOY
                         </a>
@@ -177,7 +177,6 @@
 
                     <div id="globe-box"></div>
                     
-                    <!-- CONFIGURADO PARA OTRA PESTAÑA -->
                     <a href="AccesoDelegados.html" target="_blank" class="flex items-center justify-center gap-3 text-[10px] font-black text-gray-600 hover:text-yellow-500 transition uppercase tracking-widest mt-6">
                         <i class="fa-solid fa-user-shield text-lg"></i> Acceso Restringido Delegados
                     </a>
@@ -191,13 +190,13 @@
                         <div>
                             <h2 id="userName" class="text-3xl font-black uppercase italic leading-none"></h2>
                             <p id="userFac" class="text-yellow-500 text-[11px] font-black mt-3 tracking-[5px] uppercase"></p>
-                            <p class="text-[9px] text-gray-500 font-mono mt-2">DNI: <span id="userDni" class="text-white"></span> | SESIÓN: <span class="text-green-500">VERIFICADA</span></p>
+                            <p class="text-[9px] text-gray-500 font-mono mt-2">DNI: <span id="userDni" class="text-white"></span> | SESIÓN: <span class="text-green-500 font-black">ACTIVA</span></p>
                         </div>
                     </div>
                     <div class="text-center md:text-right bg-black/40 p-5 rounded-3xl border border-white/5 min-w-[200px]">
                         <p class="text-[9px] text-gray-500 font-black uppercase mb-1 tracking-widest">Sincronización Hoy</p>
                         <div class="text-4xl font-black text-yellow-500" id="total-requests">00</div>
-                        <p class="text-[8px] text-gray-500 font-bold uppercase mt-1 italic">Solicitudes por turno</p>
+                        <p class="text-[8px] text-gray-500 font-bold uppercase mt-1 italic italic">Solicitudes procesadas</p>
                     </div>
                 </div>
 
@@ -206,22 +205,21 @@
                         <span id="badge-m" class="relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2"></span>
                         <h3 class="shift-title text-white">Mañana</h3>
                         <div class="time-badge">SALIDA: 05:15 AM</div>
-                        <p class="delegate-msg">Apertura automática de sistema: 09:00 PM - 07:00 AM</p>
+                        <p class="delegate-msg">Apertura automática de sistema</p>
                     </div>
                     <div id="card-t" class="card-panorama" style="background-image: url('DSC07588-768x432.jpg');" onclick="Core.requestTicket('TARDE')">
                         <span id="badge-t" class="relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2"></span>
                         <h3 class="shift-title text-white">Tarde</h3>
                         <div class="time-badge">SALIDA: 06:00 PM</div>
-                        <p class="delegate-msg">Activación MANUAL previa comunicacion en el grupo oficial de movilidad</p>
+                        <p class="delegate-msg">Activación Sincronizada Delegado</p>
                     </div>
                 </div>
                 <div id="card-n" class="card-panorama w-full" style="background-image: url('DSC07629-768x432.jpg');" onclick="Core.requestTicket('NOCHE')">
                     <span id="badge-n" class="relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2"></span>
                     <h3 class="shift-title text-white text-5xl">Noche</h3>
                     <div class="time-badge">SALIDA: 10:15 PM</div>
-                    <p class="delegate-msg">Activación MANUAL previa comunicacion en el grupo oficial</p>
+                    <p class="delegate-msg">Activación Sincronizada Delegado</p>
                 </div>
-
                 <div id="globe-box-2"></div>
             </div>
 
@@ -234,25 +232,18 @@
                     <div class="p-8">
                         <p class="text-[10px] font-black text-red-600 uppercase tracking-[4px] mb-1">Fecha de Caducidad:</p>
                         <p id="t-fecha" class="text-sm font-black text-black uppercase mb-6"></p>
-                        
                         <div class="bg-gray-100 border-4 border-dashed border-gray-300 rounded-[50px] py-10 mb-8 relative">
                             <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">NÚMERO DE ASIENTO</p>
                             <div id="seat-area" class="asiento-display">--</div>
                         </div>
-
                         <p class="text-[10px] font-black text-gray-500 uppercase mb-6 italic">Acerque este QR al delegado para ser escaneado <br> y verificado antes de subir a la unidad.</p>
-                        
                         <div class="flex justify-center mb-8">
                             <div id="qrcode-vip" class="p-6 border-4 border-black rounded-[40px] shadow-2xl bg-white"></div>
                         </div>
-                        
                         <div class="data-grid space-y-2">
                             <div class="flex justify-between text-[11px] border-b border-gray-300 pb-2"><span>PASAJERO:</span> <span id="t-nom" class="font-bold text-black"></span></div>
                             <div class="flex justify-between text-[11px] border-b border-gray-300 pb-2"><span>DOCUMENTO DNI:</span> <span id="t-dni" class="font-bold text-black"></span></div>
-                            <div class="turno-box">
-                                <span>Turno Seleccionado</span>
-                                <span id="t-turno-val"></span>
-                            </div>
+                            <div class="turno-box"><span>Turno Seleccionado</span> <span id="t-turno-val"></span></div>
                         </div>
                     </div>
                 </div>
@@ -281,8 +272,16 @@
         const db = firebase.database();
 
         let t6 = false, t10 = false;
-        db.ref('horarios/ticket_6pm').on('value', s => t6 = s.val());
-        db.ref('horarios/ticket_1015pm').on('value', s => t10 = s.val());
+
+        // ACTIVACIÓN REAL-TIME: Se sincroniza para todos al mismo milisegundo
+        db.ref('horarios/ticket_6pm').on('value', s => { 
+            t6 = s.val(); 
+            Core.updateStatus(); 
+        });
+        db.ref('horarios/ticket_1015pm').on('value', s => { 
+            t10 = s.val(); 
+            Core.updateStatus(); 
+        });
 
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
         const L2 = "https://script.google.com/macros/s/AKfycbxavrdf_yymc9sdUEYuGz2qWTmzMNz0KQxEtzq6aDXlX8nL7PjXdhxBOvAyMY_jeF73/exec";
@@ -291,20 +290,18 @@
             alumno: null,
             init: function() {
                 this.initThree('globe-box');
-                setInterval(() => this.updateStatus(), 1000);
                 this.updateGlobalCounter();
-                setInterval(() => this.updateGlobalCounter(), 15000);
+                setInterval(() => this.updateGlobalCounter(), 10000);
             },
 
             updateStatus: function() {
                 const h = new Date().getHours();
                 const okM = (h >= 21 || h < 7);
                 const setB = (idB, idC, ok) => {
-                    const b = document.getElementById(idB);
-                    const c = document.getElementById(idC);
+                    const b = document.getElementById(idB); const c = document.getElementById(idC);
                     if(!b || !c) return;
                     b.innerText = ok ? "ACTIVO" : "INACTIVO";
-                    b.className = `relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2 ${ok ? 'bg-green-500 shadow-lg' : 'bg-red-600'}`;
+                    b.className = `relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2 ${ok ? 'bg-green-500 shadow-lg animate-pulse' : 'bg-red-600'}`;
                     ok ? c.classList.remove('locked') : c.classList.add('locked');
                 };
                 setB('badge-m', 'card-m', okM);
@@ -316,41 +313,24 @@
                 const dni = document.getElementById('dniInput').value.trim();
                 if(dni.length < 8) return Swal.fire('Error', 'DNI incompleto', 'warning');
                 document.getElementById('scanning-overlay').style.display = 'flex';
-                document.getElementById('loader-msg').innerText = "ESPERE UN MOMENTO - ESCANEO BIOMÉTRICO...";
+                document.getElementById('loader-msg').innerText = "CONECTANDO CON SERVIDOR CENTRAL...";
                 
                 try {
                     const res = await fetch(`${L1}?dni=${dni}`).then(r => r.json());
-                    let p = 0;
-                    const itv = setInterval(() => {
-                        p += 2; document.getElementById('progress-bar').style.width = p + '%';
-                        if(p >= 100) {
-                            clearInterval(itv);
-                            if(res.found) {
-                                this.alumno = { ...res, dni };
-                                document.getElementById('scanning-overlay').style.display = 'none';
-                                document.getElementById('step-1').classList.add('hidden-section');
-                                document.getElementById('step-2').classList.remove('hidden-section');
-                                document.getElementById('userName').innerText = res.Estudiante;
-                                document.getElementById('userFac').innerText = res.Facultad;
-                                document.getElementById('userDni').innerText = dni;
-                                this.initThree('globe-box-2');
-                            } else {
-                                document.getElementById('scanning-overlay').style.display = 'none';
-                                Swal.fire({
-                                    title: 'Alumno no registrado',
-                                    text: 'No figuras en el sistema oficial de movilidad. ¿Deseas registrarte ahora?',
-                                    icon: 'error',
-                                    showCancelButton: true,
-                                    confirmButtonText: 'Registrarme Ahora',
-                                    cancelButtonText: 'Cerrar',
-                                    confirmButtonColor: '#ffc107',
-                                    cancelButtonColor: '#d33'
-                                }).then((result) => {
-                                    if (result.isConfirmed) window.location.href = 'registro.html';
-                                });
-                            }
-                        }
-                    }, 30);
+                    if(res.found) {
+                        this.alumno = { ...res, dni };
+                        document.getElementById('scanning-overlay').style.display = 'none';
+                        document.getElementById('step-1').classList.add('hidden-section');
+                        document.getElementById('step-2').classList.remove('hidden-section');
+                        document.getElementById('userName').innerText = res.Estudiante;
+                        document.getElementById('userFac').innerText = res.Facultad;
+                        document.getElementById('userDni').innerText = dni;
+                        this.initThree('globe-box-2');
+                        this.updateStatus();
+                    } else {
+                        document.getElementById('scanning-overlay').style.display = 'none';
+                        Swal.fire('No registrado', 'Tu DNI no figura en el padrón.', 'error');
+                    }
                 } catch(e) { document.getElementById('scanning-overlay').style.display = 'none'; }
             },
 
@@ -361,22 +341,39 @@
                 } catch(e) {}
             },
 
-            requestTicket: function(turno) {
+            // LÓGICA DE ALTA CARGA PARA 50+ ALUMNOS (Anti-Saturación Google)
+            requestTicket: async function(turno) {
                 document.getElementById('scanning-overlay').style.display = 'flex';
-                document.getElementById('loader-msg').innerText = "GENERANDO TICKET Y RESERVANDO ASIENTO...";
-                document.getElementById('progress-bar').style.width = '0%';
-                let p = 0;
-                const itv = setInterval(() => {
-                    p += 1; 
-                    document.getElementById('progress-bar').style.width = p + '%';
-                    if(p >= 100) {
-                        clearInterval(itv);
-                        this.finishTicket(turno);
-                    }
-                }, 100); 
+                document.getElementById('loader-msg').innerText = "RESERVANDO ESPACIO EN LA UNIDAD...";
+                
+                // JITTER: Retraso aleatorio corto para que no colapse el servidor con 50 peticiones al mismo segundo
+                const jitter = Math.random() * 1000;
+                await new Promise(r => setTimeout(r, jitter));
+
+                this.sendToAPI(turno, 0); // Intento 0
             },
 
-            async finishTicket(turno) {
+            async sendToAPI(turno, attempt) {
+                const area = document.getElementById('seat-area');
+                try {
+                    const response = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`);
+                    const res = await response.json();
+                    
+                    if(res.orden || turno === 'MAÑANA') {
+                        this.finish(turno, res);
+                    } else { throw new Error(); }
+                } catch(e) {
+                    if(attempt < 4) { // Reintentos automáticos en caso de saturación
+                        document.getElementById('loader-msg').innerText = `CONEXIÓN OCUPADA... REINTENTANDO (${attempt + 1})`;
+                        setTimeout(() => this.sendToAPI(turno, attempt + 1), 1500);
+                    } else {
+                        document.getElementById('scanning-overlay').style.display = 'none';
+                        Swal.fire('Servidor Lleno', 'Demasiados alumnos entrando. Intenta un toque más al botón.', 'warning');
+                    }
+                }
+            },
+
+            finish: function(turno, res) {
                 const area = document.getElementById('seat-area');
                 document.getElementById('t-fecha').innerText = new Date().toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
                 document.getElementById('t-nom').innerText = this.alumno.Estudiante;
@@ -384,17 +381,10 @@
                 document.getElementById('t-turno-val').innerText = turno;
 
                 if(turno === 'MAÑANA') {
-                    area.innerHTML = '✅ <br> <span class="text-2xl block font-black uppercase tracking-widest mt-2">(Ingreso Libre)</span>';
+                    area.innerHTML = '✅ <br> <span class="text-xl block font-black uppercase tracking-widest mt-2">(Libre)</span>';
                 } else {
-                    try {
-                        const res = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`).then(r => r.json());
-                        const ordenNum = parseInt(res.orden);
-                        if(ordenNum <= 45) {
-                            area.innerText = res.orden.toString().padStart(2, '0');
-                        } else {
-                            area.innerHTML = `🧍 <span class="text-xl block font-black">(Parado)</span>`;
-                        }
-                    } catch(e) { area.innerHTML = "ERR"; }
+                    const n = parseInt(res.orden);
+                    area.innerText = n <= 45 ? res.orden.toString().padStart(2, '0') : "🧍";
                 }
 
                 document.getElementById('qrcode-vip').innerHTML = "";
@@ -421,5 +411,4 @@
         window.onload = () => Core.init();
     </script>
 </body>
-    
 </html>
