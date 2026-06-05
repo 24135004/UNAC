@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNAC | Terminal Oficial de Movilidad v4.0 PRO</title>
     
-    <!-- LIBRERÍAS EXTERNAS - MANTENIDAS 100% ORIGINALES -->
+    <!-- LIBRERÍAS EXTERNAS - MANTENIDAS AL 100% -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -13,27 +13,52 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <!-- FIREBASE COMPAT - ESTRCUTURA ORIGINAL -->
+    <!-- FIREBASE COMPAT - CARGA COMPLETA -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <style>
-        :root { --accent: #ffc107; --dark: #050505; --fire: #ff4500; --white-clean: #f8f9fa; }
-        body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
-
-        /* ANIMACIONES ORIGINALES */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
-
-        .main-wrapper {
-            position: relative; z-index: 10;
-            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), 
-                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            min-height: 100vh; width: 100%; display: flex; flex-direction: column;
+        /* VARIABLES DE DISEÑO ORIGINALES */
+        :root { 
+            --accent: #ffc107; 
+            --dark: #050505; 
+            --fire: #ff4500; 
+            --white-clean: #f8f9fa; 
         }
 
-        /* NAVEGACIÓN ORIGINAL */
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh; 
+            background-color: var(--dark); 
+            font-family: 'Inter', sans-serif; 
+            color: #ffffff; 
+            overflow-x: hidden; 
+        }
+
+        /* ANIMACIONES DE ENTRADA */
+        @keyframes fadeInUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+
+        /* WRAPPER PRINCIPAL CON DISEÑO ORIGINAL */
+        .main-wrapper {
+            position: relative; 
+            z-index: 10;
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.4) 0%, rgba(5, 5, 5, 1) 100%), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed;
+            min-height: 100vh; 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column;
+        }
+
+        /* DISEÑO DE NAVEGACIÓN MANTENIDO */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
@@ -43,7 +68,7 @@
         #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; }
         #mobile-menu.active { display: flex; }
 
-        /* HUD ESCANEO ORIGINAL */
+        /* HUD DE ESCANEO SIN CARGAS FALSAS */
         #scanning-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
             z-index: 9999; display: none; flex-direction: column; 
@@ -54,7 +79,7 @@
         .hud-line { position: absolute; width: 100%; height: 4px; background: var(--accent); top: 0; animation: scanLine 2.5s linear infinite; box-shadow: 0 0 30px var(--accent); }
         @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* TARJETAS ORIGINALES */
+        /* ESTILOS DE TARJETAS MANTENIDOS */
         .card-panorama { 
             position: relative; overflow: hidden; border-radius: 35px; 
             border: 1px solid rgba(255,255,255,0.1); height: 280px; 
@@ -73,7 +98,7 @@
         }
         .delegate-msg { position: relative; z-index: 2; font-size: 9px; color: #aaa; text-transform: uppercase; font-weight: 700; max-width: 200px; margin-top: 10px; line-height: 1.4; }
 
-        /* TICKET VIP ORIGINAL */
+        /* TICKET DIGITAL MANTENIDO AL 100% */
         .ticket-tech { 
             background: #ffffff; color: #000; border-radius: 50px; width: 100%; max-width: 440px; 
             margin: 0 auto; overflow: hidden; box-shadow: 0 60px 150px rgba(0,0,0,0.9);
@@ -84,15 +109,13 @@
         .data-grid { background: #f1f1f1; padding: 25px; border-radius: 30px; margin: 0 25px 25px; text-align: left; font-family: 'Share Tech Mono', monospace; }
         .turno-box { background: #000; color: var(--accent); padding: 15px; border-radius: 20px; font-weight: 900; text-transform: uppercase; font-size: 14px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* INPUT TECH ORIGINAL */
+        /* INPUT PROFESIONAL */
         .input-tech { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,193,7,0.3); padding: 22px; border-radius: 20px; text-align: center; font-size: 26px; font-weight: 900; color: #fff; outline: none; transition: 0.3s; }
 
-        /* VISTA CELULAR ORIGINAL */
         @media (max-width: 768px) { 
             .nav-desktop { display: none; } 
             h1 { font-size: 3rem !important; } 
             header { padding: 20px; }
-            .glass { padding: 25px !important; }
             .input-tech { font-size: 1.2rem; padding: 15px; }
             .card-panorama { height: 240px; }
             .shift-title { font-size: 28px; }
@@ -105,13 +128,13 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- HUD ESCANEO ORIGINAL -->
+    <!-- HUD DE ESCANEO REFORZADO -->
     <div id="scanning-overlay">
         <div class="hud-box">
             <div class="hud-line"></div>
             <div class="absolute inset-0 flex flex-col items-center justify-center p-8">
                 <i class="fa-solid fa-dna text-6xl text-yellow-500/40 mb-6 animate-pulse"></i>
-                <p id="loader-msg" class="font-mono text-[11px] tracking-[5px] text-yellow-500 uppercase font-black"></p>
+                <p id="loader-msg" class="font-mono text-[11px] tracking-[5px] text-yellow-500 uppercase font-black">Sincronizando</p>
                 <div class="mt-10 w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
                     <div id="progress-bar" class="h-full bg-yellow-500 w-full transition-all"></div>
                 </div>
@@ -155,6 +178,7 @@
 
         <main class="max-w-6xl mx-auto px-6 py-8 w-full flex-grow z-20">
             
+            <!-- STEP 1: VERIFICACIÓN -->
             <div id="step-1" class="text-center animate-fade-up">
                 <h1 class="text-5xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 leading-none">Tickets <span class="text-yellow-500">Oficiales</span></h1>
                 <p class="text-gray-400 text-[11px] uppercase tracking-[3px] max-w-xl mx-auto mb-10 font-bold leading-relaxed">
@@ -182,6 +206,7 @@
                 </div>
             </div>
 
+            <!-- STEP 2: SELECCIÓN DE TURNO SINCRO -->
             <div id="step-2" class="hidden-section animate-fade-up">
                 <div class="bg-white/5 border border-white/10 p-8 rounded-[40px] mb-8 border-l-8 border-l-yellow-500 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-8">
                     <div class="flex items-center gap-6">
@@ -189,13 +214,13 @@
                         <div>
                             <h2 id="userName" class="text-3xl font-black uppercase italic leading-none"></h2>
                             <p id="userFac" class="text-yellow-500 text-[11px] font-black mt-3 tracking-[5px] uppercase"></p>
-                            <p class="text-[9px] text-gray-500 font-mono mt-2">DNI: <span id="userDni" class="text-white"></span> | SESIÓN: <span class="text-green-500 font-black tracking-widest">VERIFICADA</span></p>
+                            <p class="text-[9px] text-gray-500 font-mono mt-2">DNI: <span id="userDni" class="text-white"></span> | SESIÓN: <span class="text-green-500 font-black">SINCRO ACTIVA</span></p>
                         </div>
                     </div>
                     <div class="text-center md:text-right bg-black/40 p-5 rounded-3xl border border-white/5 min-w-[200px]">
                         <p class="text-[9px] text-gray-500 font-black uppercase mb-1 tracking-widest">Sincronización Hoy</p>
                         <div class="text-4xl font-black text-yellow-500" id="total-requests">00</div>
-                        <p class="text-[8px] text-gray-500 font-bold uppercase mt-1 italic">Solicitudes por turno</p>
+                        <p class="text-[8px] text-gray-500 font-bold uppercase mt-1 italic">Solicitudes procesadas</p>
                     </div>
                 </div>
 
@@ -223,6 +248,7 @@
                 <div id="globe-box-2"></div>
             </div>
 
+            <!-- STEP 3: TICKET FINAL -->
             <div id="step-3" class="hidden-section animate-fade-up text-center">
                 <div class="ticket-tech">
                     <div class="tech-header">
@@ -232,18 +258,25 @@
                     <div class="p-8">
                         <p class="text-[10px] font-black text-red-600 uppercase tracking-[4px] mb-1">Fecha de Caducidad:</p>
                         <p id="t-fecha" class="text-sm font-black text-black uppercase mb-6"></p>
+                        
                         <div class="bg-gray-100 border-4 border-dashed border-gray-300 rounded-[50px] py-10 mb-8 relative">
                             <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">NÚMERO DE ASIENTO</p>
                             <div id="seat-area" class="asiento-display">--</div>
                         </div>
+
                         <p class="text-[10px] font-black text-gray-500 uppercase mb-6 italic">Acerque este QR al delegado para ser escaneado <br> y verificado antes de subir a la unidad.</p>
+                        
                         <div class="flex justify-center mb-8">
                             <div id="qrcode-vip" class="p-6 border-4 border-black rounded-[40px] shadow-2xl bg-white"></div>
                         </div>
+                        
                         <div class="data-grid space-y-2">
                             <div class="flex justify-between text-[11px] border-b border-gray-300 pb-2"><span>PASAJERO:</span> <span id="t-nom" class="font-bold text-black"></span></div>
                             <div class="flex justify-between text-[11px] border-b border-gray-300 pb-2"><span>DOCUMENTO DNI:</span> <span id="t-dni" class="font-bold text-black"></span></div>
-                            <div class="turno-box"><span>Turno Seleccionado</span> <span id="t-turno-val"></span></div>
+                            <div class="turno-box">
+                                <span>Turno Seleccionado</span>
+                                <span id="t-turno-val"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -256,6 +289,7 @@
         </footer>
     </div>
 
+    <!-- SCRIPTS DE ALTA DISPONIBILIDAD -->
     <script>
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
 
@@ -271,46 +305,60 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let t6Status = false, t10Status = false;
+        // Variables de Control Sincronizadas
+        let tardeActivo = false;
+        let nocheActivo = false;
 
-        // --- SISTEMA DE ACTIVACIÓN POR PUSH EN TIEMPO REAL ---
-        // Esto garantiza que a todos se les active el botón al mismo milisegundo
-        db.ref('horarios/ticket_6pm').on('value', snap => { 
-            t6Status = snap.val(); 
-            Core.syncUI(); 
-        });
-        db.ref('horarios/ticket_1015pm').on('value', snap => { 
-            t10Status = snap.val(); 
-            Core.syncUI(); 
-        });
-
+        // ENDPOINTS ORIGINALES
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
         const L2 = "https://script.google.com/macros/s/AKfycbxavrdf_yymc9sdUEYuGz2qWTmzMNz0KQxEtzq6aDXlX8nL7PjXdhxBOvAyMY_jeF73/exec";
 
         const Core = {
             alumno: null,
+
             init: function() {
                 this.initThree('globe-box');
+                this.listenToFirebase(); // ACTIVACIÓN INSTANTÁNEA POR PUSH
                 this.updateGlobalCounter();
                 setInterval(() => this.updateGlobalCounter(), 10000);
             },
 
-            syncUI: function() {
+            // --- ESCUCHA FIREBASE: JUSTICIA TOTAL ---
+            // Este método asegura que todos los alumnos vean el cambio al mismo tiempo.
+            listenToFirebase: function() {
+                db.ref('horarios/ticket_6pm').on('value', snapshot => {
+                    tardeActivo = snapshot.val();
+                    this.refreshUIStatus();
+                });
+                db.ref('horarios/ticket_1015pm').on('value', snapshot => {
+                    nocheActivo = snapshot.val();
+                    this.refreshUIStatus();
+                });
+            },
+
+            refreshUIStatus: function() {
                 const h = new Date().getHours();
-                const morning = (h >= 21 || h < 7);
+                const mañanaActiva = (h >= 21 || h < 7);
                 
                 const updateCard = (badgeId, cardId, isActive) => {
-                    const b = document.getElementById(badgeId);
-                    const c = document.getElementById(cardId);
-                    if(!b || !c) return;
-                    b.innerText = isActive ? "ACTIVO" : "INACTIVO";
-                    b.className = `relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2 ${isActive ? 'bg-green-500 shadow-lg animate-pulse' : 'bg-red-600'}`;
-                    isActive ? c.classList.remove('locked') : c.classList.add('locked');
+                    const badge = document.getElementById(badgeId);
+                    const card = document.getElementById(cardId);
+                    if(!badge || !card) return;
+
+                    if(isActive) {
+                        badge.innerText = "ACTIVO";
+                        badge.className = "relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2 bg-green-500 shadow-lg animate-pulse";
+                        card.classList.remove('locked');
+                    } else {
+                        badge.innerText = "INACTIVO";
+                        badge.className = "relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2 bg-red-600";
+                        card.classList.add('locked');
+                    }
                 };
 
-                updateCard('badge-m', 'card-m', morning);
-                updateCard('badge-t', 'card-t', t6Status);
-                updateCard('badge-n', 'card-n', t10Status);
+                updateCard('badge-m', 'card-m', mañanaActiva);
+                updateCard('badge-t', 'card-t', tardeActivo);
+                updateCard('badge-n', 'card-n', nocheActivo);
             },
 
             startScan: async function() {
@@ -318,7 +366,7 @@
                 if(dni.length < 8) return Swal.fire('Error', 'DNI incompleto', 'warning');
                 
                 document.getElementById('scanning-overlay').style.display = 'flex';
-                document.getElementById('loader-msg').innerText = "CONECTANDO CON SERVIDOR CENTRAL...";
+                document.getElementById('loader-msg').innerText = "CONEXIÓN SERVIDOR CENTRAL...";
                 
                 try {
                     const res = await fetch(`${L1}?dni=${dni}`).then(r => r.json());
@@ -330,13 +378,16 @@
                         document.getElementById('userName').innerText = res.Estudiante;
                         document.getElementById('userFac').innerText = res.Facultad;
                         document.getElementById('userDni').innerText = dni;
-                        this.syncUI();
                         this.initThree('globe-box-2');
+                        this.refreshUIStatus();
                     } else {
                         document.getElementById('scanning-overlay').style.display = 'none';
-                        Swal.fire('No registrado', 'No figuras en el padrón oficial.', 'error');
+                        Swal.fire('No registrado', 'Tu DNI no figura en el sistema oficial.', 'error');
                     }
-                } catch(e) { document.getElementById('scanning-overlay').style.display = 'none'; }
+                } catch(e) { 
+                    document.getElementById('scanning-overlay').style.display = 'none';
+                    Swal.fire('Error de Red', 'Problemas de conexión.', 'error');
+                }
             },
 
             async updateGlobalCounter() {
@@ -346,61 +397,68 @@
                 } catch(e) {}
             },
 
-            // --- LÓGICA DE ALTO RENDIMIENTO PARA 50+ ALUMNOS (JUSTICIA TOTAL) ---
+            // --- LÓGICA DE ALTO RENDIMIENTO PARA 50+ ALUMNOS ---
+            // Implementa Jitter y Reintento Automático para evitar saturación de Google Script
             requestTicket: async function(turno) {
                 document.getElementById('scanning-overlay').style.display = 'flex';
-                document.getElementById('loader-msg').innerText = "RESERVANDO ASIENTO EN TIEMPO REAL...";
+                document.getElementById('loader-msg').innerText = "PROCESANDO COLA DE ASIENTOS...";
                 
-                // Algoritmo de Jitter: añade un retraso aleatorio de milisegundos para que 
-                // las 50 peticiones no golpeen al mismo tiempo y saturen el servidor de Google.
-                const jitterDelay = Math.floor(Math.random() * 1200);
-                await new Promise(resolve => setTimeout(resolve, jitterDelay));
+                // 1. Escalonamiento Milimétrico (Jitter)
+                // Evita que los 50 alumnos "golpeen" Google al mismo milisegundo
+                const delay = Math.random() * 1200; 
+                await new Promise(resolve => setTimeout(resolve, delay));
 
-                this.processQueue(turno, 0); // Empieza intento 0
+                this.dispatchTicketRequest(turno, 0); // Intento 0
             },
 
-            async processQueue(turno, attempt) {
+            async dispatchTicketRequest(turno, attempt) {
+                const area = document.getElementById('seat-area');
                 try {
-                    const response = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`);
+                    const url = `${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`;
+                    const response = await fetch(url);
                     
-                    if (!response.ok) throw new Error("Saturación");
+                    if(!response.ok) throw new Error("Saturación");
 
                     const res = await response.json();
-                    if(res.orden || turno === 'MAÑANA') {
-                        this.finalizeTicketUI(turno, res);
-                    } else {
-                        throw new Error("Respuesta inválida");
-                    }
+                    
+                    // Procesar éxito
+                    this.renderFinalTicket(turno, res);
+
                 } catch(error) {
-                    // SI EL SERVIDOR ESTÁ LLENO (MÁS DE 50 ALUMNOS), REINTENTA AUTOMÁTICAMENTE
-                    if(attempt < 4) {
+                    // 2. Sistema de Reintento con Retroceso
+                    // Si el servidor de Google está lleno, el código reintenta automáticamente
+                    if(attempt < 5) {
                         const nextAttempt = attempt + 1;
                         document.getElementById('loader-msg').innerText = `SISTEMA OCUPADO... REINTENTANDO (${nextAttempt})`;
-                        // Retroceso exponencial: espera un poco más en cada fallo
-                        setTimeout(() => this.processQueue(turno, nextAttempt), 1500 + (attempt * 500));
+                        setTimeout(() => this.dispatchTicketRequest(turno, nextAttempt), 2000);
                     } else {
                         document.getElementById('scanning-overlay').style.display = 'none';
-                        Swal.fire('Servidor Saturado', 'Hay demasiados alumnos entrando. Por favor, intenta presionar el botón una vez más.', 'warning');
+                        Swal.fire('Servidor Saturado', 'Hay demasiados alumnos ingresando. Por favor, intenta de nuevo.', 'warning');
                     }
                 }
             },
 
-            finalizeTicketUI: function(turno, res) {
+            renderFinalTicket: function(turno, res) {
                 const area = document.getElementById('seat-area');
-                document.getElementById('t-fecha').innerText = new Date().toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+                document.getElementById('t-fecha').innerText = new Date().toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
                 document.getElementById('t-nom').innerText = this.alumno.Estudiante;
                 document.getElementById('t-dni').innerText = this.alumno.dni;
                 document.getElementById('t-turno-val').innerText = turno;
 
                 if(turno === 'MAÑANA') {
-                    area.innerHTML = '✅ <br> <span class="text-xl block font-black uppercase mt-2">(Ingreso Libre)</span>';
+                    area.innerHTML = '✅ <br> <span class="text-xl block font-black uppercase tracking-widest mt-2">(Ingreso Libre)</span>';
                 } else {
-                    const n = parseInt(res.orden);
-                    area.innerText = n <= 45 ? res.orden.toString().padStart(2, '0') : "🧍";
+                    const ordenNum = parseInt(res.orden);
+                    if(ordenNum <= 45) {
+                        area.innerText = res.orden.toString().padStart(2, '0');
+                    } else {
+                        area.innerHTML = `🧍 <span class="text-xl block font-black">(Parado)</span>`;
+                    }
                 }
 
                 document.getElementById('qrcode-vip').innerHTML = "";
                 new QRCode(document.getElementById("qrcode-vip"), { text: `UNAC-VIP-${this.alumno.dni}-${turno}`, width: 180, height: 180 });
+                
                 document.getElementById('scanning-overlay').style.display = 'none';
                 document.getElementById('step-2').classList.add('hidden-section');
                 document.getElementById('step-3').classList.remove('hidden-section');
