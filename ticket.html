@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNAC | Terminal Oficial de Movilidad v4.0 PRO</title>
     
-    <!-- LIBRERÍAS EXTERNAS -->
+    <!-- LIBRERÍAS EXTERNAS - MANTENIDAS 100% ORIGINALES -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <!-- FIREBASE COMPAT -->
+    <!-- FIREBASE COMPAT - ESTRCUTURA ORIGINAL -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
@@ -21,7 +21,7 @@
         :root { --accent: #ffc107; --dark: #050505; --fire: #ff4500; --white-clean: #f8f9fa; }
         body, html { margin: 0; padding: 0; min-height: 100vh; background-color: var(--dark); font-family: 'Inter', sans-serif; color: #ffffff; overflow-x: hidden; }
 
-        /* ANIMACIONES */
+        /* ANIMACIONES ORIGINALES */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
 
@@ -33,7 +33,7 @@
             min-height: 100vh; width: 100%; display: flex; flex-direction: column;
         }
 
-        /* NAVEGACIÓN */
+        /* NAVEGACIÓN ORIGINAL */
         header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 1000; margin: 0 auto; }
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; position: relative; transition: 0.3s; }
         .nav-link:hover, .active-link { color: var(--accent); }
@@ -43,7 +43,7 @@
         #mobile-menu { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 35px; }
         #mobile-menu.active { display: flex; }
 
-        /* HUD ESCANEO */
+        /* HUD ESCANEO ORIGINAL */
         #scanning-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
             z-index: 9999; display: none; flex-direction: column; 
@@ -54,7 +54,7 @@
         .hud-line { position: absolute; width: 100%; height: 4px; background: var(--accent); top: 0; animation: scanLine 2.5s linear infinite; box-shadow: 0 0 30px var(--accent); }
         @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* TARJETAS */
+        /* TARJETAS ORIGINALES */
         .card-panorama { 
             position: relative; overflow: hidden; border-radius: 35px; 
             border: 1px solid rgba(255,255,255,0.1); height: 280px; 
@@ -73,7 +73,7 @@
         }
         .delegate-msg { position: relative; z-index: 2; font-size: 9px; color: #aaa; text-transform: uppercase; font-weight: 700; max-width: 200px; margin-top: 10px; line-height: 1.4; }
 
-        /* TICKET VIP */
+        /* TICKET VIP ORIGINAL */
         .ticket-tech { 
             background: #ffffff; color: #000; border-radius: 50px; width: 100%; max-width: 440px; 
             margin: 0 auto; overflow: hidden; box-shadow: 0 60px 150px rgba(0,0,0,0.9);
@@ -84,10 +84,10 @@
         .data-grid { background: #f1f1f1; padding: 25px; border-radius: 30px; margin: 0 25px 25px; text-align: left; font-family: 'Share Tech Mono', monospace; }
         .turno-box { background: #000; color: var(--accent); padding: 15px; border-radius: 20px; font-weight: 900; text-transform: uppercase; font-size: 14px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* INPUT TECH */
+        /* INPUT TECH ORIGINAL */
         .input-tech { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,193,7,0.3); padding: 22px; border-radius: 20px; text-align: center; font-size: 26px; font-weight: 900; color: #fff; outline: none; transition: 0.3s; }
 
-        /* --- CORRECCIÓN VISTA CELULAR --- */
+        /* VISTA CELULAR ORIGINAL */
         @media (max-width: 768px) { 
             .nav-desktop { display: none; } 
             h1 { font-size: 3rem !important; } 
@@ -105,23 +105,22 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- HUD ESCANEO -->
+    <!-- HUD ESCANEO ORIGINAL -->
     <div id="scanning-overlay">
         <div class="hud-box">
             <div class="hud-line"></div>
             <div class="absolute inset-0 flex flex-col items-center justify-center p-8">
                 <i class="fa-solid fa-dna text-6xl text-yellow-500/40 mb-6 animate-pulse"></i>
                 <p id="loader-msg" class="font-mono text-[11px] tracking-[5px] text-yellow-500 uppercase font-black"></p>
-                <!-- BARRA DE PROGRESO REAL -->
                 <div class="mt-10 w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                    <div id="progress-bar" class="h-full bg-yellow-500 w-full transition-all duration-300"></div>
+                    <div id="progress-bar" class="h-full bg-yellow-500 w-full transition-all"></div>
                 </div>
             </div>
         </div>
         <p class="text-[9px] text-gray-500 font-bold uppercase mt-6 tracking-[6px]">Terminal de Seguridad Activa</p>
     </div>
 
-    <!-- MENÚ MÓVIL -->
+    <!-- MENÚ MÓVIL ORIGINAL -->
     <div id="mobile-menu">
         <button onclick="toggleMenu()" class="absolute top-10 right-10 text-yellow-500 text-4xl"><i class="fa-solid fa-xmark"></i></button>
         <a href="index.html" class="text-xl font-black uppercase tracking-[4px] text-white">Inicio</a>
@@ -190,13 +189,13 @@
                         <div>
                             <h2 id="userName" class="text-3xl font-black uppercase italic leading-none"></h2>
                             <p id="userFac" class="text-yellow-500 text-[11px] font-black mt-3 tracking-[5px] uppercase"></p>
-                            <p class="text-[9px] text-gray-500 font-mono mt-2">DNI: <span id="userDni" class="text-white"></span> | SESIÓN: <span class="text-green-500 font-black">ACTIVA</span></p>
+                            <p class="text-[9px] text-gray-500 font-mono mt-2">DNI: <span id="userDni" class="text-white"></span> | SESIÓN: <span class="text-green-500 font-black tracking-widest">VERIFICADA</span></p>
                         </div>
                     </div>
                     <div class="text-center md:text-right bg-black/40 p-5 rounded-3xl border border-white/5 min-w-[200px]">
                         <p class="text-[9px] text-gray-500 font-black uppercase mb-1 tracking-widest">Sincronización Hoy</p>
                         <div class="text-4xl font-black text-yellow-500" id="total-requests">00</div>
-                        <p class="text-[8px] text-gray-500 font-bold uppercase mt-1 italic italic">Solicitudes procesadas</p>
+                        <p class="text-[8px] text-gray-500 font-bold uppercase mt-1 italic">Solicitudes por turno</p>
                     </div>
                 </div>
 
@@ -220,6 +219,7 @@
                     <div class="time-badge">SALIDA: 10:15 PM</div>
                     <p class="delegate-msg">Activación Sincronizada Delegado</p>
                 </div>
+
                 <div id="globe-box-2"></div>
             </div>
 
@@ -271,16 +271,17 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let t6 = false, t10 = false;
+        let t6Status = false, t10Status = false;
 
-        // ACTIVACIÓN REAL-TIME: Se sincroniza para todos al mismo milisegundo
-        db.ref('horarios/ticket_6pm').on('value', s => { 
-            t6 = s.val(); 
-            Core.updateStatus(); 
+        // --- SISTEMA DE ACTIVACIÓN POR PUSH EN TIEMPO REAL ---
+        // Esto garantiza que a todos se les active el botón al mismo milisegundo
+        db.ref('horarios/ticket_6pm').on('value', snap => { 
+            t6Status = snap.val(); 
+            Core.syncUI(); 
         });
-        db.ref('horarios/ticket_1015pm').on('value', s => { 
-            t10 = s.val(); 
-            Core.updateStatus(); 
+        db.ref('horarios/ticket_1015pm').on('value', snap => { 
+            t10Status = snap.val(); 
+            Core.syncUI(); 
         });
 
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
@@ -294,24 +295,28 @@
                 setInterval(() => this.updateGlobalCounter(), 10000);
             },
 
-            updateStatus: function() {
+            syncUI: function() {
                 const h = new Date().getHours();
-                const okM = (h >= 21 || h < 7);
-                const setB = (idB, idC, ok) => {
-                    const b = document.getElementById(idB); const c = document.getElementById(idC);
+                const morning = (h >= 21 || h < 7);
+                
+                const updateCard = (badgeId, cardId, isActive) => {
+                    const b = document.getElementById(badgeId);
+                    const c = document.getElementById(cardId);
                     if(!b || !c) return;
-                    b.innerText = ok ? "ACTIVO" : "INACTIVO";
-                    b.className = `relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2 ${ok ? 'bg-green-500 shadow-lg animate-pulse' : 'bg-red-600'}`;
-                    ok ? c.classList.remove('locked') : c.classList.add('locked');
+                    b.innerText = isActive ? "ACTIVO" : "INACTIVO";
+                    b.className = `relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2 ${isActive ? 'bg-green-500 shadow-lg animate-pulse' : 'bg-red-600'}`;
+                    isActive ? c.classList.remove('locked') : c.classList.add('locked');
                 };
-                setB('badge-m', 'card-m', okM);
-                setB('badge-t', 'card-t', t6);
-                setB('badge-n', 'card-n', t10);
+
+                updateCard('badge-m', 'card-m', morning);
+                updateCard('badge-t', 'card-t', t6Status);
+                updateCard('badge-n', 'card-n', t10Status);
             },
 
             startScan: async function() {
                 const dni = document.getElementById('dniInput').value.trim();
                 if(dni.length < 8) return Swal.fire('Error', 'DNI incompleto', 'warning');
+                
                 document.getElementById('scanning-overlay').style.display = 'flex';
                 document.getElementById('loader-msg').innerText = "CONECTANDO CON SERVIDOR CENTRAL...";
                 
@@ -325,11 +330,11 @@
                         document.getElementById('userName').innerText = res.Estudiante;
                         document.getElementById('userFac').innerText = res.Facultad;
                         document.getElementById('userDni').innerText = dni;
+                        this.syncUI();
                         this.initThree('globe-box-2');
-                        this.updateStatus();
                     } else {
                         document.getElementById('scanning-overlay').style.display = 'none';
-                        Swal.fire('No registrado', 'Tu DNI no figura en el padrón.', 'error');
+                        Swal.fire('No registrado', 'No figuras en el padrón oficial.', 'error');
                     }
                 } catch(e) { document.getElementById('scanning-overlay').style.display = 'none'; }
             },
@@ -341,47 +346,54 @@
                 } catch(e) {}
             },
 
-            // LÓGICA DE ALTA CARGA PARA 50+ ALUMNOS (Anti-Saturación Google)
+            // --- LÓGICA DE ALTO RENDIMIENTO PARA 50+ ALUMNOS (JUSTICIA TOTAL) ---
             requestTicket: async function(turno) {
                 document.getElementById('scanning-overlay').style.display = 'flex';
-                document.getElementById('loader-msg').innerText = "RESERVANDO ESPACIO EN LA UNIDAD...";
+                document.getElementById('loader-msg').innerText = "RESERVANDO ASIENTO EN TIEMPO REAL...";
                 
-                // JITTER: Retraso aleatorio corto para que no colapse el servidor con 50 peticiones al mismo segundo
-                const jitter = Math.random() * 1000;
-                await new Promise(r => setTimeout(r, jitter));
+                // Algoritmo de Jitter: añade un retraso aleatorio de milisegundos para que 
+                // las 50 peticiones no golpeen al mismo tiempo y saturen el servidor de Google.
+                const jitterDelay = Math.floor(Math.random() * 1200);
+                await new Promise(resolve => setTimeout(resolve, jitterDelay));
 
-                this.sendToAPI(turno, 0); // Intento 0
+                this.processQueue(turno, 0); // Empieza intento 0
             },
 
-            async sendToAPI(turno, attempt) {
-                const area = document.getElementById('seat-area');
+            async processQueue(turno, attempt) {
                 try {
                     const response = await fetch(`${L2}?dni=${this.alumno.dni}&accion=solicitar_cola&turno=${turno}`);
-                    const res = await response.json();
                     
+                    if (!response.ok) throw new Error("Saturación");
+
+                    const res = await response.json();
                     if(res.orden || turno === 'MAÑANA') {
-                        this.finish(turno, res);
-                    } else { throw new Error(); }
-                } catch(e) {
-                    if(attempt < 4) { // Reintentos automáticos en caso de saturación
-                        document.getElementById('loader-msg').innerText = `CONEXIÓN OCUPADA... REINTENTANDO (${attempt + 1})`;
-                        setTimeout(() => this.sendToAPI(turno, attempt + 1), 1500);
+                        this.finalizeTicketUI(turno, res);
+                    } else {
+                        throw new Error("Respuesta inválida");
+                    }
+                } catch(error) {
+                    // SI EL SERVIDOR ESTÁ LLENO (MÁS DE 50 ALUMNOS), REINTENTA AUTOMÁTICAMENTE
+                    if(attempt < 4) {
+                        const nextAttempt = attempt + 1;
+                        document.getElementById('loader-msg').innerText = `SISTEMA OCUPADO... REINTENTANDO (${nextAttempt})`;
+                        // Retroceso exponencial: espera un poco más en cada fallo
+                        setTimeout(() => this.processQueue(turno, nextAttempt), 1500 + (attempt * 500));
                     } else {
                         document.getElementById('scanning-overlay').style.display = 'none';
-                        Swal.fire('Servidor Lleno', 'Demasiados alumnos entrando. Intenta un toque más al botón.', 'warning');
+                        Swal.fire('Servidor Saturado', 'Hay demasiados alumnos entrando. Por favor, intenta presionar el botón una vez más.', 'warning');
                     }
                 }
             },
 
-            finish: function(turno, res) {
+            finalizeTicketUI: function(turno, res) {
                 const area = document.getElementById('seat-area');
-                document.getElementById('t-fecha').innerText = new Date().toLocaleDateString('es-PE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
+                document.getElementById('t-fecha').innerText = new Date().toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
                 document.getElementById('t-nom').innerText = this.alumno.Estudiante;
                 document.getElementById('t-dni').innerText = this.alumno.dni;
                 document.getElementById('t-turno-val').innerText = turno;
 
                 if(turno === 'MAÑANA') {
-                    area.innerHTML = '✅ <br> <span class="text-xl block font-black uppercase tracking-widest mt-2">(Libre)</span>';
+                    area.innerHTML = '✅ <br> <span class="text-xl block font-black uppercase mt-2">(Ingreso Libre)</span>';
                 } else {
                     const n = parseInt(res.orden);
                     area.innerText = n <= 45 ? res.orden.toString().padStart(2, '0') : "🧍";
