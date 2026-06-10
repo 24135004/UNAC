@@ -97,7 +97,7 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
         .tech-header { background: #000; color: #fff; padding: 30px; text-align: center; border-bottom: 6px solid var(--accent); }
-        .asiento-display { font-family: 'Montserrat'; font-size: 38px; font-weight: 900; color: #e11d48; line-height: 1.2; margin: 20px 0; text-transform: uppercase; }
+        .asiento-display { font-family: 'Montserrat'; font-size: 32px; font-weight: 900; color: #e11d48; line-height: 1.2; margin: 20px 0; text-transform: uppercase; }
         .data-grid { background: #f1f1f1; padding: 25px; border-radius: 30px; margin: 0 25px 25px; text-align: left; font-family: 'Share Tech Mono', monospace; }
         .turno-box { background: #000; color: var(--accent); padding: 15px; border-radius: 20px; font-weight: 900; text-transform: uppercase; font-size: 14px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
 
@@ -288,18 +288,30 @@
                 this.verificarFiltroSeguridad();
             },
 
-            // --- PROTOCOLO DE SEGURIDAD ESTRICTO ---
+            // --- PROTOCOLO DE SEGURIDAD AUTO-DETECTABLE ---
             verificarFiltroSeguridad: function() {
-                const origenValido = sessionStorage.getItem('tarde_access_granted') === 'true';
+                // Auto-conceder acceso si se detecta que viene del ticket oficial o de la raíz del sitio
+                const ref = document.referrer || "";
+                if (ref.includes("ticket.html") || ref.includes("index.html")) {
+                    sessionStorage.setItem('tarde_access_granted', 'true');
+                }
 
+                const accesoPermitido = sessionStorage.getItem('tarde_access_granted') === 'true';
+
+                // Monitorear base de datos para habilitación/deshabilitación en tiempo real
                 db.ref('horarios/ticket_6pm').on('value', snapshot => {
                     tardeActivo = !!snapshot.val();
                     
-                    // Si el turno no está activo o no se ingresó desde la pantalla principal, se bloquea el acceso
-                    if (!tardeActivo || !origenValido) {
+                    // Bloquear si el turno no está activo o si el origen es de acceso directo ilegal
+                    if (!tardeActivo || !accesoPermitido) {
                         document.getElementById('blocking-overlay').style.display = 'flex';
                     } else {
                         document.getElementById('blocking-overlay').style.display = 'none';
+                    }
+                }, error => {
+                    console.error("Falla al conectar con base de datos:", error);
+                    if (!accesoPermitido) {
+                        document.getElementById('blocking-overlay').style.display = 'flex';
                     }
                 });
             },
