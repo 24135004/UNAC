@@ -288,11 +288,15 @@
                 this.verificarFiltroSeguridad();
             },
 
-            // --- PROTOCOLO DE SEGURIDAD AUTO-DETECTABLE ---
+            // --- PROTOCOLO DE SEGURIDAD AUTO-DETECTABLE COMPATIBLE CON MÓVILES ---
             verificarFiltroSeguridad: function() {
-                // Auto-conceder acceso si se detecta que viene del ticket oficial o de la raíz del sitio
                 const ref = document.referrer || "";
-                if (ref.includes("ticket.html") || ref.includes("index.html")) {
+                
+                // MÓVILES: Si se navega en la misma pestaña desde ticket.html, history.length será >= 2
+                const tieneHistorialNavegacion = window.history.length > 1;
+
+                // Auto-conceder acceso si viene de ticket.html, index.html o si se detecta navegación interna de pestaña
+                if (ref.includes("ticket.html") || ref.includes("index.html") || tieneHistorialNavegacion) {
                     sessionStorage.setItem('tarde_access_granted', 'true');
                 }
 
@@ -302,7 +306,7 @@
                 db.ref('horarios/ticket_6pm').on('value', snapshot => {
                     tardeActivo = !!snapshot.val();
                     
-                    // Bloquear si el turno no está activo o si el origen es de acceso directo ilegal
+                    // Bloquear únicamente si no cumple los criterios de navegación o si el delegado apagó el botón
                     if (!tardeActivo || !accesoPermitido) {
                         document.getElementById('blocking-overlay').style.display = 'flex';
                     } else {
@@ -386,7 +390,7 @@
                 if (ordenNum <= 40) {
                     // Mensajes para los primeros 40 de la cola
                     area.innerHTML = "ASIENTO ASEGURADO";
-                    area.className = "asiento-display text-green-600 text-3xl font-black";
+                    area.className = "asiento-display text-green-600 text-2xl font-black";
                     warningMsg.innerText = "Hacer cola. Tendrá asiento pero el orden del asiento se definirá por orden de llegada. El delegado deberá escanear este QR para ser verificado.";
                 } else {
                     // Mensaje pasado el límite establecido
