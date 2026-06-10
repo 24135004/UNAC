@@ -231,7 +231,8 @@
                         <div class="time-badge">SALIDA: 05:15 AM</div>
                         <p class="delegate-msg">Apertura automática de sistema</p>
                     </div>
-                    <div id="card-t" class="card-panorama" style="background-image: url('DSC07588-768x432.jpg');" onclick="Core.requestTicket('TARDE')">
+                    <!-- TARJETA TARDE MODIFICADA PARA REDIRIGIR ÚNICAMENTE A TARDE.HTML -->
+                    <div id="card-t" class="card-panorama" style="background-image: url('DSC07588-768x432.jpg');" onclick="Core.goToTarde()">
                         <span id="badge-t" class="relative z-10 text-[9px] font-black px-4 py-1 rounded-full mb-2"></span>
                         <h3 class="shift-title text-white">Tarde</h3>
                         <div class="time-badge">SALIDA: 06:00 PM</div>
@@ -323,16 +324,29 @@
                 setInterval(() => this.updateGlobalCounter(), 10000);
             },
 
-            // --- ESCUCHA FIREBASE: JUSTICIA TOTAL ---
-            // Este método asegura que todos los alumnos vean el cambio al mismo tiempo.
+            // --- ESCUCHA FIREBASE REFORZADA ---
             listenToFirebase: function() {
+                // Sincronización estricta del Turno Tarde (6pm)
                 db.ref('horarios/ticket_6pm').on('value', snapshot => {
-                    tardeActivo = snapshot.val();
+                    tardeActivo = !!snapshot.val();
                     this.refreshUIStatus();
+                }, error => {
+                    console.error("Error de lectura en Firebase (Tarde):", error);
                 });
+
+                // Sincronización estricta del Turno Noche (10:15pm)
                 db.ref('horarios/ticket_1015pm').on('value', snapshot => {
-                    nocheActivo = snapshot.val();
+                    nocheActivo = !!snapshot.val();
                     this.refreshUIStatus();
+                }, error => {
+                    console.error("Error de lectura en Firebase (Noche):", error);
+                });
+
+                // Control preventivo de red para asegurar sincronización en reconexión móvil
+                db.ref('.info/connected').on('value', snapshot => {
+                    if (snapshot.val() === true) {
+                        this.refreshUIStatus();
+                    }
                 });
             },
 
@@ -359,6 +373,13 @@
                 updateCard('badge-m', 'card-m', mañanaActiva);
                 updateCard('badge-t', 'card-t', tardeActivo);
                 updateCard('badge-n', 'card-n', nocheActivo);
+            },
+
+            // Método para redirección exclusiva del Turno Tarde
+            goToTarde: function() {
+                if(tardeActivo) {
+                    window.location.href = "tarde.html";
+                }
             },
 
             startScan: async function() {
@@ -398,13 +419,11 @@
             },
 
             // --- LÓGICA DE ALTO RENDIMIENTO PARA 50+ ALUMNOS ---
-            // Implementa Jitter y Reintento Automático para evitar saturación de Google Script
             requestTicket: async function(turno) {
                 document.getElementById('scanning-overlay').style.display = 'flex';
                 document.getElementById('loader-msg').innerText = "PROCESANDO COLA DE ASIENTOS...";
                 
                 // 1. Escalonamiento Milimétrico (Jitter)
-                // Evita que los 50 alumnos "golpeen" Google al mismo milisegundo
                 const delay = Math.random() * 1200; 
                 await new Promise(resolve => setTimeout(resolve, delay));
 
@@ -426,7 +445,6 @@
 
                 } catch(error) {
                     // 2. Sistema de Reintento con Retroceso
-                    // Si el servidor de Google está lleno, el código reintenta automáticamente
                     if(attempt < 5) {
                         const nextAttempt = attempt + 1;
                         document.getElementById('loader-msg').innerText = `SISTEMA OCUPADO... REINTENTANDO (${nextAttempt})`;
