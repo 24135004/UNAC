@@ -87,9 +87,9 @@
                 <input type="text" id="searchInput" onkeyup="filter()" placeholder="FILTRAR POR DNI O NOMBRE..." class="input-search">
             </div>
 
-            <!-- CABECERA DE TABLA -->
+            <!-- CABECERA DE TABLA CAMBIADA A ASIENTO -->
             <div class="header-row hide-mobile">
-                <div>ORDEN</div>
+                <div>ASIENTO</div>
                 <div>PASAJERO / DNI</div>
                 <div>FACULTAD</div>
                 <div>TURNO</div>
@@ -113,7 +113,7 @@
         }
 
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2 = "https://script.google.com/macros/s/AKfycbwZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
+        const L2 = "https://script.google.com/macros/s/AKfycbZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
 
         let ultimaData = "";
 
@@ -128,7 +128,8 @@
                 const container = document.getElementById('lista-master');
                 container.innerHTML = "";
 
-                data.lista.forEach(item => {
+                // MODIFICADO: .slice(0, 40) PARA MOSTRAR SOLO LOS 40 PRIMEROS
+                data.lista.slice(0, 40).forEach(item => {
                     const shiftClass = item.turno === 'MAÑANA' ? 'm-bg' : (item.turno === 'TARDE' ? 't-bg' : 'n-bg');
                     const num = item.orden > 45 ? "🧍" : item.orden.toString().padStart(2, '0');
                     
