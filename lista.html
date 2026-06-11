@@ -20,7 +20,7 @@
             min-height: 100vh; width: 100%; display: flex; flex-direction: column;
         }
 
-        /* DISEÑO DE FILA TÉCNICA - ADAPTADO PARA COLUMNA DE ASIENTO */
+        /* DISEÑO DE FILA TÉCNICA - ADAPTADO A 6 COLUMNAS */
         .list-row {
             background: rgba(255, 255, 255, 0.02);
             border: 1.5px solid #ffffff; /* BORDE BLANCO ORIGINAL */
@@ -56,7 +56,7 @@
         #sync-indicator { font-size: 10px; font-weight: 900; color: #10b981; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
         
         @media (max-width: 768px) {
-            .list-row, .header-row { grid-template-columns: 50px 80px 1fr; }
+            .list-row, .header-row { grid-template-columns: 50px 70px 1fr; }
             .hide-mobile { display: none; }
         }
     </style>
@@ -114,7 +114,7 @@
         }
 
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2 = "https://script.google.com/macros/s/AKfycbZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad/exec";
+        const L2 = "https://script.google.com/macros/s/AKfycbZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
 
         let ultimaData = "";
 
@@ -129,12 +129,9 @@
                 const container = document.getElementById('lista-master');
                 container.innerHTML = "";
 
-                // Variable de control para limitar estrictamente a los 40 primeros de la lista
-                let totalMostrados = 0;
-
-                data.lista.forEach(item => {
-                    if (totalMostrados >= 40) return;
-                    totalMostrados++;
+                data.lista.forEach((item, index) => {
+                    // Detener la inserción si ya se superaron los 40 pasajeros
+                    if (index >= 40) return;
 
                     const shiftClass = item.turno === 'MAÑANA' ? 'm-bg' : (item.turno === 'TARDE' ? 't-bg' : 'n-bg');
                     const num = item.orden > 45 ? "🧍" : item.orden.toString().padStart(2, '0');
@@ -144,10 +141,10 @@
                     row.id = `row-${item.dni}`;
                     row.innerHTML = `
                         <div class="font-black text-xl text-yellow-500">#${num}</div>
-                        <div class="font-black text-sm text-white">A-${num}</div>
+                        <div class="font-bold text-sm text-white">Asiento ${num}</div>
                         <div>
                             <p class="name-val font-black text-sm uppercase text-gray-500 animate-pulse">Sincronizando...</p>
-                            <p class="text-[10px] font-mono opacity-40">DNI: ${String(item.dni).charAt(0)}*******</p>
+                            <p class="text-[10px] font-mono opacity-40">DNI: ${item.dni.charAt(0)}*******</p>
                         </div>
                         <div class="fac-val text-[10px] font-bold text-gray-400 uppercase tracking-widest hide-mobile">Cargando...</div>
                         <div class="hide-mobile"><span class="badge-turno ${shiftClass}">${item.turno}</span></div>
@@ -162,7 +159,7 @@
                             rEl.querySelector('.name-val').classList.remove('animate-pulse', 'text-gray-500');
                             rEl.querySelector('.fac-val').innerText = st.Facultad;
                         }
-                    }).catch(e => console.error("Error al consultar L1"));
+                    });
                 });
             } catch(e) { console.error("Sync Error"); }
         }
