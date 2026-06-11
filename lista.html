@@ -6,7 +6,7 @@
     <title>UNAC | Manifiesto en Tiempo Real</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Share+Tech+Mono&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=800;900&family=Share+Tech+Mono&family=Inter:wght=400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
@@ -20,7 +20,7 @@
             min-height: 100vh; width: 100%; display: flex; flex-direction: column;
         }
 
-        /* DISEÑO DE FILA TÉCNICA */
+        /* DISEÑO DE FILA TÉCNICA - SE AGREGÓ COLUMNA PARA ASIENTO (100px) */
         .list-row {
             background: rgba(255, 255, 255, 0.02);
             border: 1.5px solid #ffffff; /* BORDE BLANCO ORIGINAL */
@@ -28,7 +28,7 @@
             padding: 15px 25px;
             margin-bottom: 12px;
             display: grid;
-            grid-template-columns: 80px 1.5fr 1fr 120px 120px;
+            grid-template-columns: 80px 100px 1.5fr 1fr 120px 120px;
             align-items: center;
             transition: 0.3s;
             backdrop-filter: blur(10px);
@@ -38,7 +38,7 @@
         .header-row {
             padding: 10px 25px;
             display: grid;
-            grid-template-columns: 80px 1.5fr 1fr 120px 120px;
+            grid-template-columns: 80px 100px 1.5fr 1fr 120px 120px;
             font-weight: 900;
             text-transform: uppercase;
             font-size: 11px;
@@ -56,7 +56,7 @@
         #sync-indicator { font-size: 10px; font-weight: 900; color: #10b981; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
         
         @media (max-width: 768px) {
-            .list-row, .header-row { grid-template-columns: 50px 1fr 1fr; }
+            .list-row, .header-row { grid-template-columns: 50px 70px 1fr; }
             .hide-mobile { display: none; }
         }
     </style>
@@ -90,6 +90,7 @@
             <!-- CABECERA DE TABLA -->
             <div class="header-row hide-mobile">
                 <div>ORDEN</div>
+                <div>ASIENTO</div>
                 <div>PASAJERO / DNI</div>
                 <div>FACULTAD</div>
                 <div>TURNO</div>
@@ -113,7 +114,7 @@
         }
 
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2 = "https://script.google.com/macros/s/AKfycbwZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
+        const L2 = "https://script.google.com/macros/s/AKfycbZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
 
         let ultimaData = "";
 
@@ -128,15 +129,21 @@
                 const container = document.getElementById('lista-master');
                 container.innerHTML = "";
 
-                data.lista.forEach(item => {
+                // Se limita el arreglo a los primeros 40 elementos
+                const primeros40 = data.lista.slice(0, 40);
+
+                primeros40.forEach(item => {
                     const shiftClass = item.turno === 'MAÑANA' ? 'm-bg' : (item.turno === 'TARDE' ? 't-bg' : 'n-bg');
-                    const num = item.orden > 45 ? "🧍" : item.orden.toString().padStart(2, '0');
+                    const num = item.orden.toString().padStart(2, '0');
+                    // Formato del asiento obtenido según su número de orden
+                    const numAsiento = `A-${num}`;
                     
                     const row = document.createElement('div');
                     row.className = "list-row";
                     row.id = `row-${item.dni}`;
                     row.innerHTML = `
                         <div class="font-black text-xl text-yellow-500">#${num}</div>
+                        <div class="font-bold text-sm text-yellow-500 font-mono">ASIENTO ${num}</div>
                         <div>
                             <p class="name-val font-black text-sm uppercase text-gray-500 animate-pulse">Sincronizando...</p>
                             <p class="text-[10px] font-mono opacity-40">DNI: ${item.dni.charAt(0)}*******</p>
