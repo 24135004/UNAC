@@ -20,10 +20,10 @@
             min-height: 100vh; width: 100%; display: flex; flex-direction: column;
         }
 
-        /* DISEÑO DE FILA ORIGINAL DE 5 COLUMNAS */
+        /* DISEÑO DE FILA TÉCNICA */
         .list-row {
             background: rgba(255, 255, 255, 0.02);
-            border: 1.5px solid #ffffff; 
+            border: 1.5px solid #ffffff; /* BORDE BLANCO ORIGINAL */
             border-radius: 15px;
             padding: 15px 25px;
             margin-bottom: 12px;
@@ -72,6 +72,7 @@
                     <div id="sync-indicator"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Sincronizado</div>
                 </div>
             </div>
+            <!-- BOTÓN CERRAR CORREGIDO -->
             <button onclick="cerrarVentana()" class="bg-white text-black font-black px-6 py-2 rounded-xl text-[10px] uppercase hover:bg-yellow-500 transition shadow-lg">
                 <i class="fa-solid fa-circle-xmark mr-1"></i> Cerrar Lista
             </button>
@@ -96,19 +97,23 @@
             </div>
 
             <div id="lista-master" class="pb-20">
-                <!-- Se llena con JS -->
+                <!-- Sincronización JS -->
             </div>
         </main>
     </div>
 
     <script>
+        // LÓGICA DE CIERRE ROBUSTA
         function cerrarVentana() {
             window.close();
-            setTimeout(() => { window.location.href = "ticket.html"; }, 100);
+            // Fallback si window.close() es bloqueado por el navegador
+            setTimeout(() => {
+                window.location.href = "ticket.html";
+            }, 100);
         }
 
         const L1 = "https://script.google.com/macros/s/AKfycbwzVasP01RADjpQeQjULw_XT0ypa1hrB8_Y0OJgMDpXhr7PNMT1nkYQsTjwRr03TaR0Vg/exec";
-        const L2 = "https://script.google.com/macros/s/AKfycbZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
+        const L2 = "https://script.google.com/macros/s/AKfycbwZQM0Ju83X3np4-DsuYc3FpyNe9ipxcgceCsPLtLAUB5vNVAlAEn4EY_2mqbKeUad_/exec";
 
         let ultimaData = "";
 
@@ -117,24 +122,19 @@
                 const res = await fetch(`${L2}?accion=obtener_lista&t=${Date.now()}`);
                 const data = await res.json();
                 
-                // Si la data no ha cambiado, no redibujamos para evitar parpadeos
                 if (JSON.stringify(data.lista) === ultimaData) return;
                 ultimaData = JSON.stringify(data.lista);
 
                 const container = document.getElementById('lista-master');
                 container.innerHTML = "";
 
-                // FILTRO: Solo tomamos los primeros 40 del Link 2
-                const losPrimeros40 = data.lista.slice(0, 40);
-
-                losPrimeros40.forEach(item => {
+                data.lista.forEach(item => {
                     const shiftClass = item.turno === 'MAÑANA' ? 'm-bg' : (item.turno === 'TARDE' ? 't-bg' : 'n-bg');
-                    // Si el orden es mayor a 45 (parados), ponemos emoji, sino el número con 0 a la izquierda
                     const num = item.orden > 45 ? "🧍" : item.orden.toString().padStart(2, '0');
                     
                     const row = document.createElement('div');
                     row.className = "list-row";
-                    row.id = `row-${item.dni}`; // ID único por DNI para actualizar el nombre luego
+                    row.id = `row-${item.dni}`;
                     row.innerHTML = `
                         <div class="font-black text-xl text-yellow-500">#${num}</div>
                         <div>
@@ -147,36 +147,26 @@
                     `;
                     container.appendChild(row);
 
-                    // Buscamos los datos detallados (Nombre y Facultad) en el Link 1
-                    fetch(`${L1}?dni=${item.dni}`)
-                        .then(r => r.json())
-                        .then(st => {
-                            const rEl = document.getElementById(`row-${item.dni}`);
-                            if(rEl && st.found) {
-                                const nameEl = rEl.querySelector('.name-val');
-                                nameEl.innerText = st.Estudiante;
-                                nameEl.classList.remove('animate-pulse', 'text-gray-500');
-                                rEl.querySelector('.fac-val').innerText = st.Facultad;
-                            }
-                        })
-                        .catch(err => console.error("Error en L1:", err));
+                    fetch(`${L1}?dni=${item.dni}`).then(r => r.json()).then(st => {
+                        const rEl = document.getElementById(`row-${item.dni}`);
+                        if(rEl && st.found) {
+                            rEl.querySelector('.name-val').innerText = st.Estudiante;
+                            rEl.querySelector('.name-val').classList.remove('animate-pulse', 'text-gray-500');
+                            rEl.querySelector('.fac-val').innerText = st.Facultad;
+                        }
+                    });
                 });
-            } catch(e) { 
-                console.error("Error de Sincronización:", e); 
-            }
+            } catch(e) { console.error("Sync Error"); }
         }
 
         function filter() {
             let q = document.getElementById('searchInput').value.toUpperCase();
             let rows = document.getElementsByClassName('list-row');
-            for (let r of rows) { 
-                r.style.display = r.innerText.toUpperCase().includes(q) ? "" : "none"; 
-            }
+            for (let r of rows) { r.style.display = r.innerText.toUpperCase().includes(q) ? "" : "none"; }
         }
 
         window.onload = () => {
             syncData();
-            // Actualización automática cada 10 segundos
             setInterval(syncData, 10000); 
         };
     </script>
