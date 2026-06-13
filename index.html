@@ -1,1 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta name="google-site-verification" content="DXjJSnDAZ8sb0fRpk0pmvu8SfvsjK4mS9oN3Sp2aCSs" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UNAC | Servicio Suspendido</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
+    <style>
+        :root { 
+            --accent: #ffc107; 
+            --dark: #050505;
+            --warning: #ef4444;
+        }
+        
+        body, html { 
+            margin: 0; padding: 0; min-height: 100vh; 
+            background-color: var(--dark);
+            font-family: 'Inter', sans-serif;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* ANIMACIONES */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        /* FONDO */
+        .main-wrapper {
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.6) 0%, rgba(5, 5, 5, 1) 100%), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        header { width: 100%; max-width: 1200px; padding: 30px 20px; z-index: 100; }
+
+        .content-box {
+            max-width: 1100px; width: 90%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 0; flex-grow: 1;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            line-height: 1.1; font-weight: 800; text-transform: uppercase;
+        }
+
+        #globe-box { width: 400px; height: 400px; }
+
+        .warning-card {
+            background: rgba(255, 193, 7, 0.02);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            border-left: 4px solid var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 25px 15px; }
+            .content-box { flex-direction: column-reverse; text-align: center; padding-top: 0; align-items: center; justify-content: center; }
+            #globe-box { width: 240px; height: 240px; margin-bottom: 20px; margin: 0 auto; }
+            h1 { margin-top: 15px; text-align: center; }
+            .text-side { text-align: center !important; display: flex; flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <!-- Header Minimalista sin enlaces funcionales de navegación -->
+    <header class="flex justify-between items-center animate-fade-up relative z-20">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-yellow-500/20 border border-yellow-500/40 rounded flex items-center justify-center">
+                <i class="fa-solid fa-triangle-exclamation text-yellow-500 text-lg"></i>
+            </div>
+            <div class="flex flex-col text-left">
+                <span class="text-[10px] font-black tracking-widest leading-none uppercase text-yellow-500">UNAC</span>
+                <span class="text-[9px] text-gray-400 font-bold uppercase">Soporte Tecnológico</span>
+            </div>
+        </div>
+        
+        <div class="text-[10px] bg-red-500/10 border border-red-500/30 text-red-500 font-bold px-3 py-1.5 rounded-md uppercase tracking-wider">
+            Acceso Interrumpido
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-box">
+        <div class="text-side animate-fade-up text-left max-w-xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 mb-4">
+                <span class="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+                <span class="text-red-500 text-[9px] font-bold uppercase tracking-widest">Plataforma Desactivada</span>
+            </div>
+            
+            <h1>Página <br><span class="text-yellow-500 italic opacity-90">Eliminada por el Delegado</span></h1>
+            
+            <p class="mt-4 text-gray-300 text-sm font-light leading-relaxed">
+                Esta versión del portal de movilidad inteligente ha sido dada de baja por disposición del delegado de movilidad estudiantil.
+            </p>
+
+            <!-- Cuadro de Instrucciones Clave -->
+            <div class="warning-card p-5 rounded-r-xl mt-6 space-y-3">
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    <strong class="text-yellow-500 uppercase block mb-1 font-bold">¿Cómo acceder a la nueva plataforma?</strong>
+                    Para coordinar el uso del servicio y obtener el enlace actualizado del sistema, por favor comuníquese directamente con el delegado a través del <strong>grupo oficial de WhatsApp</strong> para que se le facilite el número de contacto de asistencia.
+                </p>
+            </div>
+            
+            <!-- Acciones de Comunicación -->
+            <div class="flex flex-col sm:flex-row gap-3 mt-8 justify-center md:justify-start">
+                <!-- Reemplazar el '#' con el enlace real al grupo de WhatsApp correspondiente -->
+                <a href="#" target="_blank" class="bg-yellow-500 text-black text-[11px] font-black px-7 py-3 rounded-lg hover:scale-105 transition shadow-lg shadow-yellow-500/20 flex items-center justify-center gap-2 uppercase">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Grupo de WhatsApp
+                </a>
+                <span class="text-[10px] text-gray-500 flex items-center justify-center italic">
+                    * Consulte el nuevo enlace al administrador.
+                </span>
+            </div>
+        </div>
+
+        <!-- Globo de advertencia en 3D (Tonos amarillos atenuados) -->
+        <div id="globe-box" class="animate-float"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-12 flex flex-col items-center border-t border-white/5 bg-black/20 relative z-20 mt-auto">
+        <span class="text-center text-[10px] font-extrabold tracking-[8px] text-yellow-500 mb-2 uppercase">SISTEMA CREADO POR SEBASTIAN</span>
+        <span class="text-center text-[9px] text-gray-500 tracking-[1px] uppercase italic font-light">
+            © 2026 UNAC - Soporte de Movilidad Estudiantil. Todos los derechos reservados.
+        </span>
+    </footer>
+</div>
+
+<script>
+    let scene, camera, renderer, globe;
+    const container = document.getElementById('globe-box');
+
+    function init() {
+        if (!container) return;
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.z = 100;
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        // Se reduce la densidad para dar aspecto de sistema desactivado/vacío
+        const geometry = new THREE.IcosahedronGeometry(35, 1);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xffc107,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.1
+        });
+        globe = new THREE.Mesh(geometry, material);
+        scene.add(globe);
+
+        const pointsGeom = new THREE.IcosahedronGeometry(35.5, 1);
+        const pointsMat = new THREE.PointsMaterial({ color: 0xff5555, size: 0.8, transparent: true, opacity: 0.3 });
+        globe.add(new THREE.Points(pointsGeom, pointsMat));
+
+        animate();
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        if (globe) {
+            globe.rotation.y += 0.001;
+            globe.rotation.x += 0.0005;
+        }
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+        if (!container || !container.clientWidth) return;
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    });
+
+    window.onload = init;
+</script>
+</body>
+</html>
